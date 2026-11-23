@@ -1,11 +1,11 @@
-// Pega aquí la configuración de tu app web de Firebase
-// (Consola de Firebase > Configuración del proyecto > Tus apps > Configuración del SDK).
+// Configuración de la app web de Firebase (proyecto el-asadero-37d8f).
 // Estos valores NO son secretos: la seguridad la dan las reglas de Firestore (firestore.rules).
 const FIREBASE_CONFIG = {
-  apiKey: "PEGA_AQUI_TU_API_KEY",
-  authDomain: "PEGA_AQUI.firebaseapp.com",
-  projectId: "PEGA_AQUI",
-  storageBucket: "PEGA_AQUI.appspot.com",
-  messagingSenderId: "PEGA_AQUI",
-  appId: "PEGA_AQUI"
+  apiKey: "AIzaSyDxJVu5_QxPlt7N6UJYI355I5v1haQD2cQ",
+  authDomain: "el-asadero-37d8f.firebaseapp.com",
+  projectId: "el-asadero-37d8f",
+  storageBucket: "el-asadero-37d8f.firebasestorage.app",
+  messagingSenderId: "276091877760",
+  appId: "1:276091877760:web:f1275a243f6df928526965",
+  measurementId: "G-TC30HHM04V"
 };
