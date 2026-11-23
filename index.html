@@ -58,6 +58,15 @@ canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block}
 .rk span:first-child{width:38px;text-align:center}
 .rk .nmu{flex:1;overflow:hidden;text-overflow:ellipsis}
 .rk.me{background:#ffd24a33;border:2px solid #ffd24a}
+#smodal{position:fixed;inset:0;background:rgba(10,5,25,.82);display:grid;place-items:center;padding:12px;z-index:7}
+#smodal.off{display:none}
+#sbox{width:min(94vw,620px);max-height:88vh;overflow-y:auto}
+#sbox h1{font-size:clamp(22px,5vw,32px)}
+.sc{background:#ffffff14;border-radius:14px;padding:10px 14px;margin-bottom:10px;text-align:left}
+.sc h3{color:#ffe08a;margin-bottom:6px;font-size:17px}
+.sr{display:flex;justify-content:space-between;gap:12px;font-weight:700;font-size:15px;padding:2px 0;border-bottom:1px solid #ffffff10}
+.sr:last-child{border-bottom:none}
+.sr b{color:#7bed9f;text-align:right}
 </style>
 </head>
 <body>
@@ -65,13 +74,14 @@ canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block}
 <div id="hud">
   <div id="lvl"></div>
   <div id="pips"></div>
-  <div class="btns"><button id="home">🏠</button><button id="spd">⏩ x1</button><button id="snd">🔊</button></div>
+  <div class="btns"><button id="stb" style="display:none">📊 Stats</button><button id="home">🏠</button><button id="spd">⏩ x1</button><button id="snd">🔊</button></div>
 </div>
 <div class="ros" id="rosL"></div>
 <div class="ros r" id="rosR"></div>
 <div id="banner"></div>
 <div id="panel"><div id="ptitle"></div><div id="cards"></div></div>
 <div id="modal"><div class="box" id="mbox"></div></div>
+<div id="smodal" class="off"><div class="box" id="sbox"></div></div>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
@@ -346,7 +356,7 @@ function pickUp(list,rng,cap){
 let mode='menu',st='menu',team=[],bteam=[],offers=[],units=[],fightT=0,fightEnd=false,endT=0,speed=1,runId=0,infN=1,pendingUpg=null,TH=THEMES[0];
 const parts=[],floaters=[];let fx=[];
 const $=id=>document.getElementById(id);
-let BEST=0;
+let BEST=0,statsOpen=false;
 const saveProg=()=>{if(typeof cloudSave==='function')cloudSave();};
 const later=(fn,ms)=>{const id=runId;setTimeout(()=>{if(id===runId)fn();},ms);};
 
@@ -494,9 +504,42 @@ function setModal(html,btns){
 function hideScreens(){$('modal').classList.add('off');$('panel').classList.remove('on');icons.length=0;}
 function resetBattle(){runId++;units=[];parts.length=0;floaters.length=0;fx=[];st='menu';team=[];bteam=[];}
 
+/* ============ estadísticas ============ */
+const f1=n=>(Math.round(n*10)/10).toString().replace('.',',');
+function closeStats(){statsOpen=false;$('smodal').classList.add('off');}
+function showStats(){
+  if(mode!=='inf'||!team.length)return;
+  statsOpen=true;
+  let h='<h1>📊 Estadísticas</h1><p>Valores reales de tus pollos ahora mismo (la pelea se pausa mientras miras).</p>';
+  team.forEach(m=>{
+    const s=memberStats(m),g=k=>m.l[k]||0,R=(a,b)=>'<div class="sr"><span>'+a+'</span><b>'+b+'</b></div>';
+    h+='<div class="sc"><h3>'+memberName(m)+(m.hero?' ⭐':'')+(m.t?' · '+(m.t===1?'🤖 Robot':'👑 Titán'):'')+'</h3>';
+    h+=R('❤️ Vida',Math.round(s.hp));
+    h+=R('⚔️ Daño por segundo',f1(s.atk)+'  ('+f1(s.atk*s.rate)+' por golpe)');
+    h+=R('💨 Velocidad de ataque','x'+f1(0.7/s.rate));
+    h+=R('🏃 Velocidad al correr','x'+f1(s.spd/3.6));
+    if(m.t)h+=R('Bonus de cuerpo','vida x'+HM[m.t]+' · daño x'+AM[m.t]);
+    if(g('power'))h+=R('💪 Músculos ('+g('power')+')','daño x'+f1(Math.pow(1.3,g('power'))));
+    if(g('vit'))h+=R('❤️ Súper plumaje ('+g('vit')+')','vida x'+f1(Math.pow(1.35,g('vit'))));
+    if(g('armor'))h+=R('🛡️ Plumas de acero ('+g('armor')+')','-'+Math.round((1-s.dmgMul)*100)+'% daño recibido');
+    if(g('gold'))h+=R('🪙 Pico de oro ('+g('gold')+')',Math.round(s.crit*100)+'% críticos · x3 daño');
+    if(g('fire'))h+=R('🔥 Pico de fuego ('+g('fire')+')',f1(s.fireDps)+' daño/s durante 3 s');
+    if(g('vamp'))h+=R('🧛 Pico vampiro ('+g('vamp')+')','roba '+Math.round(s.vamp*100)+'% del daño');
+    if(s.laser)h+=R('🔴 Láser ('+g('laser')+')',s.laser.n+(s.laser.n>1?' rayos':' rayo')+' de '+Math.round(s.laser.dmg)+' · cada '+f1(s.laser.cd)+' s');
+    if(s.egg)h+=R('🥚 Huevos ('+g('egg')+')',Math.round(s.egg.dmg)+' de daño · radio '+f1(s.egg.rad)+' · cada '+f1(s.egg.cd)+' s');
+    if(s.storm)h+=R('🪶 Tormenta ('+g('storm')+')',Math.round(s.storm.dmg)+' de daño · radio '+f1(s.storm.rad)+' · cada '+f1(s.storm.cd)+' s');
+    if(g('phoenix'))h+=R('🌅 Huevo fénix','x'+g('phoenix')+' · revive con toda la vida');
+    if(m.hero&&g('flock'))h+=R('🐥 La bandada','nivel '+g('flock'));
+    h+='</div>';
+  });
+  h+='<div class="row"><button class="btn" id="sclose">Cerrar</button></div>';
+  $('sbox').innerHTML=h;$('smodal').classList.remove('off');
+  $('sclose').onclick=()=>{ensureAudio();snd.click();closeStats();};
+}
+
 /* ============ menú ============ */
 function showMenu(){
-  resetBattle();mode='menu';TH=THEMES[0];hideScreens();
+  resetBattle();mode='menu';TH=THEMES[0];hideScreens();closeStats();$('stb').style.display='none';
   $('lvl').innerHTML='EL ASADERO<small>Rondas infinitas</small>';$('pips').innerHTML='';$('rosL').style.display=$('rosR').style.display='none';
   const a=newMember(true);a.fresh=false;team=[a];bteam=[{k:'gorilla',t:0},{k:'cat',t:0}];buildArena();units.forEach(u=>u.spawnT=1);team=[];bteam=[];
   const btns=[{t:'¡JUGAR!',f:startInf}];
@@ -508,7 +551,7 @@ function goHome(){showMenu();}
 /* ============ flujo infinito ============ */
 function startInf(){
   resetBattle();mode='inf';infN=1;team=[newMember(true)];
-  hideScreens();$('rosL').style.display=$('rosR').style.display='';nextInfRound();
+  hideScreens();$('rosL').style.display=$('rosR').style.display='';$('stb').style.display='';nextInfRound();
 }
 function nextInfRound(){
   bteam=genInfEnemy(infN);offers=genUpgrades();TH=THEMES[(((infN-1)/5)|0)%5];
@@ -662,7 +705,7 @@ function formModal(title,sub,fields,btns,msg){
 }
 const ferr=t=>{const e=$('ferr');if(e)e.textContent=t;};
 function showLogin(msg){
-  resetBattle();mode='menu';hideScreens();$('rosL').style.display=$('rosR').style.display='none';$('pips').innerHTML='';
+  resetBattle();mode='menu';hideScreens();closeStats();$('stb').style.display='none';$('rosL').style.display=$('rosR').style.display='none';$('pips').innerHTML='';
   formModal('EL ASADERO','Inicia sesión para jugar y aparecer en el ranking.',[{id:'fu',ph:'Usuario',ac:'username'},{id:'fp',ph:'Contraseña',ac:'current-password',pw:1}],[
     {t:'Entrar',f:doLogin},{t:'Crear cuenta',cls:'alt',f:()=>showRegister()}],msg);
 }
@@ -903,7 +946,7 @@ function calibInf(policy){
 }
 /* ============ bucle ============ */
 function update(dt){
-  const sdt=dt*speed;
+  const sdt=statsOpen?0:dt*speed;
   if(st==='fight'){
     if(!fightEnd){const n=Math.ceil(sdt/0.025);for(let i=0;i<n;i++)stepFight(sdt/n);}
     else{
@@ -1000,7 +1043,8 @@ function frame(now){
 }
 $('spd').onclick=()=>{speed=speed===1?2:speed===2?3:1;$('spd').textContent='⏩ x'+speed;};
 $('snd').onclick=()=>{muted=!muted;$('snd').textContent=muted?'🔇':'🔊';};
-$('home').onclick=()=>{ensureAudio();showMenu();};
+$('home').onclick=()=>{ensureAudio();closeStats();showMenu();};
+$('stb').onclick=()=>{ensureAudio();snd.click();statsOpen?closeStats():showStats();};
 window.__game={showLogin,showRegister,showRanking,boot,get st(){return st},get mode(){return mode},get offers(){return offers},get team(){return team},get units(){return units},pick,startInf,showMenu,calibInf,set speed(v){speed=v;},cfg:{get g(){return INF_G},set g(v){INF_G=v},get b(){return INF_BASE},set b(v){INF_BASE=v},get e(){return INF_E},set e(v){INF_E=v}}};
 boot();
 requestAnimationFrame(frame);
