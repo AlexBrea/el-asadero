@@ -1,0 +1,35 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Ranking: un documento por jugador (id = uid del usuario).
+    match /ranking/{uid} {
+      // Cualquiera puede ver el ranking.
+      allow read: if true;
+
+      // Un jugador solo puede crear/modificar SU documento.
+      allow create: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['username', 'best', 'updatedAt'])
+        && request.resource.data.username is string
+        && request.resource.data.username.size() >= 3
+        && request.resource.data.username.size() <= 16
+        && request.auth.token.email == request.resource.data.username + '@elasadero.game'
+        && request.resource.data.best is int
+        && request.resource.data.best >= 0
+        && request.resource.data.best <= 500
+        && request.resource.data.updatedAt == request.time;
+
+      // Solo puede subir su récord (nunca bajarlo) y no cambiar el nombre.
+      allow update: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['best', 'updatedAt'])
+        && request.resource.data.best is int
+        && request.resource.data.best >= resource.data.best
+        && request.resource.data.best <= 500
+        && request.resource.data.updatedAt == request.time;
+
+      allow delete: if false;
+    }
+  }
+}
