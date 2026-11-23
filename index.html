@@ -362,7 +362,9 @@ const parts=[],floaters=[];let fx=[];
 const $=id=>document.getElementById(id);
 let BEST=0,statsOpen=false,runT=0,pend=0;
 const saveProg=()=>{if(typeof cloudSave==='function')cloudSave();};
-const later=(fn,ms)=>{const id=runId;setTimeout(()=>{if(id===runId)fn();},ms);};
+const timers=[];
+const later=(fn,ms)=>{timers.push({t:ms/1000,fn,id:runId});};
+function runTimers(dt){for(let i=0;i<timers.length;i++){const x=timers[i];x.t-=dt;if(x.t<=0){timers.splice(i,1);i--;if(x.id===runId)x.fn();}}}
 
 /* sonido */
 let AC=null,muted=false,lastHit=0;
@@ -969,8 +971,9 @@ function calibInf(policy){
 }
 /* ============ bucle ============ */
 function update(dt){
+  runTimers(dt);
   const sdt=statsOpen?0:dt*speed;
-  if(mode==='inf'&&!statsOpen&&st!=='levelend'&&!document.hidden){runT+=dt;pend+=dt;}
+  if(mode==='inf'&&!statsOpen&&st!=='levelend'&&(!document.hidden||st==='fight'||st==='intro'||st==='rounddone0')){runT+=dt;pend+=dt;}
   if(st==='fight'){
     if(!fightEnd){const n=Math.ceil(sdt/0.025);for(let i=0;i<n;i++)stepFight(sdt/n);}
     else{
@@ -1065,6 +1068,17 @@ function frame(now){
   try{update(dt);render();renderIcons();}catch(err){console.error(err);}
   requestAnimationFrame(frame);
 }
+/* con la pestaña oculta el navegador para requestAnimationFrame: un Worker mantiene la pelea en marcha */
+let bgLast=performance.now();
+try{
+  const wk=new Worker(URL.createObjectURL(new Blob(['setInterval(function(){postMessage(0)},100)'],{type:'text/javascript'})));
+  wk.onmessage=()=>{
+    const n=performance.now();let d=(n-bgLast)/1000;bgLast=n;
+    if(!document.hidden)return;
+    d=Math.min(d,5);
+    try{while(d>0.0001){const s=Math.min(0.05,d);TT+=s;update(s);d-=s;}}catch(e){console.error(e);}
+  };
+}catch(e){console.warn('Sin worker: el juego se pausará en segundo plano',e);}
 $('spd').onclick=()=>{speed=speed===1?2:speed===2?3:1;$('spd').textContent='⏩ x'+speed;};
 $('snd').onclick=()=>{muted=!muted;$('snd').textContent=muted?'🔇':'🔊';};
 $('home').onclick=()=>{ensureAudio();closeStats();showMenu();};
