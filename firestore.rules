@@ -7,10 +7,11 @@ service cloud.firestore {
       // Cualquiera puede ver el ranking.
       allow read: if true;
 
-      // Un jugador solo puede crear/modificar SU documento.
+      // Un jugador solo puede crear SU documento.
       allow create: if request.auth != null
         && request.auth.uid == uid
-        && request.resource.data.keys().hasOnly(['username', 'best', 'updatedAt'])
+        && request.resource.data.keys().hasOnly(['username', 'best', 'updatedAt', 'playSec', 'runSec', 'build'])
+        && request.resource.data.keys().hasAll(['username', 'best', 'updatedAt'])
         && request.resource.data.username is string
         && request.resource.data.username.size() >= 3
         && request.resource.data.username.size() <= 16
@@ -18,16 +19,33 @@ service cloud.firestore {
         && request.resource.data.best is int
         && request.resource.data.best >= 0
         && request.resource.data.best <= 500
-        && request.resource.data.updatedAt == request.time;
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.get('playSec', 0) is int
+        && request.resource.data.get('playSec', 0) >= 0
+        && request.resource.data.get('playSec', 0) <= 100000000
+        && request.resource.data.get('runSec', 0) is int
+        && request.resource.data.get('runSec', 0) >= 0
+        && request.resource.data.get('runSec', 0) <= 100000000
+        && request.resource.data.get('build', '') is string
+        && request.resource.data.get('build', '').size() <= 400;
 
-      // Solo puede subir su récord (nunca bajarlo) y no cambiar el nombre.
+      // Solo puede subir su récord (nunca bajarlo), sumar tiempo (nunca restarlo) y no cambiar el nombre.
       allow update: if request.auth != null
         && request.auth.uid == uid
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['best', 'updatedAt'])
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['best', 'updatedAt', 'playSec', 'runSec', 'build'])
         && request.resource.data.best is int
         && request.resource.data.best >= resource.data.best
         && request.resource.data.best <= 500
-        && request.resource.data.updatedAt == request.time;
+        && ((request.resource.data.best == resource.data.best && request.resource.data.updatedAt == resource.data.updatedAt)
+            || (request.resource.data.best > resource.data.best && request.resource.data.updatedAt == request.time))
+        && request.resource.data.get('playSec', 0) is int
+        && request.resource.data.get('playSec', 0) >= resource.data.get('playSec', 0)
+        && request.resource.data.get('playSec', 0) <= 100000000
+        && request.resource.data.get('runSec', 0) is int
+        && request.resource.data.get('runSec', 0) >= 0
+        && request.resource.data.get('runSec', 0) <= 100000000
+        && request.resource.data.get('build', '') is string
+        && request.resource.data.get('build', '').size() <= 400;
 
       allow delete: if false;
     }
