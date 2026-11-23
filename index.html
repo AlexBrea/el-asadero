@@ -376,7 +376,10 @@ const snd={
   hit(big){const n=performance.now();if(n-lastHit<45)return;lastHit=n;tone(big?160:260,big?50:80,0.1,'square',0.05);},
   ko(){tone(420,70,0.35,'sawtooth',0.05);},
   drop(){tone(300,700,0.12,'sine',0.06);},
-  win(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,f*1.01,0.18,'triangle',0.07),i*120));},
+  win(){ /* gallina: po-koo, po-koo */
+    const c=(d)=>{setTimeout(()=>{tone(520,330,0.07,'triangle',0.12);tone(1040,660,0.05,'sine',0.04);},d);
+      setTimeout(()=>{tone(380,900,0.07,'sawtooth',0.07);tone(900,520,0.16,'sawtooth',0.07);tone(760,1040,0.05,'sine',0.04);},d+110);};
+    c(0);c(520);c(1040);},
   lose(){[400,330,260,200].forEach((f,i)=>setTimeout(()=>tone(f,f*0.98,0.22,'sawtooth',0.05),i*160));},
   click(){tone(500,800,0.08,'triangle',0.06);},
   laser(){tone(1100,200,0.25,'sawtooth',0.04);},
