@@ -1149,7 +1149,6 @@ $('snd').onclick=()=>{muted=!muted;$('snd').textContent=muted?'🔇':'🔊';};
 $('mus').onclick=()=>{ensureAudio();musicOn=!musicOn;$('mus').style.opacity=musicOn?1:0.45;};
 $('home').onclick=()=>{ensureAudio();closeStats();showMenu();};
 $('stb').onclick=()=>{ensureAudio();snd.click();statsOpen?closeStats():showStats();};
-window.__game={showLogin,showRegister,showRanking,boot,get st(){return st},get mode(){return mode},get offers(){return offers},get team(){return team},get units(){return units},get mus(){return mus},pick,startInf,showMenu,calibInf,jump(n){infN=n;nextInfRound();},roundOver,get prize(){return prize},get picks(){return picksLeft},get infN(){return infN},set speed(v){speed=v;},cfg:{get g(){return INF_G},set g(v){INF_G=v},get b(){return INF_BASE},set b(v){INF_BASE=v},get e(){return INF_E},set e(v){INF_E=v}}};
 boot();
 requestAnimationFrame(frame);
 })();
