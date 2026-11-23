@@ -345,7 +345,7 @@ const THEMES=[
  {sky:['#1a0f2e','#6a1b4d','#ff5e5e'],hill:'#3a1d4a',fa:'#5a4a80',fb:'#4a3b6b',oa:'#2a2146',ob:'#251c3c'}
 ];
 function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
-function S(list){let h=0,a=0;for(const e of list){const sp=SP[e.k];h+=sp.hp*HM[e.t||0];a+=sp.atk*AM[e.t||0];}return h*a;}
+function S(list){let h=0,a=0;for(const e of list){const sp=SP[e.k];h+=sp.hp*HM[e.t||0]*(e.f||1);a+=sp.atk*AM[e.t||0]*(e.f||1);}return h*a;}
 function minTier(list,k){let m=9;for(const e of list)if(e.k===k)m=Math.min(m,e.t||0);return m;}
 function upSpecies(list,k,mark){
   const m=minTier(list,k);if(m>=2)return false;
@@ -360,7 +360,7 @@ function pickUp(list,rng,cap){
 let mode='menu',st='menu',team=[],bteam=[],offers=[],units=[],fightT=0,fightEnd=false,endT=0,speed=1,runId=0,infN=1,pendingUpg=null,TH=THEMES[0];
 const parts=[],floaters=[];let fx=[];
 const $=id=>document.getElementById(id);
-let BEST=0,statsOpen=false,runT=0,pend=0;
+let BEST=0,statsOpen=false,runT=0,pend=0,picksLeft=1,prize=0;
 const saveProg=()=>{if(typeof cloudSave==='function')cloudSave();};
 const timers=[];
 const later=(fn,ms)=>{timers.push({t:ms/1000,fn,id:runId});};
@@ -425,7 +425,11 @@ function memberStats(m){
 let INF_BASE=70,INF_G=1.35,INF_E=0.003;
 function genInfEnemy(n){
   const rng=mulberry(n*104729+17),top=Math.min(9,Math.floor((n-1)*0.6)),lo=Math.max(0,top-2);
-  const target=INF_BASE*Math.pow(INF_G,n-1)*Math.exp(INF_E*n*n),cap=n>=18?2:n>=9?1:0,t=[];
+  let target=INF_BASE*Math.pow(INF_G,n-1)*Math.exp(INF_E*n*n);const cap=n>=18?2:n>=9?1:0,t=[];
+  if(n%10===0){ /* JEFE: una bestia gigante + escoltas */
+    target*=1.3;const bk=['bear','gorilla','elephant'][(n/10-1)%3],bs=SP[bk],raw=bs.hp*HM[2]*bs.atk*AM[2];
+    t.push({k:bk,t:2,boss:true,f:Math.sqrt(0.5*target/raw),fresh:true});
+  }
   let g=0;
   while(S(t)<target&&g++<150){
     if(cap>0&&t.length>=3&&rng()<(t.length>12?0.7:0.25)){const k=pickUp(t,rng,cap);if(k){upSpecies(t,k,true);continue;}}
@@ -457,11 +461,11 @@ function memberDesc(m){
 /* unidades */
 function mkUnit(side,e){
   const sp=SP[e.k],t=e.t||0,gold=!!(e.l&&e.l.gold>0),m=getModel(e.k,t,gold);
-  let hp=sp.hp*HM[t]*HPM,atk=sp.atk*AM[t],rate=sp.rate,spd=sp.spd,sc=1.4*SM[t];
+  let hp=sp.hp*HM[t]*HPM*(e.f||1),atk=sp.atk*AM[t]*(e.f||1),rate=sp.rate,spd=sp.spd,sc=1.4*SM[t]*(e.boss?(e.k==='elephant'?0.8:1):1);
   const fresh=e.fresh;e.fresh=false;
   const u={side,key:e.k,tier:t,robot:t>0,model:m.parts,sc,hw:m.hw,size:m.size*sc,top:m.top*sc,
     x:0,y:0,z:0,hx:0,hz:0,yaw:side?Math.PI:0,pitch:0,roll:0,lunge:0,state:'idle',gait:Math.random()*6,seed:Math.random()*10,wk:0,cd:Math.random()*0.5,atkT:0,hit:false,flash:0,kx:0,kz:0,alpha:1,dieT:0,
-    spawnT:fresh?-Math.random()*0.4:1,landed:!fresh,tgt:null,dead:false,dying:false,win:false,rd:Math.random()<.5?1:-1,dmgMul:1,vamp:0,fireDps:0,crit:0,phoenix:0,burn:null,hero:false};
+    spawnT:fresh?-Math.random()*0.4:1,landed:!fresh,tgt:null,dead:false,dying:false,win:false,rd:Math.random()<.5?1:-1,dmgMul:1,vamp:0,fireDps:0,crit:0,phoenix:0,burn:null,hero:false,boss:!!e.boss};
   if(e.l){
     const h=memberStats(e);hp=h.hp;atk=h.atk;rate=h.rate;spd=h.spd;
     if(e.hero){u.sc=sc*1.15;u.size*=1.15;u.top*=1.15;u.hero=true;}
@@ -488,8 +492,8 @@ function buildArena(){
 const plural=(k,n)=>SP[k].es[n===1?0:1];
 function rosterHTML(list){
   if(!list.length)return '<span style="opacity:.7">— nadie —</span>';
-  const m={};list.forEach(e=>{const id=e.k+(e.t||0);m[id]=m[id]||{k:e.k,t:e.t||0,n:0};m[id].n++;});
-  return Object.values(m).map(g=>'<span class="chip">'+TIERN[g.t]+SP[g.k].e+'×'+g.n+'</span>').join('');
+  const m={};list.forEach(e=>{const id=e.k+(e.t||0)+(e.boss?'B':'');m[id]=m[id]||{k:e.k,t:e.t||0,n:0,b:!!e.boss};m[id].n++;});
+  return Object.values(m).map(g=>'<span class="chip">'+(g.b?'👹':'')+TIERN[g.t]+SP[g.k].e+'×'+g.n+'</span>').join('');
 }
 function updateRosters(){
   const hero=team.find(m=>m.hero);let h='<b>TU EQUIPO</b>';
@@ -558,16 +562,17 @@ function goHome(){showMenu();}
 
 /* ============ flujo infinito ============ */
 function startInf(){
-  resetBattle();mode='inf';infN=1;runT=0;team=[newMember(true)];
+  resetBattle();mode='inf';infN=1;runT=0;picksLeft=1;prize=0;team=[newMember(true)];
   hideScreens();$('rosL').style.display=$('rosR').style.display='';$('stb').style.display='';nextInfRound();
 }
 function nextInfRound(){
   bteam=genInfEnemy(infN);offers=genUpgrades();TH=THEMES[(((infN-1)/5)|0)%5];
-  st='choose';buildArena();showCards();updatePips();banner('RONDA '+infN,'#ffe08a');
+  st='choose';buildArena();showCards();updatePips();
+  if(infN%10===0)banner('👹 ¡JEFE! RONDA '+infN,'#ff6b6b');else banner('RONDA '+infN,'#ffe08a');
 }
 function showCards(){
   icons.length=0;
-  $('ptitle').textContent='Ronda '+infN+' · ¡Elige una mejora!';
+  $('ptitle').textContent=prize?'🎁 Premio del jefe ('+(prize-picksLeft+1)+'/'+prize+') · ¡Elige una mejora!':'Ronda '+infN+(infN%10===0?' · ¡JEFE!':'')+' · ¡Elige una mejora!';
   const box=$('cards');box.innerHTML='';
   offers.forEach((o,i)=>{
     const u=UPG[o.id],d=document.createElement('div');d.className='card'+(o.id==='robot'||o.id==='titan'?' up':'');
@@ -594,6 +599,8 @@ function pick(i){
   });
 }
 function proceed(){
+  if(picksLeft>1){picksLeft--;offers=genUpgrades();st='choose';icons.length=0;showCards();return;}
+  prize=0;picksLeft=1;
   st='intro';$('panel').classList.remove('on');icons.length=0;buildArena();
   later(()=>{if(st==='intro')startFight();},1500);
 }
@@ -612,9 +619,9 @@ function panelButton(title,label,fn){
 function roundOver(pw){
   st='rounddone';
   if(pw){
-    snd.win();banner('¡RONDA '+infN+' SUPERADA!','#7bed9f');
+    snd.win();banner(infN%10===0?'¡JEFE DERROTADO!':'¡RONDA '+infN+' SUPERADA!','#7bed9f');
     if(infN>BEST)BEST=infN;saveProg();
-    later(()=>panelButton(phoenixLost.length?'¡Ganaste! Pero perdiste el Huevo fénix de '+[...new Set(phoenixLost)].map(memberName).join(' y '):'¡Bien! Sigue mejorando a tu equipo','Elegir mejora ▶',()=>{infN++;nextInfRound();}),1800);
+    later(()=>panelButton(phoenixLost.length?'¡Ganaste! Pero perdiste el Huevo fénix de '+[...new Set(phoenixLost)].map(memberName).join(' y '):'¡Bien! Sigue mejorando a tu equipo',(infN%10===0?'Reclamar 2 mejoras 🎁':'Elegir mejora ▶'),()=>{const bz=infN%10===0;infN++;prize=bz?2:0;picksLeft=bz?2:1;nextInfRound();}),1800);
   }else{
     snd.lose();banner('¡HAS CAÍDO!','#ff6b6b');saveProg();
     later(()=>{
@@ -959,11 +966,13 @@ function simBattle(pt,bt){
 function calibInf(policy){
   const sT=team;team=[newMember(true)];let n=1;
   while(n<70){
+  for(let pk=0;pk<((n>1&&(n-1)%10===0)?2:1);pk++){
     const o=genUpgrades();let k;
     if(policy==='smart'){const pref=['laser','egg','storm','power','vit','robot','armor','gold','fire','titan','phoenix','flock','vamp','speed'];o.sort((a,b)=>pref.indexOf(a.id)-pref.indexOf(b.id));k=o[0].id;}
     else k=o[(Math.random()*o.length)|0].id;
     const targets=k==='flock'?[team[0]]:team.filter(m=>canUpg(m,k));
     applyTo(policy==='smart'?targets[0]:targets[(Math.random()*targets.length)|0],k);
+  }
     if(!simBattle(team,genInfEnemy(n)))break;
     n++;
   }
@@ -1038,7 +1047,7 @@ function render(){
   const bars=[];
   for(const u of units){
     if(u.dying||u.dead||u.spawnT<1)continue;
-    if(u.hero){const q=proj(u.x,u.top+0.85+u.y,u.z);if(q){const fs=Math.max(14,Math.min(30,F/q[2]*0.5));ctx.font='900 '+fs+'px sans-serif';ctx.lineWidth=4;ctx.strokeStyle='#1b1330';ctx.strokeText('⭐',q[0],q[1]-26);ctx.fillStyle='#ffd24a';ctx.fillText('⭐',q[0],q[1]-26);}}
+    const mk=u.hero?'⭐':u.boss?'👹':'';if(mk){const q=proj(u.x,u.top+0.85+u.y,u.z);if(q){const fs=Math.max(14,Math.min(30,F/q[2]*0.5));ctx.font='900 '+fs+'px sans-serif';ctx.lineWidth=4;ctx.strokeStyle='#1b1330';ctx.strokeText(mk,q[0],q[1]-26);ctx.fillStyle='#ffd24a';ctx.fillText(mk,q[0],q[1]-26);}}
     const q=proj(u.x,u.top+0.3+u.y,u.z);if(!q)continue;
     bars.push({u,x:q[0],y:q[1],d:q[2],w:Math.max(36,Math.min(86,u.size*1.0*F/q[2]))});
   }
@@ -1083,7 +1092,7 @@ $('spd').onclick=()=>{speed=speed===1?2:speed===2?3:1;$('spd').textContent='⏩ 
 $('snd').onclick=()=>{muted=!muted;$('snd').textContent=muted?'🔇':'🔊';};
 $('home').onclick=()=>{ensureAudio();closeStats();showMenu();};
 $('stb').onclick=()=>{ensureAudio();snd.click();statsOpen?closeStats():showStats();};
-window.__game={showLogin,showRegister,showRanking,boot,get st(){return st},get mode(){return mode},get offers(){return offers},get team(){return team},get units(){return units},pick,startInf,showMenu,calibInf,set speed(v){speed=v;},cfg:{get g(){return INF_G},set g(v){INF_G=v},get b(){return INF_BASE},set b(v){INF_BASE=v},get e(){return INF_E},set e(v){INF_E=v}}};
+window.__game={showLogin,showRegister,showRanking,boot,get st(){return st},get mode(){return mode},get offers(){return offers},get team(){return team},get units(){return units},pick,startInf,showMenu,calibInf,jump(n){infN=n;nextInfRound();},roundOver,get prize(){return prize},get picks(){return picksLeft},get infN(){return infN},set speed(v){speed=v;},cfg:{get g(){return INF_G},set g(v){INF_G=v},get b(){return INF_BASE},set b(v){INF_BASE=v},get e(){return INF_E},set e(v){INF_E=v}}};
 boot();
 requestAnimationFrame(frame);
 })();
