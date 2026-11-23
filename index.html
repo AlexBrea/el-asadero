@@ -393,7 +393,7 @@ const UPG={
  power:{n:'Músculos de gallina',max:99,d:'Cada picotazo pega más fuerte'},
  vit:{n:'Súper plumaje',max:99,d:'Aguanta muchos más golpes'},
  flock:{n:'La bandada',max:4,d:'Dos pollitos aliados se unen (y también se pueden mejorar)'},
- phoenix:{n:'Huevo fénix',max:3,d:'Resucita cuando lo derrotan'},
+ phoenix:{n:'Huevo fénix',max:1,d:'Resucita con toda la vida (solo 1 a la vez; se gasta al usarlo)'},
  robot:{n:'Cuerpo robot',max:1,d:'Se convierte en robot: mucho más fuerte'},
  titan:{n:'Titán dorado',max:1,d:'Armadura de oro: enorme y brutal'}
 };
@@ -402,6 +402,7 @@ function newMember(hero){return{k:hero?'chicken':'chick',hero:!!hero,t:0,l:{},ba
 function canUpg(m,k){
   const l=m.l[k]||0;
   if(k==='robot')return m.t===0;if(k==='titan')return m.t===1;
+  if(k==='phoenix')return !team.some(x=>(x.l.phoenix||0)>0);
   if(k==='flock')return m.hero&&l<UPG.flock.max;
   return l<UPG[k].max;
 }
