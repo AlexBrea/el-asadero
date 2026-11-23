@@ -1,51 +1,44 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Ranking: un documento por jugador (id = uid del usuario).
     match /ranking/{uid} {
-      // Cualquiera puede ver el ranking.
       allow read: if true;
 
-      // Un jugador solo puede crear SU documento.
-      allow create: if request.auth != null
-        && request.auth.uid == uid
-        && request.resource.data.keys().hasOnly(['username', 'best', 'updatedAt', 'playSec', 'runSec', 'build'])
-        && request.resource.data.keys().hasAll(['username', 'best', 'updatedAt'])
+      allow create: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['username','best','updatedAt','playSec','runSec','build'])
         && request.resource.data.username is string
-        && request.resource.data.username.size() >= 3
-        && request.resource.data.username.size() <= 16
-        && request.auth.token.email == request.resource.data.username + '@elasadero.game'
+        && request.resource.data.username.matches('^[a-z0-9_]{3,16}$')
+        && request.resource.data.username == request.auth.token.email.split('@')[0]
         && request.resource.data.best is int
-        && request.resource.data.best >= 0
-        && request.resource.data.best <= 500
-        && request.resource.data.updatedAt == request.time
-        && request.resource.data.get('playSec', 0) is int
-        && request.resource.data.get('playSec', 0) >= 0
-        && request.resource.data.get('playSec', 0) <= 100000000
-        && request.resource.data.get('runSec', 0) is int
-        && request.resource.data.get('runSec', 0) >= 0
-        && request.resource.data.get('runSec', 0) <= 100000000
-        && request.resource.data.get('build', '') is string
-        && request.resource.data.get('build', '').size() <= 400;
+        && request.resource.data.best >= 1 && request.resource.data.best <= 5
+        && request.resource.data.playSec is number
+        && request.resource.data.playSec >= 0 && request.resource.data.playSec <= 86400
+        && request.resource.data.runSec is number
+        && request.resource.data.runSec >= 0 && request.resource.data.runSec <= 10000000
+        && request.resource.data.build is string && request.resource.data.build.size() <= 400
+        && request.resource.data.updatedAt == request.time;
 
-      // Solo puede subir su récord (nunca bajarlo), sumar tiempo (nunca restarlo) y no cambiar el nombre.
-      allow update: if request.auth != null
-        && request.auth.uid == uid
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['best', 'updatedAt', 'playSec', 'runSec', 'build'])
-        && request.resource.data.best is int
-        && request.resource.data.best >= resource.data.best
-        && request.resource.data.best <= 500
-        && ((request.resource.data.best == resource.data.best && request.resource.data.updatedAt == resource.data.updatedAt)
-            || (request.resource.data.best > resource.data.best && request.resource.data.updatedAt == request.time))
-        && request.resource.data.get('playSec', 0) is int
-        && request.resource.data.get('playSec', 0) >= resource.data.get('playSec', 0)
-        && request.resource.data.get('playSec', 0) <= 100000000
-        && request.resource.data.get('runSec', 0) is int
-        && request.resource.data.get('runSec', 0) >= 0
-        && request.resource.data.get('runSec', 0) <= 100000000
-        && request.resource.data.get('build', '') is string
-        && request.resource.data.get('build', '').size() <= 400;
+      allow update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['best','updatedAt','playSec','runSec','build'])
+        && request.resource.data.username == resource.data.username
+        && request.resource.data.playSec is number
+        && request.resource.data.playSec >= resource.data.get('playSec', 0)
+        && request.resource.data.playSec <= resource.data.get('playSec', 0) + 86400
+        && request.resource.data.runSec is number
+        && request.resource.data.runSec >= 0 && request.resource.data.runSec <= 10000000
+        && request.resource.data.build is string && request.resource.data.build.size() <= 400
+        && (
+          request.resource.data.best == resource.data.best
+          || (
+            request.resource.data.best is int
+            && request.resource.data.best > resource.data.best
+            && request.resource.data.best <= resource.data.best + 5
+            && request.resource.data.best <= 500
+            && request.resource.data.updatedAt == request.time
+            && request.time > resource.data.get('updatedAt', timestamp.date(2000,1,1)) + duration.value(4, 's')
+          )
+        );
 
       allow delete: if false;
     }
