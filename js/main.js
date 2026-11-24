@@ -44,6 +44,14 @@ function render(){
     const p=proj(f.x,0.03,f.z);if(!p)continue;const k=f.t/f.max,rr=f.r*Math.min(1,k*1.6)*F/p[2];
     ctx.strokeStyle='rgba('+f.c+','+(1-k)+')';ctx.lineWidth=6;ctx.beginPath();ctx.ellipse(p[0],p[1],rr,rr*0.4,0,0,7);ctx.stroke();
   }
+  for(const f of fx){
+    if(f.k!=='lava')continue;
+    const p=proj(f.x,0.025,f.z);if(!p)continue;const k=f.t/f.max,rr=f.r*Math.min(1,f.t*4)*F/p[2],pl=0.5+0.5*Math.sin(TT*8);
+    ctx.globalAlpha=Math.min(1,(1-k)*2.2);
+    ctx.fillStyle='rgba(255,'+(70+pl*50|0)+',20,.55)';ctx.beginPath();ctx.ellipse(p[0],p[1],rr,rr*0.4,0,0,7);ctx.fill();
+    ctx.fillStyle='rgba(255,200,60,.5)';ctx.beginPath();ctx.ellipse(p[0],p[1],rr*0.6,rr*0.24,0,0,7);ctx.fill();
+    ctx.globalAlpha=1;
+  }
   const faces=[];
   for(const d of decor)entFaces(d,faces);
   for(const u of units){if(fp&&u.hero)continue;entFaces(u,faces);}
