@@ -5,7 +5,7 @@ service cloud.firestore {
       allow read: if true;
 
       allow create: if request.auth != null && request.auth.uid == uid
-        && request.resource.data.keys().hasOnly(['username','best','updatedAt','playSec','runSec','build'])
+        && request.resource.data.keys().hasOnly(['username','best','updatedAt','playSec','runSec','build','xp','skin'])
         && request.resource.data.username is string
         && request.resource.data.username.matches('^[a-z0-9_]{3,16}$')
         && request.resource.data.username == request.auth.token.email.split('@')[0]
@@ -16,11 +16,13 @@ service cloud.firestore {
         && request.resource.data.runSec is number
         && request.resource.data.runSec >= 0 && request.resource.data.runSec <= 10000000
         && request.resource.data.build is string && request.resource.data.build.size() <= 400
-        && request.resource.data.updatedAt == request.time;
+        && request.resource.data.updatedAt == request.time
+        && (!('xp' in request.resource.data) || (request.resource.data.xp is int && request.resource.data.xp >= 0 && request.resource.data.xp <= 3000))
+        && (!('skin' in request.resource.data) || (request.resource.data.skin is string && request.resource.data.skin.size() <= 20));
 
       allow update: if request.auth != null && request.auth.uid == uid
         && request.resource.data.diff(resource.data).affectedKeys()
-             .hasOnly(['best','updatedAt','playSec','runSec','build'])
+             .hasOnly(['best','updatedAt','playSec','runSec','build','xp','skin'])
         && request.resource.data.username == resource.data.username
         && request.resource.data.playSec is number
         && request.resource.data.playSec >= resource.data.get('playSec', 0)
@@ -28,6 +30,14 @@ service cloud.firestore {
         && request.resource.data.runSec is number
         && request.resource.data.runSec >= 0 && request.resource.data.runSec <= 10000000
         && request.resource.data.build is string && request.resource.data.build.size() <= 400
+        && (!('xp' in request.resource.data) || (
+          request.resource.data.xp is int
+          && request.resource.data.xp >= resource.data.get('xp', 0)
+          && request.resource.data.xp <= resource.data.get('xp', 0) + 3000
+        ))
+        && (!('skin' in request.resource.data) || (
+          request.resource.data.skin is string && request.resource.data.skin.size() <= 20
+        ))
         && (
           request.resource.data.best == resource.data.best
           || (
