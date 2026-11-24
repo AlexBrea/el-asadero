@@ -26,7 +26,8 @@ const EM={
   lion:(D,L)=>Array.from({length:12},(_,i)=>`<circle cx="${(Math.cos(i*Math.PI/6)*15).toFixed(1)}" cy="${(Math.sin(i*Math.PI/6)*15).toFixed(1)}" r="5.5" fill="${D}"/>`).join('')+`<circle r="16" fill="${D}"/><circle r="10.5" fill="${L}"/><circle cx="-4" cy="-2" r="1.7" fill="${D}"/><circle cx="4" cy="-2" r="1.7" fill="${D}"/><path d="M-3 3 H3 L0 6.5Z" fill="${D}"/><path d="M-4 9.5 Q0 12 4 9.5" fill="none" stroke="${D}" stroke-width="1.3"/>`,
   bear:(D,L)=>`<circle cx="-11" cy="-11" r="5.5" fill="${D}"/><circle cx="11" cy="-11" r="5.5" fill="${D}"/><circle cx="-11" cy="-11" r="2.4" fill="${L}"/><circle cx="11" cy="-11" r="2.4" fill="${L}"/><circle cy="3" r="14" fill="${D}"/><ellipse cy="8" rx="7" ry="5.5" fill="${L}"/><ellipse cy="6" rx="2.8" ry="2" fill="${D}"/><circle cx="-5.5" cy="-1" r="1.8" fill="${L}"/><circle cx="5.5" cy="-1" r="1.8" fill="${L}"/>`,
   gorilla:(D,L)=>`<path d="M-15 8 Q-17 -14 0 -16 Q17 -14 15 8 Q14 17 0 17 Q-14 17 -15 8Z" fill="${D}"/><path d="M-9 0 Q-9 -4 0 -4 Q9 -4 9 0 Q11 12 0 14 Q-11 12 -9 0Z" fill="${L}"/><path d="M-10 -3 H10" stroke="${D}" stroke-width="3.2"/><circle cx="-4" cy="1" r="1.5" fill="${D}"/><circle cx="4" cy="1" r="1.5" fill="${D}"/><circle cx="-1.8" cy="7" r="1.1" fill="${D}"/><circle cx="1.8" cy="7" r="1.1" fill="${D}"/><path d="M-5 11 Q0 13 5 11" fill="none" stroke="${D}" stroke-width="1.2"/>`,
-  elephant:(D,L)=>`<circle cx="-14" r="9" fill="${D}"/><circle cx="14" r="9" fill="${D}"/><circle cy="-1" r="11" fill="${D}"/><path d="M-3 4 Q-3 17 4 17 Q8 17 8 13" fill="none" stroke="${D}" stroke-width="5" stroke-linecap="round"/><circle cx="-5" cy="-3" r="1.7" fill="${L}"/><circle cx="5" cy="-3" r="1.7" fill="${L}"/><path d="M-7 8 Q-11 14 -7 17 M7 8 Q11 14 7 17" fill="none" stroke="${L}" stroke-width="2"/>`
+  elephant:(D,L)=>`<circle cx="-14" r="9" fill="${D}"/><circle cx="14" r="9" fill="${D}"/><circle cy="-1" r="11" fill="${D}"/><path d="M-3 4 Q-3 17 4 17 Q8 17 8 13" fill="none" stroke="${D}" stroke-width="5" stroke-linecap="round"/><circle cx="-5" cy="-3" r="1.7" fill="${L}"/><circle cx="5" cy="-3" r="1.7" fill="${L}"/><path d="M-7 8 Q-11 14 -7 17 M7 8 Q11 14 7 17" fill="none" stroke="${L}" stroke-width="2"/>`,
+  dino:(D,L)=>`<path d="M-16 10 L-16 -4 Q-16 -14 -5 -14 L11 -14 Q20 -14 20 -5 L20 1 L-1 1 L-1 11Z" fill="${D}"/><path d="M-1 4 L20 4 L17 11 L-1 13Z" fill="${D}" opacity=".8"/><path d="M4 1 L6 6 L8 1ZM10 1 L12 6 L14 1ZM16 1 L17.5 5 L19 1Z" fill="${L}"/><circle cx="6" cy="-6" r="2.4" fill="${L}"/><path d="M-12 -13 L-9 -19 L-6 -13ZM-5 -14 L-2 -20 L1 -14Z" fill="${D}"/>`
 };
 /* medalla en SVG con relieve: t = 0 bronce, 1 plata, 2 oro, 3 diamante, -1 bloqueada */
 function medal(c,t,px){
@@ -52,7 +53,7 @@ const CATS=[],ACH=[];
   c('g','Adicto al corral','g','#2980b9',()=>ST.g,[3,10,50,200],g=>'Juega '+g+' partidas');
   c('l','Coleccionista','l','#8e44ad',()=>ST.rl,[3,10,25,50],g=>'Consigue '+g+' reliquias');
   const T1=[3,10,50,200],T2=[2,8,30,100],T3=[1,5,15,50],T4=[1,3,10,25];
-  [['chicken',T1],['rooster',T1],['cat',T1],['dog',T1],['wolf',T2],['puma',T2],['lion',T3],['bear',T3],['gorilla',T3],['elephant',T4]].forEach(a=>{
+  [['chicken',T1],['rooster',T1],['cat',T1],['dog',T1],['wolf',T2],['puma',T2],['lion',T3],['bear',T3],['gorilla',T3],['elephant',T4],['dino',T4]].forEach(a=>{
     const k=a[0],pl=SP[k].es[1].toLowerCase();
     c('s'+k,'Cazador de '+pl,k,'#d35400',()=>ST.kb[k]||0,a[1],g=>'Derrota a '+g+' '+(g===1?SP[k].es[0].toLowerCase():pl));
   });
