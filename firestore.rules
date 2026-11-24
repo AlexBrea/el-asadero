@@ -52,5 +52,17 @@ service cloud.firestore {
 
       allow delete: if false;
     }
+
+    // Datos privados del jugador: nombre del pollo, estadisticas/logros y partida en curso.
+    match /players/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['name','st','run','ts'])
+        && request.resource.data.name is string && request.resource.data.name.size() <= 12
+        && request.resource.data.st is map
+        && request.resource.data.run is string && request.resource.data.run.size() <= 30000
+        && request.resource.data.ts is number;
+      allow delete: if false;
+    }
   }
 }
