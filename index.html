@@ -160,8 +160,8 @@ let camTx=0,zoom=1,CX=0,CYc=7,CZ=14.5,cyw=1,syw=0,cpt=Math.cos(CAM.pitch),spt=Ma
 function resize(){
   DPR=Math.min(2,window.devicePixelRatio||1);W=window.innerWidth;H=window.innerHeight;cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);ctx.setTransform(DPR,0,0,DPR,0,0);
   PORT=W<H*0.85; /* móvil en vertical: arena girada, equipos arriba/abajo */
-  if(PORT){CAM.y=16;CAM.z=26;CAM.pitch=0.6;FB=W*1.5;YF=0.5;}
-  else{CAM.y=7;CAM.z=14.5;CAM.pitch=0.45;FB=Math.min(W*0.8,H*1.6);YF=0.42;}
+  if(PORT){CAM.y=16;CAM.z=26;CAM.pitch=0.6;FB=W*1.95;YF=0.64;}
+  else{CAM.y=6;CAM.z=12;CAM.pitch=0.45;FB=Math.min(W*0.8,H*1.6);YF=0.56;}
   cpt=Math.cos(CAM.pitch);spt=Math.sin(CAM.pitch);F=FB;
 }
 window.addEventListener('resize',resize);resize();
