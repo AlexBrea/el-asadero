@@ -1,7 +1,7 @@
 'use strict';
 /* data.js — Datos base (especies, temas, generador mulberry) y estado global del juego */
 /* ============ datos ============ */
-const KEYS=['chicken','rooster','cat','dog','wolf','puma','lion','bear','gorilla','elephant'];
+const KEYS=['chicken','rooster','cat','dog','wolf','puma','lion','bear','gorilla','elephant','dino'];
 const HM=[1,2,4],AM=[1,1.6,2.8],SM=[1,1.12,1.3],TIERN=['','🤖','👑'],TIERW=['','Robots','Titanes'];
 const THEMES=[
  {sky:['#2a1b5c','#7b3fa0','#ff9a6b'],hill:'#4b2f7a',fa:'#dcbd7c',fb:'#d0b06c',oa:'#3f8f4a',ob:'#3a8544'},
@@ -31,4 +31,3 @@ const saveProg=()=>{if(typeof cloudSave==='function')cloudSave();};
 const timers=[];
 const later=(fn,ms)=>{timers.push({t:ms/1000,fn,id:runId});};
 function runTimers(dt){for(let i=0;i<timers.length;i++){const x=timers[i];x.t-=dt;if(x.t<=0){timers.splice(i,1);i--;if(x.id===runId)x.fn();}}}
-
