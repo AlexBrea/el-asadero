@@ -57,12 +57,13 @@ function genInfEnemy(n){
   }
   return t;
 }
+const OFFER_N=2; /* cuántas mejoras se ofrecen por ronda */
 function genUpgrades(){
   const av=Object.keys(UPG).filter(k=>specOK(k)&&team.some(m=>canUpg(m,k)));
   const ex=av.filter(k=>UPG[k].sp),pk=[];
   if(ex.length)pk.push(ex[(Math.random()*ex.length)|0]); /* siempre sale 1 de la especialidad */
   const rest=av.filter(k=>!pk.includes(k));
-  while(pk.length<3&&rest.length)pk.push(rest.splice((Math.random()*rest.length)|0,1)[0]);
+  while(pk.length<OFFER_N&&rest.length)pk.push(rest.splice((Math.random()*rest.length)|0,1)[0]);
   for(let i=pk.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[pk[i],pk[j]]=[pk[j],pk[i]];}
   return pk.map(k=>({id:k}));
 }
