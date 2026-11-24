@@ -11,7 +11,9 @@ const SPECS={
  pyr:{n:'Pirómana',col:'#ff9a3d',d:'Todo arde: empieza con pico de fuego y +35% de daño y +20% de vida. Sus mejoras son de fuego y explosiones.',hp:1.2,atk:1.35,dmg:1,spd:1,vamp:0,cd:1,dodge:0,
    start:['fire'],allow:['fire','egg','power','vit','speed','armor'],up:['ember','spread','volcano','ashes']},
  sto:{n:'Tormentosa',col:'#b7a8ff',d:'Veloz y escurridiza: empieza con tormenta de plumas, +15% de velocidad, +10% de vida y daño, y 5% de esquiva.',hp:1.1,atk:1.1,dmg:1,spd:1.15,vamp:0,cd:1,dodge:0.05,
-   start:['storm'],allow:['storm','laser','speed','power','vit','gold'],up:['cyclone','breeze','bolt','eye']}
+   start:['storm'],allow:['storm','laser','speed','power','vit','gold'],up:['cyclone','breeze','bolt','eye']},
+ bru:{n:'Brujo',col:'#a855f7',d:'Hechicero oscuro: empieza con 2 polluelos (La bandada). Cada aliado que cae le da más daño, velocidad y vida (Pacto de sangre). Sus mejoras: espíritus, maldiciones y explosiones.',hp:1,atk:1.1,dmg:1,spd:1,vamp:0,cd:1,dodge:0,
+   start:['flock'],allow:['egg','storm','power','vit','speed','armor'],up:['summon','curse','pact','nova']}
 };
 const SUPG={
  rage:{sp:'war',n:'Furia de gallina',max:4,d:'Cuanta menos vida te queda, más rápido picoteas (hasta +80%)',v:l=>'hasta +'+20*l+'% vel. de ataque con poca vida'},
@@ -33,8 +35,14 @@ const SUPG={
  cyclone:{sp:'sto',n:'Ciclón',max:4,d:'Tu tormenta es más grande, pega más y empuja a los enemigos',v:l=>'radio +'+f1(0.8*l)+' · daño +'+20*l+'%'},
  breeze:{sp:'sto',n:'Brisa esquiva',max:4,d:'Esquivas golpes y corres más rápido',v:l=>6*l+'% esquiva · +'+6*l+'% velocidad'},
  bolt:{sp:'sto',n:'Rayo del cielo',max:4,d:'Cada pocos segundos caen rayos sobre los enemigos',v:l=>(1+Math.ceil(l/2))+' rayos cada '+f1(Math.max(2.5,6-0.6*l))+' s'},
- eye:{sp:'sto',n:'Ojo del huracán',max:4,d:'Atacas y corres más rápido',v:l=>'+'+15*l+'% velocidad de ataque y carrera'}
+ eye:{sp:'sto',n:'Ojo del huracán',max:4,d:'Atacas y corres más rápido',v:l=>'+'+15*l+'% velocidad de ataque y carrera'},
+ summon:{sp:'bru',n:'Invocar espíritus',max:4,d:'Cada pocos segundos invocas polluelos espectrales que pelean por ti unos segundos',v:l=>(1+Math.ceil(l/2))+' espíritus cada '+f1(Math.max(5,11-1.2*l))+' s'},
+ curse:{sp:'bru',n:'Maldición',max:4,d:'Maldices a enemigos: reciben más daño de todo tu equipo durante 6 s',v:l=>'+'+(15+5*l)+'% daño recibido · '+(l>=3?2:1)+' objetivo(s) cada '+f1(Math.max(4,8.5-0.9*l))+' s'},
+ pact:{sp:'bru',n:'Pacto profundo',max:4,d:'Refuerza el Pacto de sangre: cada aliado caído te potencia mucho más',v:l=>{const c=pactCfg(l,false);return '+'+f1(c.dmg*100)+'% daño y +'+f1(c.haste*100)+'% vel. por aliado caído (máx. '+c.cap+')';}},
+ nova:{sp:'bru',n:'Muerte explosiva',max:4,d:'Tus polluelos y espíritus explotan al caer y dañan a los enemigos cercanos',v:l=>'explosión del '+Math.round((0.9+0.4*l)*100)+'% de tu daño · radio '+f1(2.4+0.2*l)}
 };
+/* Pacto de sangre del brujo: bonos por cada aliado caído (se reinician cada combate) */
+function pactCfg(l,ult){const pm=(1+0.35*l)*(ult?1.5:1);return{dmg:0.04*pm,haste:0.03*pm,heal:0.04,cap:ult?14:8};}
 /* habilidades definitivas: se desbloquean al llegar al nivel máximo de cada habilidad exclusiva */
 const ULT={
  rage:{n:'Furia berserker',d:'Con menos del 35% de vida pegas un 50% más fuerte'},
@@ -56,7 +64,11 @@ const ULT={
  cyclone:{n:'Tornado',d:'La tormenta atrae a los enemigos y se recarga un 30% antes'},
  breeze:{n:'Viento a favor',d:'+10% de esquiva y +10% de velocidad'},
  bolt:{n:'Tormenta eléctrica',d:'Cada rayo salta a 2 enemigos cercanos'},
- eye:{n:'Vórtice',d:'Cada 9 s un torbellino te rodea y destruye a los cercanos'}
+ eye:{n:'Vórtice',d:'Cada 9 s un torbellino te rodea y destruye a los cercanos'},
+ summon:{n:'Ejército fantasma',d:'Invocas 3 espíritus más, duran más y son un 30% más fuertes'},
+ curse:{n:'Plaga maldita',d:'Los malditos sufren daño continuo y la maldición salta a otro enemigo al morir'},
+ pact:{n:'Pacto oscuro',d:'Los bonos del pacto valen un 50% más y el tope sube a 14 aliados caídos'},
+ nova:{n:'Supernova',d:'Explosión mucho mayor (+80% daño, +1.5 radio) y te cura un 8% al explotar'}
 };
 Object.assign(UPG,SUPG);
 const SPEC_ALWAYS=['robot','titan','phoenix','flock'];
@@ -95,9 +107,16 @@ function specStats(m,o){
   if(o.storm){o.storm.cd*=cdm;o.storm.rad+=0.8*g('cyclone');o.storm.dmg*=1+0.2*g('cyclone');if(U.cyclone)o.storm.cd*=0.7;}
   sk.pull=!!U.cyclone;
   if(U.eye)sk.eyeUlt={cd:9*cdm,dmg:atk*1.8,rad:3};
+  if(m.spec==='bru'){
+    const lp=g('pact'),ls=g('summon'),lc=g('curse'),ln=g('nova');
+    sk.pact=pactCfg(lp,!!U.pact);
+    if(ls)sk.summon={cd:Math.max(5,11-1.2*ls)*cdm,n:1+Math.ceil(ls/2)+(U.summon?3:0),hp:o.hp*0.2*(1+0.15*(ls-1))*(U.summon?1.3:1),atk:atk*0.3*(1+0.15*(ls-1))*(U.summon?1.3:1),life:10+(U.summon?4:0),cap:U.summon?12:8};
+    if(lc)sk.curse={cd:Math.max(4,8.5-0.9*lc)*cdm,n:lc>=3?2:1,mul:0.15+0.05*lc,dps:U.curse?atk*1.0:0,jump:!!U.curse};
+    if(ln)sk.nova={dmg:atk*(0.9+0.4*ln)*(U.nova?1.8:1),rad:2.4+0.2*ln+(U.nova?1.5:0),heal:U.nova?0.08:0};
+  }
   o.sk=sk;
 }
-function specHaste(u){const s=u.sk;return s?1+s.rage*0.2*(1-u.hp/u.max)+0.15*s.eye:1;}
+function specHaste(u){const s=u.sk;return s?(1+s.rage*0.2*(1-u.hp/u.max)+0.15*s.eye)*(1+(u.pact||0)*(s.pact?s.pact.haste:0)):1;}
 function skTick(u,key,cd,dt){
   const T=u.skT||(u.skT={});
   if(T[key]===undefined)T[key]=cd*0.6;
@@ -151,9 +170,51 @@ function specAbilities(u,alive,dt){
       if(s.bolt.chain)en.filter(e=>e!==t&&!e.dying&&!e.dead).sort((a,b)=>Math.hypot(a.x-t.x,a.z-t.z)-Math.hypot(b.x-t.x,b.z-t.z)).slice(0,2).forEach(e=>{fx.push({k:'laser',x1:t.x,y1:t.top*0.55,z1:t.z,x2:e.x,y2:e.top*0.55,z2:e.z,t:0,max:0.32,c1:'255,210,60',c2:'255,245,150'});burst(e.x,e.top*0.55,e.z,6,['#ffe36a','#ffffff'],3,0.09,0.4);hurt(u,e,s.bolt.dmg*0.5,{laser:true});});}
     snd.laser();
   }
+  if(s.summon&&skTick(u,'s',s.summon.cd,dt))summonSpirits(u,s.summon);
+  if(s.curse&&skTick(u,'c',s.curse.cd,dt)){
+    const pool=en.filter(e=>!e.curse);
+    for(let i=0;i<s.curse.n&&pool.length;i++){
+      const t=pool.splice((Math.random()*pool.length)|0,1)[0];
+      t.curse={t:6,mul:s.curse.mul,dps:s.curse.dps,jump:s.curse.jump,by:u,tk:0.5};
+      fx.push({k:'ring',x:t.x,z:t.z,r:1.6,t:0,max:0.5,c:'168,85,247'});burst(t.x,t.top*0.6,t.z,16,['#a855f7','#e0b0ff','#3b1a6b'],4,0.1,0.6);
+      floater(t.x,t.top+0.9,t.z,'¡MALDITO!','#c77dff');
+    }
+    tone(120,60,0.35,'sawtooth',0.06);
+  }
   if(s.eyeUlt&&skTick(u,'y',s.eyeUlt.cd,dt)){
     fx.push({k:'ring',x:u.x,z:u.z,r:s.eyeUlt.rad,t:0,max:0.6,c:'183,168,255'});burst(u.x,0.8,u.z,28,['#b7a8ff','#ffffff','#d9ceff'],6,0.12,0.7);snd.boom();
     en.forEach(e=>{const dx=e.x-u.x,dz=e.z-u.z,d=Math.hypot(dx,dz)||1;if(d<s.eyeUlt.rad+e.size*0.4){hurt(u,e,s.eyeUlt.dmg,{egg:true});e.kx+=dx/d*4;e.kz+=dz/d*4;}});
+  }
+}
+/* ====== brujo: espíritus y pacto de sangre ====== */
+function summonSpirits(u,c){
+  const cnt=units.filter(e=>e.spirit&&!e.dying&&!e.dead).length,n=Math.min(c.n,c.cap-cnt);
+  for(let i=0;i<n;i++){
+    const sp=mkUnit(0,{k:'ghost',t:0,fresh:false}),a=Math.random()*6.28,r=1.1+Math.random()*0.9;
+    sp.x=Math.max(-9.6,Math.min(9.6,u.x+Math.cos(a)*r));sp.z=Math.max(-5.6,Math.min(5.6,u.z+Math.sin(a)*r));sp.hx=sp.x;sp.hz=sp.z;
+    sp.hp=sp.max=c.hp;sp.atk=c.atk;sp.spd=4.6;sp.spirit=true;sp.life=c.life;sp.yaw=u.yaw;
+    units.push(sp);
+    fx.push({k:'ring',x:sp.x,z:sp.z,r:1.1,t:0,max:0.4,c:'200,160,255'});
+    if(!simming)burst(sp.x,0.6,sp.z,12,['#c9a4ff','#ffffff','#a855f7'],3.5,0.09,0.6);
+  }
+  if(n>0){floater(u.x,u.top+1.2,u.z,'¡ESPÍRITUS!','#c9a4ff');tone(500,180,0.35,'sine',0.07);}
+}
+/* un aliado (polluelo o espíritu) cae: el brujo se fortalece y, si tiene la habilidad, el aliado explota */
+function allyDied(t){
+  const h=units.find(x=>x.hero&&!x.dying&&!x.dead&&x.sk&&x.sk.pact);if(!h)return;
+  const s=h.sk,pc=s.pact;
+  h.pact=Math.min(pc.cap,(h.pact||0)+1);
+  h.hp=Math.min(h.max,h.hp+h.max*pc.heal);
+  fx.push({k:'ring',x:h.x,z:h.z,r:2.2,t:0,max:0.45,c:'168,85,247'});
+  if(!simming)burst(h.x,h.top*0.6,h.z,18,['#a855f7','#e0b0ff','#d0102e'],4.5,0.1,0.7);
+  floater(h.x,h.top+1.3,h.z,'¡PACTO! ×'+h.pact,'#c77dff');tone(180,520,0.3,'triangle',0.07);
+  if(s.nova){
+    const nv=s.nova;
+    fx.push({k:'ring',x:t.x,z:t.z,r:nv.rad,t:0,max:0.45,c:'200,120,255'});
+    if(!simming)burst(t.x,t.top*0.5,t.z,24,['#a855f7','#e0b0ff','#ffffff','#ff7be0'],6,0.13,0.7);
+    snd.boom();shake=Math.min(0.6,shake+0.25);
+    units.forEach(e=>{if(e.side!==t.side&&!e.dying&&!e.dead&&Math.hypot(e.x-t.x,e.z-t.z)<nv.rad+e.size*0.4)hurt(h,e,nv.dmg,{egg:true});});
+    if(nv.heal&&!h.dying)h.hp=Math.min(h.max,h.hp+h.max*nv.heal);
   }
 }
 /* ====== murciélagos 3D (habilidad de la vampira) ====== */
@@ -205,6 +266,7 @@ function showSpecPick(){
 function specStatsHTML(m,R){
   if(!m.hero||!m.spec)return '';
   const sp=SPECS[m.spec];let h=R('Especialización',sp.n);
+  if(m.spec==='bru'){const c=pactCfg(m.l.pact||0,(m.l.pact||0)>=SUPG.pact.max);h+=R('🩸 Pacto de sangre','+'+f1(c.dmg*100)+'% daño · +'+f1(c.haste*100)+'% vel. · cura '+Math.round(c.heal*100)+'% por aliado caído (máx. '+c.cap+')');}
   sp.up.forEach(k=>{const l=m.l[k]||0;if(l)h+=R(SUPG[k].n+' ('+l+')',SUPG[k].v(l));if(l>=SUPG[k].max)h+=R('★ '+ULT[k].n,ULT[k].d);});
   return h;
 }
