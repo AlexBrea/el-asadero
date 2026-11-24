@@ -125,6 +125,13 @@ html,body{touch-action:manipulation}
 #fpv.on{background:linear-gradient(#ffd24a,#ff9d1e);box-shadow:0 4px 0 #a35b00}
 #panel.on ~ #fpv,#modal:not(.off) ~ #fpv{display:none}
 #fpv.hide{display:none}
+#cards.tgt{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:8px;max-height:46vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:2px 2px 6px}
+#cards.tgt .card{width:auto;min-width:0;max-width:none;padding:6px 6px 8px}
+#cards.tgt .ic{height:clamp(44px,9vh,70px)}
+#cards.tgt .card .nm{font-size:13px}
+#cards.tgt .card .ds{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:10px;line-height:1.25}
+@media (min-width:700px) and (min-height:501px){#cards.tgt{grid-template-columns:repeat(auto-fit,minmax(150px,230px));justify-content:center}}
+@media (max-height:500px){#cards.tgt{grid-template-columns:repeat(auto-fit,minmax(120px,1fr));max-height:42vh}}
 </style>
 </head>
 <body>
@@ -724,7 +731,7 @@ function nextInfRound(){
 function showCards(){
   icons.length=0;
   $('ptitle').textContent=prize?'🎁 Premio del jefe ('+(prize-picksLeft+1)+'/'+prize+') · ¡Elige una mejora!':'Ronda '+infN+(infN%10===0?' · ¡JEFE!':'')+' · ¡Elige una mejora!';
-  const box=$('cards');box.innerHTML='';
+  const box=$('cards');box.innerHTML='';box.classList.remove('tgt');
   offers.forEach((o,i)=>{
     const u=UPG[o.id],d=document.createElement('div');d.className='card'+(o.id==='robot'||o.id==='titan'?' up':'');
     d.innerHTML='<canvas class="ic"></canvas><div class="nm">'+u.n+'</div><div class="ds">'+u.d+'</div>';
@@ -741,7 +748,7 @@ function pick(i){
   if(targets.length===1){applyTo(targets[0],k);proceed();return;}
   st='target';icons.length=0;
   $('ptitle').textContent='¿A quién le das «'+UPG[k].n+'»?';
-  const box=$('cards');box.innerHTML='';
+  const box=$('cards');box.innerHTML='';box.classList.add('tgt');box.scrollTop=0;
   targets.forEach(m=>{
     const d=document.createElement('div');d.className='card';
     d.innerHTML='<canvas class="ic"></canvas><div class="nm">'+memberName(m)+(m.hero?' ⭐':'')+'</div><div class="ds">'+memberDesc(m)+'</div>';
@@ -762,7 +769,7 @@ function startFight(){
   banner('¡PELEA!','#ff6b6b');tone(200,400,0.2,'sawtooth',0.05);
 }
 function panelButton(title,label,fn){
-  icons.length=0;$('ptitle').textContent=title;$('cards').innerHTML='';
+  icons.length=0;$('ptitle').textContent=title;$('cards').innerHTML='';$('cards').classList.remove('tgt');
   const b=document.createElement('button');b.className='btn';b.textContent=label;
   b.onclick=()=>{ensureAudio();snd.click();$('panel').classList.remove('on');fn();};
   $('cards').appendChild(b);$('panel').classList.add('on');
