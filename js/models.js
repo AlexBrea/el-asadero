@@ -140,9 +140,9 @@ function skinAcc(id,base,parts){
   }
 }
 const mcache={};
-function getModel(k,tier,gold,skin){
+function getModel(k,tier,gold,skin,spec){
   const sk=(k==='chicken'&&skin&&skin!=='classic')?SKINS.find(x=>x.id===skin):null;
-  const id=k+tier+(gold?'G':'')+(sk?sk.id:'');if(mcache[id])return mcache[id];
+  const sp=(k==='chicken'&&spec)?spec:null,id=k+tier+(gold?'G':'')+(sk?sk.id:'')+(sp?'S'+sp:'');if(mcache[id])return mcache[id];
   const base=SP[k].mk(),pal=TP[tier];
   const parts=base.map(p=>{const q=Object.assign({},p);q.col=pal?C(pal[p.role]||pal.body):p.col;if(gold&&p.beak){q.col=C('#ffd700');q.glow=true;}return q;});
   if(sk&&tier===0&&sk.pal){
@@ -157,6 +157,7 @@ function getModel(k,tier,gold,skin){
     });
   }
   if(sk)skinAcc(sk.id,base,parts);
+  if(sp)specAcc(sp,base,parts);
   if(tier>0){
     const h=base.head,hd=h.hd;
     parts.push(B([h.x-h.s*0.1,h.y+0.12,0],[0.05,0.24,0.05],tier>1?'#a8780c':'#5f687c','limb',hd));
@@ -167,4 +168,3 @@ function getModel(k,tier,gold,skin){
   parts.forEach(p=>{top=Math.max(top,p.c[1]+p.s[1]/2);hw=Math.max(hw,Math.abs(p.c[2])+p.s[2]/2);});
   return mcache[id]={parts,size:base.size,top,hw,rbw:!!(sk&&sk.rbw&&tier===0)};
 }
-

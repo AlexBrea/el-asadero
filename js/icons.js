@@ -27,7 +27,7 @@ function objSpec(id){
   return [ocache[id]];
 }
 function skinSpec(id){const mo=getModel('chicken',0,false,id);return [Object.assign({},boundsOf(mo.parts),{robot:false,rbw:mo.rbw})];}
-function memberSpec(m){const mo=getModel(m.k,m.t,m.l.gold>0,m.hero?m.skin:null);return [Object.assign({},boundsOf(mo.parts),{robot:m.t>0,rbw:mo.rbw})];}
+function memberSpec(m){const mo=getModel(m.k,m.t,m.l.gold>0,m.hero?m.skin:null,m.hero?m.spec:null);return [Object.assign({},boundsOf(mo.parts),{robot:m.t>0,rbw:mo.rbw})];}
 function renderIcons(){
   if(!icons.length)return;
   const sv=[W,H,F,CX,CYc,CZ,cyw,syw,cpt,spt,YF],dpr=Math.min(2,window.devicePixelRatio||1);
@@ -59,4 +59,3 @@ function drawFaces(c,faces){
   }
   c.globalAlpha=1;
 }
-
