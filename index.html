@@ -201,9 +201,9 @@ function setCam(T){
     fpYaw=turnTo(fpYaw,hero.yaw,0.3);
     if(!looking){lookY*=0.9;lookP*=0.9;}
     const la=fpYaw-lookY,dx=Math.cos(la),dz=-Math.sin(la),bob=hero.state==='walk'?Math.sin(hero.gait*16)*0.05:0;
-    CX=hero.x+dx*0.05+sx*0.3;CZ=hero.z+dz*0.05+sx*0.3;CYc=hero.top*1.05+hero.y+bob+sy*0.3;
+    CX=hero.x+dx*0.05+sx*0.3;CZ=hero.z+dz*0.05+sx*0.3;CYc=hero.top*0.55+hero.y+bob+sy*0.3;
     const yw=Math.atan2(-dx,-dz);cyw=Math.cos(yw);syw=Math.sin(yw);
-    const pp=0.2+lookP;cpt=Math.cos(pp);spt=Math.sin(pp);YF=0.5;
+    const pp=0.02+lookP;cpt=Math.cos(pp);spt=Math.sin(pp);YF=0.5;
     F=(PORT?W*0.75:Math.min(W*0.5,H*1.1))*zoom;
     return;
   }
