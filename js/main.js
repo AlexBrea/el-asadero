@@ -75,7 +75,7 @@ function render(){
   for(const u of units){
     if(u.dying||u.dead||u.spawnT<1)continue;
     if(fp&&u.hero)continue;
-    const mk=u.hero?((u.ref&&u.ref.spec?SPECS[u.ref.spec].e+' ':'')+(CNAME||'⭐')):u.boss?'👹':'';if(mk){const q=proj(u.x,u.top+0.85+u.y,u.z);if(q){const fs=Math.max(14,Math.min(30,F/q[2]*0.5));ctx.font='900 '+fs+'px sans-serif';ctx.lineWidth=4;ctx.strokeStyle='#1b1330';ctx.strokeText(mk,q[0],q[1]-26);ctx.fillStyle='#ffd24a';ctx.fillText(mk,q[0],q[1]-26);}}
+    const mk=u.hero?((u.ref&&u.ref.spec?SPECS[u.ref.spec].n+' · ':'')+(CNAME||'⭐')):u.boss?'👹':'';if(mk){const q=proj(u.x,u.top+0.85+u.y,u.z);if(q){const fs=Math.max(14,Math.min(30,F/q[2]*0.5));ctx.font='900 '+fs+'px sans-serif';ctx.lineWidth=4;ctx.strokeStyle='#1b1330';ctx.strokeText(mk,q[0],q[1]-26);ctx.fillStyle='#ffd24a';ctx.fillText(mk,q[0],q[1]-26);}}
     const q=proj(u.x,u.top+0.3+u.y,u.z);if(!q)continue;
     bars.push({u,x:q[0],y:q[1],d:q[2],w:Math.max(36,Math.min(86,u.size*1.0*F/q[2]))});
   }

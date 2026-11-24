@@ -2,41 +2,40 @@
 /* spec.js — Ramas de evolución de la gallina: especializaciones y sus habilidades exclusivas */
 const SPEC_ROUND=5;
 const SPECS={
- war:{e:'⚔️',n:'Guerrera',col:'#ff7b3d',d:'Cuerpo a cuerpo: +65% de vida, +30% de daño y empieza con plumas de acero (menos daño recibido).',hp:1.65,atk:1.3,dmg:0.85,spd:1,vamp:0,cd:1,dodge:0,
+ war:{n:'Guerrera',col:'#ff7b3d',d:'Cuerpo a cuerpo: +65% de vida, +30% de daño y empieza con plumas de acero (menos daño recibido).',hp:1.65,atk:1.3,dmg:0.85,spd:1,vamp:0,cd:1,dodge:0,
    start:['armor'],allow:['power','vit','armor','speed','gold','fire'],up:['rage','cleave','warcry','thorns']},
- art:{e:'🎯',n:'Artillera',col:'#ff7be0',d:'A distancia: empieza con rayos láser y todas sus habilidades recargan un 15% más rápido, pero con un 10% menos de vida.',hp:0.9,atk:1,dmg:1,spd:1,vamp:0,cd:0.85,dodge:0,
+ art:{n:'Artillera',col:'#ff7be0',d:'A distancia: empieza con rayos láser y todas sus habilidades recargan un 15% más rápido, pero con un 10% menos de vida.',hp:0.9,atk:1,dmg:1,spd:1,vamp:0,cd:0.85,dodge:0,
    start:['laser'],allow:['laser','egg','storm','power','vit','speed'],up:['focus','barrage','mega','overclock']},
- vam:{e:'🧛',n:'Vampira',col:'#d0102e',d:'Roba vida: empieza con pico vampiro, +12% de robo de vida base, +25% de vida y +15% de daño.',hp:1.25,atk:1.15,dmg:1,spd:1,vamp:0.12,cd:1,dodge:0,
+ vam:{n:'Vampira',col:'#d0102e',d:'Roba vida: empieza con pico vampiro, +12% de robo de vida base, +25% de vida y +15% de daño.',hp:1.25,atk:1.15,dmg:1,spd:1,vamp:0.12,cd:1,dodge:0,
    start:['vamp'],allow:['vamp','power','vit','speed','gold','armor'],up:['drain','bats','lust','mist']},
- pyr:{e:'🔥',n:'Pirómana',col:'#ff9a3d',d:'Todo arde: empieza con pico de fuego y +35% de daño y +20% de vida. Sus mejoras son de fuego y explosiones.',hp:1.2,atk:1.35,dmg:1,spd:1,vamp:0,cd:1,dodge:0,
+ pyr:{n:'Pirómana',col:'#ff9a3d',d:'Todo arde: empieza con pico de fuego y +35% de daño y +20% de vida. Sus mejoras son de fuego y explosiones.',hp:1.2,atk:1.35,dmg:1,spd:1,vamp:0,cd:1,dodge:0,
    start:['fire'],allow:['fire','egg','power','vit','speed','armor'],up:['ember','spread','volcano','ashes']},
- sto:{e:'🌪️',n:'Tormentosa',col:'#b7a8ff',d:'Veloz y escurridiza: empieza con tormenta de plumas, +15% de velocidad, +10% de vida y daño, y 5% de esquiva.',hp:1.1,atk:1.1,dmg:1,spd:1.15,vamp:0,cd:1,dodge:0.05,
+ sto:{n:'Tormentosa',col:'#b7a8ff',d:'Veloz y escurridiza: empieza con tormenta de plumas, +15% de velocidad, +10% de vida y daño, y 5% de esquiva.',hp:1.1,atk:1.1,dmg:1,spd:1.15,vamp:0,cd:1,dodge:0.05,
    start:['storm'],allow:['storm','laser','speed','power','vit','gold'],up:['cyclone','breeze','bolt','eye']}
 };
 const SUPG={
- rage:{sp:'war',e:'😡',n:'Furia de gallina',max:4,d:'Cuanta menos vida te queda, más rápido picoteas (hasta +80%)',v:l=>'hasta +'+20*l+'% vel. de ataque con poca vida'},
- cleave:{sp:'war',e:'🪓',n:'Picotazo en arco',max:4,d:'Tus golpes dañan también a los enemigos cercanos',v:l=>25*l+'% del golpe a los cercanos'},
- warcry:{sp:'war',e:'📣',n:'Grito de guerra',max:4,d:'Cada pocos segundos, todo tu equipo pega más fuerte durante 4 s',v:l=>'+'+(30+12*l)+'% daño · cada '+f1(Math.max(4,10-1.5*l))+' s'},
- thorns:{sp:'war',e:'🦔',n:'Espolones de acero',max:4,d:'Devuelves parte del daño que recibes',v:l=>'devuelve el '+18*l+'% del daño'},
- focus:{sp:'art',e:'🔭',n:'Mira telescópica',max:4,d:'Tus rayos láser hacen mucho más daño',v:l=>'láser +'+30*l+'% de daño'},
- barrage:{sp:'art',e:'🥚',n:'Lluvia de huevos',max:4,d:'Lanza una salva de huevos explosivos',v:l=>(2+l)+' huevos cada '+f1(Math.max(3,7.5-0.6*l))+' s'},
- mega:{sp:'art',e:'💣',n:'Mega huevo',max:4,d:'Cada pocos segundos lanza un huevo gigante devastador',v:l=>'radio '+f1(4+0.3*l)+' · cada '+f1(Math.max(5,12-1.3*l))+' s'},
- overclock:{sp:'art',e:'⚡',n:'Recarga turbo',max:4,d:'Todas tus habilidades se recargan más rápido',v:l=>'recarga -'+10*l+'%'},
- drain:{sp:'vam',e:'🩸',n:'Aura de sangre',max:4,d:'Un aura roja daña a los enemigos cercanos y te cura',v:l=>'radio '+f1(3+0.15*l)+' · daño continuo'},
- bats:{sp:'vam',e:'🦇',n:'Murciélagos',max:4,d:'Envía murciélagos que muerden a enemigos lejanos',v:l=>(2+l)+' mordiscos cada '+f1(Math.max(3,6.5-0.6*l))+' s'},
- lust:{sp:'vam',e:'💀',n:'Sed de sangre',max:4,d:'Al derrotar a un enemigo recuperas vida',v:l=>'+'+12*l+'% de vida por KO'},
- mist:{sp:'vam',e:'🌫️',n:'Forma de niebla',max:4,d:'Esquivas parte de los golpes',v:l=>8*l+'% de esquiva'},
- ember:{sp:'pyr',e:'♨️',n:'Brasas eternas',max:4,d:'La quemadura dura más y quema más fuerte',v:l=>'quema +'+50*l+'% · +'+f1(0.5*l)+' s'},
- spread:{sp:'pyr',e:'🧨',n:'Contagio',max:3,d:'Los enemigos que mueren ardiendo incendian a sus vecinos',v:l=>'radio '+f1(2.4+0.8*l)},
- volcano:{sp:'pyr',e:'🌋',n:'Erupción',max:4,d:'Cada pocos segundos, una explosión de fuego a tu alrededor',v:l=>'radio '+f1(3.2+0.3*l)+' · cada '+f1(Math.max(4,8.5-0.8*l))+' s'},
- ashes:{sp:'pyr',e:'🌑',n:'Cenizas ardientes',max:4,d:'Los enemigos en llamas reciben más daño tuyo',v:l=>'+'+25*l+'% contra enemigos ardiendo'},
- cyclone:{sp:'sto',e:'🌀',n:'Ciclón',max:4,d:'Tu tormenta es más grande, pega más y empuja a los enemigos',v:l=>'radio +'+f1(0.8*l)+' · daño +'+20*l+'%'},
- breeze:{sp:'sto',e:'🍃',n:'Brisa esquiva',max:4,d:'Esquivas golpes y corres más rápido',v:l=>6*l+'% esquiva · +'+6*l+'% velocidad'},
- bolt:{sp:'sto',e:'🌩️',n:'Rayo del cielo',max:4,d:'Cada pocos segundos caen rayos sobre los enemigos',v:l=>(1+Math.ceil(l/2))+' rayos cada '+f1(Math.max(2.5,6-0.6*l))+' s'},
- eye:{sp:'sto',e:'👀',n:'Ojo del huracán',max:4,d:'Atacas y corres más rápido',v:l=>'+'+15*l+'% velocidad de ataque y carrera'}
+ rage:{sp:'war',n:'Furia de gallina',max:4,d:'Cuanta menos vida te queda, más rápido picoteas (hasta +80%)',v:l=>'hasta +'+20*l+'% vel. de ataque con poca vida'},
+ cleave:{sp:'war',n:'Picotazo en arco',max:4,d:'Tus golpes dañan también a los enemigos cercanos',v:l=>25*l+'% del golpe a los cercanos'},
+ warcry:{sp:'war',n:'Grito de guerra',max:4,d:'Cada pocos segundos, todo tu equipo pega más fuerte durante 4 s',v:l=>'+'+(30+12*l)+'% daño · cada '+f1(Math.max(4,10-1.5*l))+' s'},
+ thorns:{sp:'war',n:'Espolones de acero',max:4,d:'Devuelves parte del daño que recibes',v:l=>'devuelve el '+18*l+'% del daño'},
+ focus:{sp:'art',n:'Mira telescópica',max:4,d:'Tus rayos láser hacen mucho más daño',v:l=>'láser +'+30*l+'% de daño'},
+ barrage:{sp:'art',n:'Lluvia de huevos',max:4,d:'Lanza una salva de huevos explosivos',v:l=>(2+l)+' huevos cada '+f1(Math.max(3,7.5-0.6*l))+' s'},
+ mega:{sp:'art',n:'Mega huevo',max:4,d:'Cada pocos segundos lanza un huevo gigante devastador',v:l=>'radio '+f1(4+0.3*l)+' · cada '+f1(Math.max(5,12-1.3*l))+' s'},
+ overclock:{sp:'art',n:'Recarga turbo',max:4,d:'Todas tus habilidades se recargan más rápido',v:l=>'recarga -'+10*l+'%'},
+ drain:{sp:'vam',n:'Aura de sangre',max:4,d:'Un aura roja daña a los enemigos cercanos y te cura',v:l=>'radio '+f1(3+0.15*l)+' · daño continuo'},
+ bats:{sp:'vam',n:'Murciélagos',max:4,d:'Envía murciélagos que muerden a enemigos lejanos',v:l=>(2+l)+' mordiscos cada '+f1(Math.max(3,6.5-0.6*l))+' s'},
+ lust:{sp:'vam',n:'Sed de sangre',max:4,d:'Al derrotar a un enemigo recuperas vida',v:l=>'+'+12*l+'% de vida por KO'},
+ mist:{sp:'vam',n:'Forma de niebla',max:4,d:'Esquivas parte de los golpes',v:l=>8*l+'% de esquiva'},
+ ember:{sp:'pyr',n:'Brasas eternas',max:4,d:'La quemadura dura más y quema más fuerte',v:l=>'quema +'+50*l+'% · +'+f1(0.5*l)+' s'},
+ spread:{sp:'pyr',n:'Contagio',max:3,d:'Los enemigos que mueren ardiendo incendian a sus vecinos',v:l=>'radio '+f1(2.4+0.8*l)},
+ volcano:{sp:'pyr',n:'Erupción',max:4,d:'Cada pocos segundos, una explosión de fuego a tu alrededor',v:l=>'radio '+f1(3.2+0.3*l)+' · cada '+f1(Math.max(4,8.5-0.8*l))+' s'},
+ ashes:{sp:'pyr',n:'Cenizas ardientes',max:4,d:'Los enemigos en llamas reciben más daño tuyo',v:l=>'+'+25*l+'% contra enemigos ardiendo'},
+ cyclone:{sp:'sto',n:'Ciclón',max:4,d:'Tu tormenta es más grande, pega más y empuja a los enemigos',v:l=>'radio +'+f1(0.8*l)+' · daño +'+20*l+'%'},
+ breeze:{sp:'sto',n:'Brisa esquiva',max:4,d:'Esquivas golpes y corres más rápido',v:l=>6*l+'% esquiva · +'+6*l+'% velocidad'},
+ bolt:{sp:'sto',n:'Rayo del cielo',max:4,d:'Cada pocos segundos caen rayos sobre los enemigos',v:l=>(1+Math.ceil(l/2))+' rayos cada '+f1(Math.max(2.5,6-0.6*l))+' s'},
+ eye:{sp:'sto',n:'Ojo del huracán',max:4,d:'Atacas y corres más rápido',v:l=>'+'+15*l+'% velocidad de ataque y carrera'}
 };
 Object.assign(UPG,SUPG);
-Object.keys(SUPG).forEach(k=>{UEM[k]=SUPG[k].e;});
 const SPEC_ALWAYS=['robot','titan','phoenix','flock'];
 
 function heroOf(){return team.find(m=>m.hero);}
@@ -124,14 +123,15 @@ function specAbilities(u,alive,dt){
 function showSpecPick(){
   st='spec';icons.length=0;$('panel').classList.remove('on');
   const rows=Object.keys(SPECS).map(id=>{const s=SPECS[id];
-    return '<div class="spc" data-id="'+id+'" style="--c:'+s.col+'"><div class="spe">'+s.e+'</div><div class="spt"><b>'+s.n+'</b><span>'+s.d+'</span><small>'+s.up.map(k=>UPG[k].e+' '+UPG[k].n).join(' · ')+'</small></div></div>';}).join('');
+    return '<div class="spc" data-id="'+id+'" style="--c:'+s.col+'"><canvas class="ic"></canvas><div class="spt"><b>'+s.n+'</b><span>'+s.d+'</span><small>'+s.up.map(k=>UPG[k].n).join(' · ')+'</small></div></div>';}).join('');
   let sel=null;
-  setModal('<div class="big">🌟🐔</div><h1>¡Tu gallina evoluciona!</h1><p>Elige una especialización <b>para toda la partida</b>: cambia cómo juegas y las mejoras que te salgan serán de ese estilo.</p><div class="spl">'+rows+'</div>',[{t:'Elige una especialización',f:()=>{
+  setModal('<h1>¡Tu gallina evoluciona!</h1><p>Elige una especialización <b>para toda la partida</b>: cambia cómo juegas y las mejoras que te salgan serán de ese estilo.</p><div class="spl">'+rows+'</div>',[{t:'Elige una especialización',f:()=>{
     if(!sel)return;
     const h=heroOf();chooseSpec(h,sel);hideScreens();
     offers=genUpgrades();st='choose';updateRosters();showCards();snapRun('choose');
-    banner(SPECS[sel].e+' '+SPECS[sel].n.toUpperCase(),SPECS[sel].col);tone(300,900,0.4,'triangle',0.08);
+    banner(SPECS[sel].n.toUpperCase(),SPECS[sel].col);tone(300,900,0.4,'triangle',0.08);
   }}]);
+  document.querySelectorAll('.spc').forEach(r=>{icons.push({cv:r.querySelector('canvas'),spec:()=>specSpec(r.dataset.id)});});
   const go=$('mrow').firstChild;go.disabled=true;go.style.opacity=0.5;
   document.querySelectorAll('.spc').forEach(r=>{r.onclick=()=>{
     ensureAudio();snd.click();sel=r.dataset.id;
@@ -142,7 +142,7 @@ function showSpecPick(){
 /* filas para el panel de estadísticas */
 function specStatsHTML(m,R){
   if(!m.hero||!m.spec)return '';
-  const sp=SPECS[m.spec];let h=R(sp.e+' Especialización',sp.n);
-  sp.up.forEach(k=>{const l=m.l[k]||0;if(l)h+=R(SUPG[k].e+' '+SUPG[k].n+' ('+l+')',SUPG[k].v(l));});
+  const sp=SPECS[m.spec];let h=R('Especialización',sp.n);
+  sp.up.forEach(k=>{const l=m.l[k]||0;if(l)h+=R(SUPG[k].n+' ('+l+')',SUPG[k].v(l));});
   return h;
 }
