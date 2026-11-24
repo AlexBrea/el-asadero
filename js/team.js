@@ -79,13 +79,13 @@ function memberName(m){
 function memberDesc(m){
   const a=Object.keys(m.l).filter(k=>m.l[k]&&k!=='flock').map(k=>UPG[k].n+' '+m.l[k]);
   if(m.t)a.unshift(m.t===1?'Robot':'Titán');
-  if(m.hero&&m.spec)a.unshift(SPECS[m.spec].e+' '+SPECS[m.spec].n);
+  if(m.hero&&m.spec)a.unshift(SPECS[m.spec].n);
   return a.length?a.join(' · '):'Sin mejoras todavía';
 }
 
 /* unidades */
 function mkUnit(side,e){
-  const sp=SP[e.k],t=e.t||0,gold=!!(e.l&&e.l.gold>0),m=getModel(e.k,t,gold,e.hero?e.skin:null);
+  const sp=SP[e.k],t=e.t||0,gold=!!(e.l&&e.l.gold>0),m=getModel(e.k,t,gold,e.hero?e.skin:null,e.hero?e.spec:null);
   let hp=sp.hp*HM[t]*HPM*(e.f||1),atk=sp.atk*AM[t]*(e.f||1),rate=sp.rate,spd=sp.spd,sc=1.4*SM[t]*(e.boss?(e.k==='elephant'?0.8:1):1);
   const fresh=e.fresh;e.fresh=false;
   const u={side,key:e.k,tier:t,robot:t>0,model:m.parts,sc,hw:m.hw,size:m.size*sc,top:m.top*sc,
@@ -122,7 +122,7 @@ function rosterHTML(list){
 }
 function updateRosters(){
   const hero=team.find(m=>m.hero);let h='<b>TU EQUIPO</b>';
-  if(hero){h+='<span class="chip">'+TIERN[hero.t]+'⭐🐔'+(hero.spec?SPECS[hero.spec].e:'')+'</span>';Object.keys(hero.l).forEach(k=>{if(UEM[k]&&k!=='flock')h+='<span class="chip">'+UEM[k]+hero.l[k]+'</span>';});}
+  if(hero){h+='<span class="chip">'+TIERN[hero.t]+'⭐🐔</span>'+(hero.spec?'<span class="chip">'+SPECS[hero.spec].n+'</span>':'');Object.keys(hero.l).forEach(k=>{if(UEM[k]&&k!=='flock')h+='<span class="chip">'+UEM[k]+hero.l[k]+'</span>';});}
   Object.keys(RL).forEach(k=>{if(RL[k]&&REL[k])h+='<span class="chip">'+REL[k].e+(RL[k]>1?'×'+RL[k]:'')+'</span>';});const ch=team.filter(e=>!e.hero).length;if(ch)h+='<span class="chip">🐥×'+ch+'</span>';
   $('rosL').innerHTML=h;
   $('rosR').innerHTML='<b>ENEMIGOS · RONDA '+infN+'</b>'+rosterHTML(bteam);

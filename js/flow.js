@@ -15,11 +15,11 @@ function showCards(){
   $('ptitle').textContent=prize?'🎁 Premio del jefe ('+(prize-picksLeft+1)+'/'+prize+') · ¡Elige una mejora!':'Ronda '+infN+(infN%10===0?' · ¡JEFE!':'')+' · ¡Elige una mejora!';
   const box=$('cards');box.innerHTML='';box.classList.remove('tgt');
   offers.forEach((o,i)=>{
-    const u=UPG[o.id],d=document.createElement('div'),hasIc=!!OBJ[o.id]||o.id==='robot'||o.id==='titan';d.className='card'+(o.id==='robot'||o.id==='titan'?' up':'');
-    d.innerHTML=(hasIc?'<canvas class="ic"></canvas>':'<div class="ic eic">'+u.e+'</div>')+'<div class="nm">'+u.n+'</div><div class="ds">'+u.d+'</div>'+(u.sp?'<div class="lv">'+SPECS[u.sp].e+' '+SPECS[u.sp].n+' · nivel '+(((heroOf().l[o.id])||0)+1)+'/'+u.max+'</div>':'');
+    const u=UPG[o.id],d=document.createElement('div');d.className='card'+(o.id==='robot'||o.id==='titan'?' up':'');
+    d.innerHTML='<canvas class="ic"></canvas>'+'<div class="nm">'+u.n+'</div><div class="ds">'+u.d+'</div>'+(u.sp?'<div class="lv">'+SPECS[u.sp].n+' · nivel '+(((heroOf().l[o.id])||0)+1)+'/'+u.max+'</div>':'');
     if(u.sp)d.style.borderColor=SPECS[u.sp].col;
     d.onclick=()=>pick(i);box.appendChild(d);
-    if(hasIc)icons.push({cv:d.querySelector('canvas'),spec:()=>objSpec(o.id)});
+    icons.push({cv:d.querySelector('canvas'),spec:()=>objSpec(o.id)});
   });
   $('panel').classList.add('on');
 }
