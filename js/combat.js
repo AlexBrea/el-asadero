@@ -143,7 +143,7 @@ function stepFight(dt){
   for(const u of al2){u.x=Math.max(-9.6,Math.min(9.6,u.x));u.z=Math.max(-5.6,Math.min(5.6,u.z));}
   fightT+=dt;
   const pl=units.filter(u=>u.side===0&&!u.dying),bl=units.filter(u=>u.side===1&&!u.dying);
-  if(!fightEnd&&(!pl.length||!bl.length||fightT>60)){
+  if(!fightEnd&&(!pl.length||!bl.length||(simming&&fightT>60))){
     let pw=pl.length>0&&(bl.length===0||pl.reduce((s,u)=>s+u.hp,0)>=bl.reduce((s,u)=>s+u.hp,0));
     if(!pl.length)pw=false;
     endT=0;
