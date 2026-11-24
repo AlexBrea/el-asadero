@@ -74,7 +74,8 @@ html,body{touch-action:manipulation}
 #menu:active{transform:translateY(3px);box-shadow:0 1px 0 #a35b00}
 #hud .mid{flex:1;display:flex;justify-content:center;min-width:0;pointer-events:none}
 #hud .mid>*{pointer-events:auto}
-#spd{flex:none;height:54px;min-width:64px;border-radius:16px;font-size:17px}
+#spd{flex:none;height:54px;min-width:64px;border-radius:16px;font-size:22px;font-weight:900;letter-spacing:1px;color:#0b2342;background:linear-gradient(#8fe0ff,#2d8fe0);border:3px solid #ffffffaa;box-shadow:0 5px 0 #145a9a,0 8px 10px #0006,inset 0 2px 0 #fff8;text-shadow:0 1px 0 #fff8}
+#spd:active{transform:translateY(4px);box-shadow:0 1px 0 #145a9a,0 2px 4px #0006,inset 0 2px 0 #fff8}
 #drawer{position:fixed;top:0;left:0;bottom:0;width:min(88vw,380px);z-index:9;background:linear-gradient(170deg,#3b2c6e,#1d1440);border-right:4px solid #ffd24a;box-shadow:8px 0 30px #000a;transform:translateX(-105%);transition:transform .22s ease-out;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);padding-left:env(safe-area-inset-left)}
 #drawer.open{transform:none}
 #drawer .dh{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;font-size:22px;font-weight:900;color:#ffe08a;letter-spacing:1px}
@@ -115,7 +116,7 @@ html,body{touch-action:manipulation}
   #banner{top:24%}
 }
 @media (max-height:500px){
-  #menu,#spd{height:44px}#menu{width:44px;font-size:24px}
+  #menu,#spd{height:44px}#spd{font-size:18px}#menu{width:44px;font-size:24px}
   .ros{top:calc(56px + env(safe-area-inset-top))}
   .ic{height:46px}
   .card .ds{display:none}
@@ -139,7 +140,7 @@ html,body{touch-action:manipulation}
 <div id="hud">
   <button id="menu" aria-label="Menú">☰</button>
   <div class="mid"><div id="lvl"></div><div id="pips"></div></div>
-  <button id="spd">⏩ x1</button>
+  <button id="spd">x1</button>
 </div>
 <div id="drawer">
   <div class="dh"><span>🐔 MENÚ</span><button id="dclose" aria-label="Cerrar">✕</button></div>
@@ -699,7 +700,7 @@ function refreshDrawer(){
   $('d-out').classList.toggle('hide',!ONLINE);
   $('d-mus').classList.toggle('off',!musicOn);$('d-snd').classList.toggle('off',muted);
   $('d-snd').textContent=muted?'🔇 Sonido':'🔊 Sonido';
-  $('spd').textContent='⏩ x'+speed;
+  $('spd').textContent='x'+speed;
   $('d-home').textContent='🏠 Menú principal';homeArm=0;
   refreshStats();
 }
@@ -1253,7 +1254,7 @@ try{
     try{while(d>0.0001){const s=Math.min(0.05,d);TT+=s;update(s);d-=s;}}catch(e){console.error(e);}
   };
 }catch(e){console.warn('Sin worker: el juego se pausará en segundo plano',e);}
-$('spd').onclick=()=>{speed=speed===1?2:speed===2?3:1;$('spd').textContent='⏩ x'+speed;};
+$('spd').onclick=()=>{speed=speed===1?2:speed===2?3:1;$('spd').textContent='x'+speed;};
 const toggleSnd=()=>{muted=!muted;refreshDrawer();};
 const toggleMus=()=>{ensureAudio();musicOn=!musicOn;refreshDrawer();};
 const fpBtn=$('fpv');
