@@ -18,7 +18,7 @@ function doSignOut(){
 function getRun(){return pj(lsGet('asadero_run_'+UID));}
 function snapRun(ph,extra){
   if(mode!=='inf')return;
-  const o={v:1,ts:Date.now(),ph,n:infN,rt:Math.round(runT),pk:picksLeft,pz:prize,rl:RL,tm:team.map(m=>({hero:m.hero?1:0,t:m.t,l:m.l}))};
+  const o={v:1,ts:Date.now(),ph,n:infN,rt:Math.round(runT),pk:picksLeft,pz:prize,rl:RL,tm:team.map(m=>({hero:m.hero?1:0,t:m.t,l:m.l,sp:m.spec||''}))};
   if(extra)Object.assign(o,extra);
   lsSet('asadero_run_'+UID,JSON.stringify(o));cloudProfile();
 }
@@ -37,7 +37,10 @@ function resumeRun(){
   let hero=false;
   team=s.tm.slice(0,40).filter(m=>m&&(m.hero?!hero&&(hero=true):true)).map(m=>{
     const l={};Object.keys(UPG).forEach(k=>{const v=Math.max(0,Math.min(UPG[k].max,(m.l&&m.l[k])|0));if(v)l[k]=v;});
-    return{k:m.hero?'chicken':'chick',hero:!!m.hero,t:Math.max(0,Math.min(2,m.t|0)),l,base:m.hero?1:0.55,fresh:true,skin:m.hero?SKIN:null};
+    const o={k:m.hero?'chicken':'chick',hero:!!m.hero,t:Math.max(0,Math.min(2,m.t|0)),l,base:m.hero?1:0.55,fresh:true,skin:m.hero?SKIN:null};
+    if(m.hero&&SPECS[m.sp])o.spec=m.sp;
+    else Object.keys(l).forEach(k=>{if(UPG[k].sp)delete l[k];});
+    return o;
   });
   hideScreens();$('rosL').style.display=$('rosR').style.display='';
   TH=THEMES[(((infN-1)/5)|0)%5];bteam=genInfEnemy(infN);
@@ -45,7 +48,7 @@ function resumeRun(){
   if(s.ph==='relic'&&ro.length){buildArena();updatePips();startRelic(ro);}
   else if(s.ph==='won'||s.ph==='relic'){st='rounddone';buildArena();updatePips();winPanel();}
   else if(s.ph==='fight'){st='intro';buildArena();updatePips();banner('RONDA '+infN,'#ffe08a');later(()=>{if(st==='intro')startFight();},1500);}
-  else{offers=genUpgrades();st='choose';buildArena();showCards();updatePips();banner(infN%10===0?'👹 ¡JEFE! RONDA '+infN:'RONDA '+infN,infN%10===0?'#ff6b6b':'#ffe08a');}
+  else{offers=genUpgrades();st='choose';buildArena();if(needSpec())showSpecPick();else showCards();updatePips();banner(infN%10===0?'👹 ¡JEFE! RONDA '+infN:'RONDA '+infN,infN%10===0?'#ff6b6b':'#ffe08a');}
 }
 
 function showMenu(){

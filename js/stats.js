@@ -11,6 +11,7 @@ function statsHTML(){
   team.forEach(m=>{
     const s=memberStats(m),g=k=>m.l[k]||0,R=(a,b)=>'<div class="sr"><span>'+a+'</span><b>'+b+'</b></div>';
     h+='<div class="sc"><h3>'+memberName(m)+(m.hero?' ⭐':'')+(m.t?' · '+(m.t===1?'🤖 Robot':'👑 Titán'):'')+'</h3>';
+    h+=specStatsHTML(m,R);
     h+=R('❤️ Vida',Math.round(s.hp));
     h+=R('⚔️ Daño por segundo',f1(s.atk)+'  ('+f1(s.atk*s.rate)+' por golpe)');
     h+=R('💨 Velocidad de ataque','x'+f1(0.7/s.rate));
