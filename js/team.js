@@ -70,6 +70,7 @@ function genUpgrades(){
 function applyTo(m,k){
   if(k==='robot')m.t=1;else if(k==='titan')m.t=2;else m.l[k]=(m.l[k]||0)+1;
   m.fresh=true;
+  if(UPG[k].sp&&m.l[k]===UPG[k].max&&!simming&&typeof ULT!=='undefined'){banner('★ '+ULT[k].n.toUpperCase()+' ★',SPECS[m.spec].col);tone(300,1500,0.5,'triangle',0.09);}
   if(k==='flock'){team.push(newMember(false),newMember(false));}
 }
 function memberName(m){

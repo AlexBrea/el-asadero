@@ -16,10 +16,11 @@ function showCards(){
   const box=$('cards');box.innerHTML='';box.classList.remove('tgt');
   offers.forEach((o,i)=>{
     const u=UPG[o.id],d=document.createElement('div');d.className='card'+(o.id==='robot'||o.id==='titan'?' up':'');
-    d.innerHTML='<canvas class="ic"></canvas>'+'<div class="nm">'+u.n+'</div><div class="ds">'+u.d+'</div>'+(u.sp?'<div class="lv">'+SPECS[u.sp].n+' · nivel '+(((heroOf().l[o.id])||0)+1)+'/'+u.max+'</div>':'');
+    d.innerHTML='<canvas class="ic"></canvas>'+'<div class="nm">'+u.n+'</div><div class="ds">'+u.d+'</div>'+(u.sp?'<div class="lv">'+SPECS[u.sp].n+' · nivel '+(((heroOf().l[o.id])||0)+1)+'/'+u.max+'</div>'+((((heroOf().l[o.id])||0)+1)>=u.max?'<div class="ult">★ DEFINITIVA: '+ULT[o.id].n+'<small>'+ULT[o.id].d+'</small></div>':''):'');
     if(u.sp)d.style.borderColor=SPECS[u.sp].col;
+    const isU=!!(u.sp&&((heroOf().l[o.id]||0)+1)>=u.max);if(isU)d.classList.add('ultc');
     d.onclick=()=>pick(i);box.appendChild(d);
-    icons.push({cv:d.querySelector('canvas'),spec:()=>objSpec(o.id)});
+    icons.push({cv:d.querySelector('canvas'),spec:()=>isU?ultSpec(o.id):objSpec(o.id)});
   });
   $('panel').classList.add('on');
 }
