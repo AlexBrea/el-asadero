@@ -24,8 +24,55 @@ function winPanel(msg){
 }
 function advance(){
   const bz=infN%10===0;
-  if(bz){const ro=relOffer();if(ro.length){startRelic(ro);return;}}
-  infN++;prize=bz?2:0;picksLeft=bz?2:1;nextInfRound();
+  if(bz){const ro=relOffer();if(ro.length){startRelic(ro);return;}afterBoss();return;}
+  infN++;prize=0;picksLeft=1;nextInfRound();
+}
+function toNext(){infN++;prize=2;picksLeft=2;nextInfRound();}
+/* ===== apuesta de reliquias (ronda 20): 50% ganas una más, 50% pierdes todas ===== */
+const GAMBLE_AT=20;
+const relCount=()=>Object.keys(REL).reduce((t,k)=>t+rl(k),0);
+const gambleOK=()=>relCount()>=2&&Object.keys(REL).some(k=>rl(k)<REL[k].max);
+function afterBoss(){if(infN===GAMBLE_AT&&gambleOK()){startGamble();}else toNext();}
+function startGamble(){st='gamble';snapRun('gamble');showGamble();}
+function resumeGamble(){if(infN===GAMBLE_AT&&gambleOK()){buildArena();updatePips();startGamble();}else toNext();}
+function showGamble(){
+  icons.length=0;const n=relCount();
+  $('ptitle').textContent='🎲 ¡Apuesta! Juégate tus '+n+' reliquias para conseguir 1 más';
+  const box=$('cards');box.innerHTML='';box.classList.remove('tgt');
+  const mk=(e,nm,ds,fn,cls)=>{const d=document.createElement('div');d.className='card '+cls;d.innerHTML='<div class="em" style="height:clamp(54px,11vh,92px);display:grid;place-items:center;font-size:clamp(38px,9vw,60px)">'+e+'</div><div class="nm">'+nm+'</div><div class="ds">'+ds+'</div>';d.onclick=fn;box.appendChild(d);};
+  mk('🎲','Apostar','50%: ganas 1 reliquia al azar ('+(n+1)+' en total)<br>50%: pierdes las '+n+' que tienes',betRelics,'up');
+  mk('✋','Quedármelas','Sigues con tus '+n+' reliquias y continúas la partida',()=>{if(st!=='gamble')return;ensureAudio();snd.click();$('panel').classList.remove('on');toNext();},'');
+  $('panel').classList.add('on');
+}
+function betRelics(){
+  if(st!=='gamble')return;
+  ensureAudio();snd.click();st='gambling';
+  const n=relCount(),win=Math.random()<0.5;let got=null;
+  /* el resultado se decide y se guarda ya, para que recargar la página no sirva de nada */
+  if(win){
+    const av=Object.keys(REL).filter(k=>rl(k)<REL[k].max);got=av[(Math.random()*av.length)|0];
+    RL[got]=rl(got)+1;ST.rl++;if(got==='chick')team.push(newMember(false));
+  }else{
+    for(let i=rl('chick');i>0;i--){const j=team.map(m=>m.hero).lastIndexOf(false);if(j>=0)team.splice(j,1);}
+    RL={};
+  }
+  achCheck();saveStats();snapRun('gamble');updateRosters();
+  icons.length=0;$('ptitle').textContent='🎲 Lanzando...';
+  const box=$('cards');box.innerHTML='<div style="font-size:clamp(54px,14vw,96px);line-height:1.1" id="dice">🎲</div>';
+  const faces=Object.keys(REL).map(k=>REL[k].e);let f=0;
+  const iv=setInterval(()=>{const d=$('dice');if(d)d.textContent=f++%2?'🎲':faces[(Math.random()*faces.length)|0];tone(300+Math.random()*500,500,0.05,'square',0.03);},110);
+  const runId0=runId;
+  later(()=>{
+    clearInterval(iv);if(runId!==runId0)return;
+    st='gambleres';
+    if(win){
+      snd.win();banner('¡GANASTE!','#7bed9f');
+      panelButton('🎉 ¡Has ganado '+REL[got].e+' '+REL[got].n+'!  Ahora tienes '+relCount()+' reliquias',gambleOK()?'Seguir ▶':'Continuar ▶',()=>{if(gambleOK()){st='gamble';snapRun('gamble');showGamble();}else toNext();});
+    }else{
+      snd.lose();banner('¡LO PERDISTE TODO!','#ff6b6b');
+      panelButton('💥 Has perdido tus '+n+' reliquias','Continuar ▶',toNext);
+    }
+  },1700);
 }
 function showRelics(ids){
   icons.length=0;
@@ -46,5 +93,5 @@ function pickRelic(id){
   toast('🏺 '+REL[id].e+' '+REL[id].n+(RL[id]>1?' ×'+RL[id]:''));
   achCheck();saveStats();
   $('panel').classList.remove('on');icons.length=0;
-  infN++;prize=2;picksLeft=2;nextInfRound();
+  afterBoss();
 }

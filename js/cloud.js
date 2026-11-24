@@ -45,7 +45,8 @@ function resumeRun(){
   hideScreens();$('rosL').style.display=$('rosR').style.display='';
   TH=THEMES[(((infN-1)/5)|0)%5];bteam=genInfEnemy(infN);
   const ro=Array.isArray(s.ro)?s.ro.filter(k=>REL[k]&&rl(k)<REL[k].max):[];
-  if(s.ph==='relic'&&ro.length){buildArena();updatePips();startRelic(ro);}
+  if(s.ph==='gamble'){resumeGamble();}
+  else if(s.ph==='relic'&&ro.length){buildArena();updatePips();startRelic(ro);}
   else if(s.ph==='won'||s.ph==='relic'){st='rounddone';buildArena();updatePips();winPanel();}
   else if(s.ph==='fight'){st='intro';buildArena();updatePips();banner('RONDA '+infN,'#ffe08a');later(()=>{if(st==='intro')startFight();},1500);}
   else{offers=genUpgrades();st='choose';buildArena();if(needSpec())showSpecPick();else showCards();updatePips();banner(infN%10===0?'👹 ¡JEFE! RONDA '+infN:'RONDA '+infN,infN%10===0?'#ff6b6b':'#ffe08a');}
