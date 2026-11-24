@@ -5,12 +5,16 @@ function turnTo(a,b,k){let d=b-a;while(d>Math.PI)d-=6.2832;while(d<-Math.PI)d+=6
 function hurt(src,t,dmg,o){
   if(t.dying||t.dead||t.invuln>0)return;
   o=o||{};
+  const qt=o.burn||o.quiet;
+  if(!qt&&t.sk&&t.sk.dodge&&Math.random()<t.sk.dodge){floater(t.x,t.top+0.5,t.z,'¡ESQUIVA!','#b7f0ff');return;}
   dmg*=t.dmgMul||1;
+  if(src&&src.sk&&src.sk.ashes&&t.burn)dmg*=1+0.25*src.sk.ashes;
   t.hp-=dmg;t.flash=0.18;
+  if(t.sk&&t.sk.thorns&&src&&src!==t&&!src.dying&&!qt&&!o.thorn&&!o.laser&&!o.egg)hurt(t,src,dmg*0.18*t.sk.thorns,{quiet:true,thorn:true});
   if(src&&src.vamp&&src.hp>0)src.hp=Math.min(src.max,src.hp+dmg*src.vamp);
   const big=dmg>t.max*0.25||dmg>25||o.crit;
-  floater(t.x+(Math.random()-0.5)*0.5,t.top+0.2,t.z,Math.round(dmg)+'',o.crit?'#ffd24a':o.burn?'#ff9a3d':o.laser?'#ff7be0':big?'#ff7b3d':'#fff');
-  if(!o.burn){
+  if(!o.quiet)floater(t.x+(Math.random()-0.5)*0.5,t.top+0.2,t.z,Math.round(dmg)+'',o.crit?'#ffd24a':o.burn?'#ff9a3d':o.laser?'#ff7be0':big?'#ff7b3d':'#fff');
+  if(!qt){
     burst(t.x,t.top*0.6,t.z,big?10:5,t.robot?['#ffb83d','#fff3a0']:['#fff3a0','#ffffff','#ffd24a'],3.2,0.09,0.4);
     snd.hit(big);shake=Math.min(0.5,shake+(big?0.22:0.04));
   }
@@ -30,6 +34,8 @@ function hurt(src,t,dmg,o){
       return;
     }
     t.hp=0;t.dying=true;t.dieT=0;t.state='die';
+    if(src&&src.sk&&src.sk.lust&&src.hp>0)src.hp=Math.min(src.max,src.hp+src.max*0.12*src.sk.lust);
+    if(t.burn&&t.burn.sp){const r=2.4+0.8*(t.burn.spl||1);units.forEach(e=>{if(e.side===t.side&&e!==t&&!e.dying&&!e.dead&&Math.hypot(e.x-t.x,e.z-t.z)<r+e.size*0.3){e.burn={t:3,dps:t.burn.dps,tick:0.5,sp:true,spl:t.burn.spl};}});fx.push({k:'ring',x:t.x,z:t.z,r:r,t:0,max:0.4,c:'255,120,30'});}
     if(t.side===1&&mode==='inf'&&!simming){ST.k++;ST.kb[t.key]=(ST.kb[t.key]||0)+1;achCheck();}
     puff(t.x,t.z,8,0.5);burst(t.x,t.top*0.5,t.z,14,['#ffd24a','#ff6b6b','#fff'],4.5,0.11,0.7);
     floater(t.x,t.top+0.8,t.z,'¡KO!','#ffd24a');snd.ko();shake=Math.min(0.6,shake+0.3);
@@ -40,8 +46,11 @@ function strike(u,t){
   if(u.crit&&Math.random()<u.crit){dmg*=3;crit=true;burst(t.x,t.top*0.7,t.z,14,['#ffd700','#fff3a0','#ffffff'],4,0.1,0.6);}
   const dx=t.x-u.x,dz=t.z-u.z,d=Math.hypot(dx,dz)||1,k=Math.min(5,2+dmg/t.max*10);
   t.kx+=dx/d*k;t.kz+=dz/d*k;
+  if(u.buf>0)dmg*=u.bufMul;
   hurt(u,t,dmg,{crit});
-  if(u.fireDps&&!t.dying)t.burn={t:3,dps:u.fireDps,tick:0.5};
+  const sk=u.sk;
+  if(sk&&sk.cleave)units.forEach(e=>{if(e.side!==u.side&&e!==t&&!e.dying&&!e.dead&&Math.hypot(e.x-t.x,e.z-t.z)<2+e.size*0.3)hurt(u,e,dmg*0.25*sk.cleave,{quiet:true});});
+  if(u.fireDps&&!t.dying)t.burn={t:3+(sk?0.5*sk.ember:0),dps:u.fireDps*(1+(sk?0.4*sk.ember:0)),tick:0.5,sp:!!(sk&&sk.spread),spl:sk?sk.spread:0};
 }
 function explodeEgg(f){
   burst(f.x1,0.6,f.z1,26,['#fff3a0','#ffb83d','#ffffff','#ff7b3d'],6,0.14,0.7);puff(f.x1,f.z1,10,0.6);
@@ -80,7 +89,7 @@ function heroAbilities(u,alive,dt){
       fx.push({k:'ring',x:u.x,z:u.z,r:ab.storm.rad,t:0,max:0.5,c:'255,255,255'});
       for(let i=0;i<30;i++){const a=i/30*6.28;parts.push({x:u.x,y:0.6,z:u.z,vx:Math.cos(a)*6,vy:1.5,vz:Math.sin(a)*6,life:0.5,max:0.5,c:i%2?'#ffffff':'#d9ceff',s:0.1,k:'s'});}
       snd.laser();
-      en.forEach(e=>{if(Math.hypot(e.x-u.x,e.z-u.z)<ab.storm.rad+e.size*0.4)hurt(u,e,ab.storm.dmg,{});});
+      en.forEach(e=>{if(Math.hypot(e.x-u.x,e.z-u.z)<ab.storm.rad+e.size*0.4){hurt(u,e,ab.storm.dmg,{});if(u.sk&&u.sk.cyclone){const dx=e.x-u.x,dz=e.z-u.z,d=Math.hypot(dx,dz)||1;e.kx+=dx/d*3*u.sk.cyclone;e.kz+=dz/d*3*u.sk.cyclone;}}});
     }
   }
 }
@@ -96,7 +105,8 @@ function stepFight(dt){
       if(u.burn.t<=0)u.burn=null;
       if(u.dying)continue;
     }
-    if(u.hero&&u.ab)heroAbilities(u,alive,dt);
+    if(u.buf>0)u.buf-=dt;
+    if(u.hero&&u.ab){heroAbilities(u,alive,dt);specAbilities(u,alive,dt);}
     if(u.kx||u.kz){u.x+=u.kx*dt;u.z+=u.kz*dt;const d=Math.exp(-dt*7);u.kx*=d;u.kz*=d;}
     let t=u.tgt;
     if(!t||t.dying||t.dead){t=null;let bd=1e9;for(const e of alive){if(e.side===u.side||e.dying)continue;const d=(e.x-u.x)**2+(e.z-u.z)**2;if(d<bd){bd=d;t=e;}}u.tgt=t;}
@@ -105,7 +115,7 @@ function stepFight(dt){
     if(u.state==='attack'){
       u.atkT+=dt;u.yaw=turnTo(u.yaw,Math.atan2(-dz,dx),dt*14);
       if(!u.hit&&u.atkT>=0.38){u.hit=true;if(!t.dying)strike(u,t);}
-      if(u.atkT>=0.6){u.state='idle';u.cd=u.rate*(0.85+Math.random()*0.3);}
+      if(u.atkT>=0.6){u.state='idle';u.cd=u.rate*(0.85+Math.random()*0.3)/specHaste(u);}
       continue;
     }
     u.cd-=dt;
