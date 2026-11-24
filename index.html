@@ -676,7 +676,7 @@ function applyTo(m,k){
   if(k==='flock'){team.push(newMember(false),newMember(false));}
 }
 function memberName(m){
-  if(m.hero)return 'Tu gallina';
+  if(m.hero)return CNAME||'Tu gallina';
   let i=0;for(const e of team){if(!e.hero){i++;if(e===m)break;}}
   return 'Pollito '+i;
 }
@@ -790,7 +790,8 @@ function closeDrawer(){drawerOpen=false;$('drawer').classList.remove('open');}
 function closeStats(){closeDrawer();}
 
 /* ============ nivel de cuenta ============ */
-let XP=0,SKIN='classic',UID='guest',runXP0=0;
+let XP=0,SKIN='classic',UID='guest',runXP0=0,CNAME='';
+const cleanName=v=>String(v||'').replace(/[<>&"'`\\]/g,'').replace(/\s+/g,' ').slice(0,12).trim();
 const lvNeed=L=>Math.round(4+1.5*L+0.12*L*L);
 function lvInfo(xp){let L=1;xp=Math.max(0,Math.floor(+xp||0));while(xp>=lvNeed(L)){xp-=lvNeed(L);L++;}return{L,cur:xp,need:lvNeed(L)};}
 const lvOf=xp=>lvInfo(xp).L;
@@ -799,13 +800,13 @@ function titleOf(L){let t=TITLES[0][1];TITLES.forEach(a=>{if(L>=a[0])t=a[1];});r
 function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
 function loadProfile(uid,data){
-  UID=uid;const lx=Math.floor(+lsGet('asadero_xp_'+uid)||0),cx=Math.floor(+(data&&data.xp)||0);
+  UID=uid;CNAME=cleanName(lsGet('asadero_name_'+uid));const lx=Math.floor(+lsGet('asadero_xp_'+uid)||0),cx=Math.floor(+(data&&data.xp)||0);
   XP=Math.max(lx,cx);
   const sk=(data&&data.skin)||lsGet('asadero_skin_'+uid)||'classic',L=lvOf(XP);
   SKIN=SKINS.some(x=>x.id===sk&&L>=x.lvl)?sk:'classic';
 }
 function saveProfile(){
-  lsSet('asadero_xp_'+UID,XP);lsSet('asadero_skin_'+UID,SKIN);
+  lsSet('asadero_xp_'+UID,XP);lsSet('asadero_skin_'+UID,SKIN);lsSet('asadero_name_'+UID,CNAME);
   if(!ONLINE||!fbAuth.currentUser||BEST<1)return;
   fbDb.collection('ranking').doc(fbAuth.currentUser.uid).update({xp:XP,skin:SKIN}).catch(e=>console.warn('Perfil no guardado en la nube',e&&e.code));
 }
@@ -845,7 +846,8 @@ function profHTML(){
 function showProfile(){
   hideScreens();closeStats();
   const L=lvOf(XP),nx=SKINS.find(x=>x.lvl>L);
-  setModal('<div class="big">👤</div><h1>Tu perfil</h1>'+profHTML()+'<p style="margin-bottom:8px">Cada ronda que superas = <b>1 XP</b>.'+(nx?'<br>Próxima skin: <b>'+nx.n+'</b> (nivel '+nx.lvl+')':'<br>¡Tienes todas las skins!')+'</p><div class="skg" id="skg"></div>',[{t:'Volver',cls:'alt',f:showMenu}]);
+  setModal('<div class="big">👤</div><h1>Tu perfil</h1>'+profHTML()+'<p style="margin-bottom:8px">Cada ronda que superas = <b>1 XP</b>.'+(nx?'<br>Próxima skin: <b>'+nx.n+'</b> (nivel '+nx.lvl+')':'<br>¡Tienes todas las skins!')+'</p><input class="inp" id="cname" maxlength="12" placeholder="Ponle nombre a tu pollo" autocomplete="off" spellcheck="false" value="'+CNAME+'" style="margin-bottom:10px"><div class="skg" id="skg"></div>',[{t:'Volver',cls:'alt',f:showMenu}]);
+  $('cname').oninput=e=>{CNAME=cleanName(e.target.value);lsSet('asadero_name_'+UID,CNAME);};
   const box=$('skg');
   SKINS.forEach(sk=>{
     const ok=L>=sk.lvl,d=document.createElement('div');
@@ -1362,7 +1364,7 @@ function render(){
   for(const u of units){
     if(u.dying||u.dead||u.spawnT<1)continue;
     if(fp&&u.hero)continue;
-    const mk=u.hero?'⭐':u.boss?'👹':'';if(mk){const q=proj(u.x,u.top+0.85+u.y,u.z);if(q){const fs=Math.max(14,Math.min(30,F/q[2]*0.5));ctx.font='900 '+fs+'px sans-serif';ctx.lineWidth=4;ctx.strokeStyle='#1b1330';ctx.strokeText(mk,q[0],q[1]-26);ctx.fillStyle='#ffd24a';ctx.fillText(mk,q[0],q[1]-26);}}
+    const mk=u.hero?(CNAME||'⭐'):u.boss?'👹':'';if(mk){const q=proj(u.x,u.top+0.85+u.y,u.z);if(q){const fs=Math.max(14,Math.min(30,F/q[2]*0.5));ctx.font='900 '+fs+'px sans-serif';ctx.lineWidth=4;ctx.strokeStyle='#1b1330';ctx.strokeText(mk,q[0],q[1]-26);ctx.fillStyle='#ffd24a';ctx.fillText(mk,q[0],q[1]-26);}}
     const q=proj(u.x,u.top+0.3+u.y,u.z);if(!q)continue;
     bars.push({u,x:q[0],y:q[1],d:q[2],w:Math.max(36,Math.min(86,u.size*1.0*F/q[2]))});
   }
