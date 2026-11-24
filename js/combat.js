@@ -8,6 +8,7 @@ function hurt(src,t,dmg,o){
   const qt=o.burn||o.quiet;
   if(!qt&&t.sk&&t.sk.dodge&&Math.random()<t.sk.dodge){floater(t.x,t.top+0.5,t.z,'¡ESQUIVA!','#b7f0ff');if(t.sk.ult&&t.sk.ult.mist)t.hp=Math.min(t.max,t.hp+t.max*0.05);return;}
   dmg*=t.dmgMul||1;
+  if(t.curse)dmg*=1+t.curse.mul;
   if(src&&src.sk&&src.sk.ashes&&t.burn)dmg*=1+0.25*src.sk.ashes+(src.sk.ult&&src.sk.ult.ashes?0.5:0);
   t.hp-=dmg;t.flash=0.18;
   if(t.sk&&t.sk.thorns&&src&&src!==t&&!src.dying&&!qt&&!o.thorn&&!o.laser&&!o.egg)hurt(t,src,dmg*0.18*t.sk.thorns*(t.sk.ult&&t.sk.ult.thorns?2:1),{quiet:true,thorn:true});
@@ -34,6 +35,9 @@ function hurt(src,t,dmg,o){
       return;
     }
     t.hp=0;t.dying=true;t.dieT=0;t.state='die';
+    if(t.side===0&&!t.hero&&!t.expire)allyDied(t);
+    if(t.curse&&t.curse.jump){const nx=units.filter(e=>e.side===t.side&&e!==t&&!e.dying&&!e.dead&&!e.curse).sort((a,b)=>Math.hypot(a.x-t.x,a.z-t.z)-Math.hypot(b.x-t.x,b.z-t.z))[0];
+      if(nx){nx.curse={t:5,mul:t.curse.mul,dps:t.curse.dps,jump:true,by:t.curse.by,tk:0.5};fx.push({k:'laser',x1:t.x,y1:t.top*0.55,z1:t.z,x2:nx.x,y2:nx.top*0.55,z2:nx.z,t:0,max:0.32,c1:'168,85,247',c2:'230,190,255'});floater(nx.x,nx.top+0.9,nx.z,'¡MALDITO!','#c77dff');}}
     if(src&&src.sk&&src.sk.lust&&src.hp>0){const ul=src.sk.ult&&src.sk.ult.lust;src.hp=Math.min(src.max,src.hp+src.max*0.12*src.sk.lust*(ul?2:1));if(ul){src.buf=3;src.bufMul=1.3;}}
     const ab=(src&&src.sk&&src.sk.ult&&src.sk.ult.ashes)?src:(t.burn&&t.burn.by&&t.burn.by.sk&&t.burn.by.sk.ult&&t.burn.by.sk.ult.ashes&&!t.burn.by.dying?t.burn.by:null);
     if(t.burn&&ab){fx.push({k:'ring',x:t.x,z:t.z,r:2.2,t:0,max:0.4,c:'255,120,30'});burst(t.x,t.top*0.5,t.z,18,['#ff5a1a','#ffb83d','#ffe36a'],5,0.12,0.6);units.forEach(e=>{if(e.side===t.side&&e!==t&&!e.dying&&!e.dead&&Math.hypot(e.x-t.x,e.z-t.z)<2.2+e.size*0.3)hurt(ab,e,ab.atk*1.2,{egg:true});});}
@@ -50,6 +54,7 @@ function strike(u,t){
   t.kx+=dx/d*k;t.kz+=dz/d*k;
   if(u.buf>0)dmg*=u.bufMul;
   const sk=u.sk,UL=(sk&&sk.ult)||{};
+  if(u.pact&&sk&&sk.pact)dmg*=1+u.pact*sk.pact.dmg;
   if(UL.rage&&u.hp<u.max*0.35)dmg*=1.5;
   hurt(u,t,dmg,{crit});
   if(sk&&sk.cleave){const cr=UL.cleave?3.6:2;if(UL.cleave)fx.push({k:'ring',x:t.x,z:t.z,r:cr,t:0,max:0.3,c:'255,123,61'});units.forEach(e=>{if(e.side!==u.side&&e!==t&&!e.dying&&!e.dead&&Math.hypot(e.x-t.x,e.z-t.z)<cr+e.size*0.3)hurt(u,e,dmg*0.25*sk.cleave*(UL.cleave?1.5:1),{quiet:true});});}
@@ -112,6 +117,18 @@ function stepFight(dt){
       if(u.dying)continue;
     }
     if(u.buf>0)u.buf-=dt;
+    if(u.curse){
+      const c=u.curse;c.t-=dt;
+      if(!simming&&Math.random()<dt*7)parts.push({x:u.x+(Math.random()-0.5)*u.size*0.6,y:u.top*(0.3+Math.random()*0.6),z:u.z+(Math.random()-0.5)*u.size*0.6,vx:0,vy:1.4,vz:0,life:0.6,max:0.6,c:'#a855f7',s:0.07,k:'p'});
+      if(c.dps){c.tk-=dt;if(c.tk<=0){c.tk=0.5;hurt(c.by,u,c.dps*0.5,{burn:true});}}
+      if(c.t<=0)u.curse=null;
+      if(u.dying)continue;
+    }
+    if(u.spirit){
+      u.life-=dt;
+      if(!simming&&Math.random()<dt*10)parts.push({x:u.x+(Math.random()-0.5)*0.5,y:u.top*0.5,z:u.z+(Math.random()-0.5)*0.5,vx:0,vy:1.2,vz:0,life:0.5,max:0.5,c:'#c9a4ff',s:0.06,k:'p'});
+      if(u.life<=0){u.expire=true;u.hp=0;u.dying=true;u.dieT=0;u.state='die';fx.push({k:'ring',x:u.x,z:u.z,r:0.9,t:0,max:0.3,c:'200,160,255'});if(!simming)burst(u.x,u.top*0.5,u.z,10,['#c9a4ff','#ffffff'],3,0.08,0.5);continue;}
+    }
     if(u.hero&&u.ab){heroAbilities(u,alive,dt);specAbilities(u,alive,dt);}
     if(u.kx||u.kz){u.x+=u.kx*dt;u.z+=u.kz*dt;const d=Math.exp(-dt*7);u.kx*=d;u.kz*=d;}
     let t=u.tgt;
@@ -142,7 +159,7 @@ function stepFight(dt){
   }
   for(const u of al2){u.x=Math.max(-9.6,Math.min(9.6,u.x));u.z=Math.max(-5.6,Math.min(5.6,u.z));}
   fightT+=dt;
-  const pl=units.filter(u=>u.side===0&&!u.dying),bl=units.filter(u=>u.side===1&&!u.dying);
+  const pl=units.filter(u=>u.side===0&&!u.dying&&!u.spirit),bl=units.filter(u=>u.side===1&&!u.dying);
   if(!fightEnd&&(!pl.length||!bl.length||(simming&&fightT>60))){
     let pw=pl.length>0&&(bl.length===0||pl.reduce((s,u)=>s+u.hp,0)>=bl.reduce((s,u)=>s+u.hp,0));
     if(!pl.length)pw=false;
