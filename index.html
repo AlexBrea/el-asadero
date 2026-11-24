@@ -120,6 +120,11 @@ html,body{touch-action:manipulation}
   .ic{height:46px}
   .card .ds{display:none}
 }
+#fpv{position:fixed;right:calc(12px + env(safe-area-inset-right));bottom:calc(14px + env(safe-area-inset-bottom));width:60px;height:60px;border-radius:50%;z-index:4;background:linear-gradient(#6fd3ff,#2d8fe0);color:#0b2342;border:3px solid #fff7;font-size:28px;line-height:1;cursor:pointer;box-shadow:0 4px 0 #145a9a;font-family:inherit}
+#fpv:active{transform:translateY(3px);box-shadow:0 1px 0 #145a9a}
+#fpv.on{background:linear-gradient(#ffd24a,#ff9d1e);box-shadow:0 4px 0 #a35b00}
+#panel.on ~ #fpv,#modal:not(.off) ~ #fpv{display:none}
+#fpv.hide{display:none}
 </style>
 </head>
 <body>
@@ -145,6 +150,7 @@ html,body{touch-action:manipulation}
 <div id="banner"></div>
 <div id="panel"><div id="ptitle"></div><div id="cards"></div></div>
 <div id="modal"><div class="box" id="mbox"></div></div>
+<button id="fpv" class="hide" aria-label="Vista en primera persona">👁️</button>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
@@ -156,7 +162,7 @@ html,body{touch-action:manipulation}
 const cv=document.getElementById('c'),ctx=cv.getContext('2d');
 let W=0,H=0,DPR=1,F=800,FB=800,PORT=false,YF=0.42;
 const CAM={y:7,z:14.5,pitch:0.45};
-let camTx=0,zoom=1,CX=0,CYc=7,CZ=14.5,cyw=1,syw=0,cpt=Math.cos(CAM.pitch),spt=Math.sin(CAM.pitch),shake=0;
+let fp=false,fpYaw=0,camTx=0,zoom=1,CX=0,CYc=7,CZ=14.5,cyw=1,syw=0,cpt=Math.cos(CAM.pitch),spt=Math.sin(CAM.pitch),shake=0;
 function resize(){
   DPR=Math.min(2,window.devicePixelRatio||1);W=window.innerWidth;H=window.innerHeight;cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);ctx.setTransform(DPR,0,0,DPR,0,0);
   PORT=W<H*0.85; /* móvil en vertical: arena girada, equipos arriba/abajo */
@@ -167,6 +173,17 @@ function resize(){
 window.addEventListener('resize',resize);resize();
 function setCam(T){
   const sx=(Math.random()-.5)*shake,sy=(Math.random()-.5)*shake,sw=Math.sin(T*0.22)*1.5+sx;
+  const hero=fp?units.find(u=>u.hero&&!u.dead):null;
+  if(hero){ /* primera persona: ojos de la gallina de la estrella */
+    fpYaw=turnTo(fpYaw,hero.yaw,0.3);
+    const dx=Math.cos(fpYaw),dz=-Math.sin(fpYaw),bob=hero.state==='walk'?Math.sin(hero.gait*16)*0.05:0;
+    CX=hero.x+dx*0.05+sx*0.3;CZ=hero.z+dz*0.05+sx*0.3;CYc=hero.top*1.05+hero.y+bob+sy*0.3;
+    const yw=Math.atan2(-dx,-dz);cyw=Math.cos(yw);syw=Math.sin(yw);
+    cpt=Math.cos(0.2);spt=Math.sin(0.2);YF=0.5;
+    F=(PORT?W*0.75:Math.min(W*0.5,H*1.1))*zoom;
+    return;
+  }
+  cpt=Math.cos(CAM.pitch);spt=Math.sin(CAM.pitch);YF=PORT?0.64:0.56;
   F=FB*zoom;CYc=CAM.y+sy;
   if(PORT){CX=-CAM.z+camTx;CZ=sw;}else{CX=camTx+sw;CZ=CAM.z;}
   const yw=Math.atan2(CX-camTx,CZ);cyw=Math.cos(yw);syw=Math.sin(yw);
@@ -1115,6 +1132,8 @@ function calibInf(policy){
 /* ============ bucle ============ */
 function update(dt){
   try{musicTick();}catch(e){}
+  fpBtn.classList.toggle('hide',mode!=='inf');
+  if(fp&&mode!=='inf')setFp(false);
   if(drawerOpen&&statsShown){statsT-=dt;if(statsT<=0){statsT=0.5;refreshStats();}}
   runTimers(dt);
   const sdt=dt*speed;
@@ -1141,6 +1160,7 @@ function render(){
   drawSky();drawFloor();
   for(const u of units){
     if(u.alpha<=0.01)continue;
+    if(fp&&u.hero)continue;
     const p=proj(u.x,0.02,u.z);if(!p)continue;
     const rx=u.size*0.55*F/p[2],k=1-Math.min(1,u.y/6);
     ctx.fillStyle='rgba(20,10,40,'+(0.35*k*u.alpha)+')';
@@ -1155,7 +1175,7 @@ function render(){
   }
   const faces=[];
   for(const d of decor)entFaces(d,faces);
-  for(const u of units)entFaces(u,faces);
+  for(const u of units){if(fp&&u.hero)continue;entFaces(u,faces);}
   faces.sort((a,b)=>b.d-a.d);
   drawFaces(ctx,faces);
   // proyectiles y rayos
@@ -1183,6 +1203,7 @@ function render(){
   const bars=[];
   for(const u of units){
     if(u.dying||u.dead||u.spawnT<1)continue;
+    if(fp&&u.hero)continue;
     const mk=u.hero?'⭐':u.boss?'👹':'';if(mk){const q=proj(u.x,u.top+0.85+u.y,u.z);if(q){const fs=Math.max(14,Math.min(30,F/q[2]*0.5));ctx.font='900 '+fs+'px sans-serif';ctx.lineWidth=4;ctx.strokeStyle='#1b1330';ctx.strokeText(mk,q[0],q[1]-26);ctx.fillStyle='#ffd24a';ctx.fillText(mk,q[0],q[1]-26);}}
     const q=proj(u.x,u.top+0.3+u.y,u.z);if(!q)continue;
     bars.push({u,x:q[0],y:q[1],d:q[2],w:Math.max(36,Math.min(86,u.size*1.0*F/q[2]))});
@@ -1227,6 +1248,9 @@ try{
 $('spd').onclick=()=>{speed=speed===1?2:speed===2?3:1;$('spd').textContent='⏩ x'+speed;};
 const toggleSnd=()=>{muted=!muted;refreshDrawer();};
 const toggleMus=()=>{ensureAudio();musicOn=!musicOn;refreshDrawer();};
+const fpBtn=$('fpv');
+function setFp(v){fp=v;fpBtn.classList.toggle('on',fp);fpBtn.textContent=fp?'\u{1F414}':'\u{1F441}️';fpBtn.setAttribute('aria-label',fp?'Volver a la vista general':'Vista en primera persona');if(fp){const h=units.find(u=>u.hero);if(h)fpYaw=h.yaw;}}
+fpBtn.onclick=()=>{ensureAudio();snd.click();setFp(!fp);};
 $('menu').onclick=()=>{ensureAudio();drawerOpen?closeDrawer():openDrawer();};
 $('dclose').onclick=closeDrawer;
 $('d-stats').onclick=()=>{statsShown=!statsShown;$('dstats').classList.toggle('on',statsShown);$('d-stats').querySelector('.ar').textContent=statsShown?'▴':'▾';refreshStats();};
