@@ -57,22 +57,37 @@ function betRelics(){
     RL={};
   }
   achCheck();saveStats();snapRun('gamble');updateRosters();
-  icons.length=0;$('ptitle').textContent='🎲 Lanzando...';
-  const box=$('cards');box.innerHTML='<div style="font-size:clamp(54px,14vw,96px);line-height:1.1" id="dice">🎲</div>';
-  const faces=Object.keys(REL).map(k=>REL[k].e);let f=0;
-  const iv=setInterval(()=>{const d=$('dice');if(d)d.textContent=f++%2?'🎲':faces[(Math.random()*faces.length)|0];tone(300+Math.random()*500,500,0.05,'square',0.03);},110);
+  icons.length=0;$('ptitle').textContent='🎰 ¡Gira la ruleta! Verde = ganas · Rojo = lo pierdes todo';
+  /* ruleta: 10 sectores que alternan verde/rojo (50% cada color); el puntero está arriba */
+  const N=10,sg=360/N,box=$('cards');box.classList.remove('tgt');
+  const seg=[];for(let i=0;i<N;i++)if((i%2===0)===win)seg.push(i);
+  const idx=seg[(Math.random()*seg.length)|0],off=sg*(0.18+Math.random()*0.64),turns=5+((Math.random()*2)|0);
+  const R=360*turns-(idx*sg+off);
+  let paths='';
+  for(let i=0;i<N;i++){
+    const a0=(i*sg-90)*Math.PI/180,a1=((i+1)*sg-90)*Math.PI/180,am=((i+0.5)*sg-90)*Math.PI/180,r=100;
+    paths+='<path d="M0 0 L'+(r*Math.cos(a0)).toFixed(2)+' '+(r*Math.sin(a0)).toFixed(2)+' A'+r+' '+r+' 0 0 1 '+(r*Math.cos(a1)).toFixed(2)+' '+(r*Math.sin(a1)).toFixed(2)+'Z" fill="'+(i%2===0?'#2fbf5a':'#e0414f')+'" stroke="#1b1330" stroke-width="2.5"/>';
+  }
+  box.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div id="wheelw" style="position:relative;width:min(36vh,230px);height:min(36vh,230px)">'
+    +'<svg id="wheel" viewBox="-104 -104 208 208" style="width:100%;height:100%;transform:rotate(0deg);filter:drop-shadow(0 5px 6px #0009)">'+paths+'<circle r="14" fill="#ffd24a" stroke="#1b1330" stroke-width="3"/></svg>'
+    +'<svg viewBox="-104 -104 208 208" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"><path d="M-9 -110 L9 -110 L0 -88Z" fill="#ffd24a" stroke="#1b1330" stroke-width="3" stroke-linejoin="round"/></svg></div><div id="wres" style="min-height:48px"></div></div>';
+  const wh=$('wheel');void wh.getBoundingClientRect();
+  wh.style.transition='transform 3.4s cubic-bezier(.12,.62,.08,1)';wh.style.transform='rotate('+R+'deg)';
+  let lastK=-1;
+  const iv=setInterval(()=>{const w=$('wheel');if(!w)return;const m=getComputedStyle(w).transform.match(/matrix\(([^)]+)\)/);if(!m)return;const v=m[1].split(',').map(Number),ang=((Math.atan2(v[1],v[0])*180/Math.PI)%360+360)%360,k=Math.floor((((360-ang)%360))/sg);if(k!==lastK){lastK=k;tone(700+(k%2)*160,600,0.04,'square',0.04);}},40);
   const runId0=runId;
   later(()=>{
     clearInterval(iv);if(runId!==runId0)return;
     st='gambleres';
+    const done=(title,label,fn,bn,col)=>{banner(bn,col);$('ptitle').textContent=title;const b=document.createElement('button');b.className='btn';b.textContent=label;b.onclick=()=>{ensureAudio();snd.click();$('panel').classList.remove('on');fn();};const r=$('wres');if(r)r.appendChild(b);};
     if(win){
-      snd.win();banner('¡GANASTE!','#7bed9f');
-      panelButton('🎉 ¡Has ganado '+REL[got].e+' '+REL[got].n+'!  Ahora tienes '+relCount()+' reliquias',gambleOK()?'Seguir ▶':'Continuar ▶',()=>{if(gambleOK()){st='gamble';snapRun('gamble');showGamble();}else toNext();});
+      snd.win();
+      done('🎉 ¡Has ganado '+REL[got].e+' '+REL[got].n+'!  Ahora tienes '+relCount()+' reliquias',gambleOK()?'Seguir ▶':'Continuar ▶',()=>{if(gambleOK()){st='gamble';snapRun('gamble');$('panel').classList.add('on');showGamble();}else toNext();},'¡VERDE!','#7bed9f');
     }else{
-      snd.lose();banner('¡LO PERDISTE TODO!','#ff6b6b');
-      panelButton('💥 Has perdido tus '+n+' reliquias','Continuar ▶',toNext);
+      snd.lose();
+      done('💥 Has perdido tus '+n+' reliquias','Continuar ▶',toNext,'¡ROJO!','#ff6b6b');
     }
-  },1700);
+  },3600);
 }
 function showRelics(ids){
   icons.length=0;
