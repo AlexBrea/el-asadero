@@ -47,6 +47,7 @@ function render(){
   const faces=[];
   for(const d of decor)entFaces(d,faces);
   for(const u of units){if(fp&&u.hero)continue;entFaces(u,faces);}
+  for(const f of fx)if(f.k==='bat')entFaces(batEnt(f),faces);
   faces.sort((a,b)=>b.d-a.d);
   drawFaces(ctx,faces);
   // proyectiles y rayos

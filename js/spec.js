@@ -1,6 +1,6 @@
 'use strict';
 /* spec.js — Ramas de evolución de la gallina: especializaciones y sus habilidades exclusivas */
-const SPEC_ROUND=5;
+const SPEC_ROUND=5,SPEC_OFFER=2;
 const SPECS={
  war:{n:'Guerrera',col:'#ff7b3d',d:'Cuerpo a cuerpo: +65% de vida, +30% de daño y empieza con plumas de acero (menos daño recibido).',hp:1.65,atk:1.3,dmg:0.85,spd:1,vamp:0,cd:1,dodge:0,
    start:['armor'],allow:['power','vit','armor','speed','gold','fire'],up:['rage','cleave','warcry','thorns']},
@@ -23,7 +23,7 @@ const SUPG={
  mega:{sp:'art',n:'Mega huevo',max:4,d:'Cada pocos segundos lanza un huevo gigante devastador',v:l=>'radio '+f1(4+0.3*l)+' · cada '+f1(Math.max(5,12-1.3*l))+' s'},
  overclock:{sp:'art',n:'Recarga turbo',max:4,d:'Todas tus habilidades se recargan más rápido',v:l=>'recarga -'+10*l+'%'},
  drain:{sp:'vam',n:'Aura de sangre',max:4,d:'Un aura roja daña a los enemigos cercanos y te cura',v:l=>'radio '+f1(3+0.15*l)+' · daño continuo'},
- bats:{sp:'vam',n:'Murciélagos',max:4,d:'Envía murciélagos que muerden a enemigos lejanos',v:l=>(2+l)+' mordiscos cada '+f1(Math.max(3,6.5-0.6*l))+' s'},
+ bats:{sp:'vam',n:'Murciélagos',max:4,d:'Envía murciélagos que vuelan hasta los enemigos y los muerden',v:l=>(2+l)+' murciélagos cada '+f1(Math.max(3,6.5-0.6*l))+' s'},
  lust:{sp:'vam',n:'Sed de sangre',max:4,d:'Al derrotar a un enemigo recuperas vida',v:l=>'+'+12*l+'% de vida por KO'},
  mist:{sp:'vam',n:'Forma de niebla',max:4,d:'Esquivas parte de los golpes',v:l=>8*l+'% de esquiva'},
  ember:{sp:'pyr',n:'Brasas eternas',max:4,d:'La quemadura dura más y quema más fuerte',v:l=>'quema +'+50*l+'% · +'+f1(0.5*l)+' s'},
@@ -106,7 +106,11 @@ function specAbilities(u,alive,dt){
   }
   if(s.bats&&skTick(u,'t',s.bats.cd,dt)){
     const pool=en.slice();
-    for(let i=0;i<s.bats.n&&pool.length;i++){const t=pool.splice((Math.random()*pool.length)|0,1)[0];skBeam(u,t,'150,10,40','230,50,90');burst(t.x,t.top*0.55,t.z,8,['#d0102e','#3a0a14','#fff'],3.5,0.09,0.5);hurt(u,t,s.bats.dmg,{laser:true});}
+    burst(u.x,u.top*0.9,u.z,10,['#2a1530','#d0102e','#4a1f3d'],3,0.08,0.5);
+    for(let i=0;i<s.bats.n&&pool.length;i++){
+      const t=pool.splice((Math.random()*pool.length)|0,1)[0];
+      fx.push({k:'bat',x0:u.x+(Math.random()-0.5)*0.7,y0:u.top*0.9+u.y,z0:u.z+(Math.random()-0.5)*0.7,tgt:t,tx:t.x,tz:t.z,ty:t.top*0.55,t:0,fly:0.5+0.07*i,max:1.25+0.07*i,dmg:s.bats.dmg,src:u,seed:Math.random()*6.28,px:u.x,pz:u.z,yaw:0,bt:0,hit:false});
+    }
     snd.laser();
   }
   if(s.volcano&&skTick(u,'v',s.volcano.cd,dt)){
@@ -119,10 +123,35 @@ function specAbilities(u,alive,dt){
     snd.laser();
   }
 }
+/* ====== murciélagos 3D (habilidad de la vampira) ====== */
+const BATM=(()=>{const d='#5a2a6e',P=[];
+  P.push(B([0,0,0],[0.22,0.16,0.16],d,'body'),B([0.15,0.03,0],[0.14,0.14,0.14],d,'head'));
+  [1,-1].forEach(z=>{
+    P.push(B([0.14,0.13,z*0.05],[0.04,0.08,0.04],d,'acc'),B([0.225,0.06,z*0.04],[0.02,0.04,0.04],'#ff2a4a','eye',{glow:true}),B([0.225,-0.03,z*0.03],[0.02,0.05,0.02],'#ffffff','acc'));
+    P.push(B([0,0,z*0.2],[0.26,0.03,0.24],'#8a2f9e','limb',{an:'wing',sg:z,pv:[0,0,z*0.1]}),B([-0.04,0,z*0.42],[0.22,0.03,0.2],'#c0449a','limb',{an:'wing',sg:z,pv:[0,0,z*0.1]}));
+  });
+  return P;})();
+/* entidad dibujable de un murciélago: vuela hacia el enemigo y revolotea mordiéndolo */
+function batEnt(f){
+  const t=f.tgt;if(t&&!t.dying&&!t.dead){f.tx=t.x;f.tz=t.z;f.ty=t.top*0.55+t.y;}
+  let x,y,z;
+  if(f.t<f.fly){
+    const k=f.t/f.fly,e=k*k*(3-2*k),w=Math.sin(k*Math.PI*2+f.seed)*0.5*(1-k);
+    const dx=f.tx-f.x0,dz=f.tz-f.z0,l=Math.hypot(dx,dz)||1;
+    x=f.x0+dx*e-dz/l*w;z=f.z0+dz*e+dx/l*w;y=f.y0+(f.ty-f.y0)*e+Math.sin(k*Math.PI)*1.1;
+  }else{
+    const a=TT*9+f.seed,b=Math.max(0,Math.sin(TT*17+f.seed)),r=0.55*(1-0.8*b);
+    x=f.tx+Math.cos(a)*r;z=f.tz+Math.sin(a)*r;y=f.ty+0.15+Math.sin(TT*13+f.seed)*0.2;
+  }
+  if(Math.hypot(x-f.px,z-f.pz)>1e-4)f.yaw=Math.atan2(-(z-f.pz),x-f.px);
+  f.px=x;f.pz=z;
+  return{model:BATM,x,y,z,yaw:f.yaw,sc:2.8,state:'attack',atkT:f.t,gait:0,wk:0,seed:f.seed,alpha:1,flash:0,hw:0.4};
+}
 /* ====== elección de especialización ====== */
 function showSpecPick(){
   st='spec';icons.length=0;$('panel').classList.remove('on');
-  const rows=Object.keys(SPECS).map(id=>{const s=SPECS[id];
+  const ids=Object.keys(SPECS).sort(()=>Math.random()-0.5).slice(0,SPEC_OFFER); /* solo 2 especializaciones al azar */
+  const rows=ids.map(id=>{const s=SPECS[id];
     return '<div class="spc" data-id="'+id+'" style="--c:'+s.col+'"><canvas class="ic"></canvas><div class="spt"><b>'+s.n+'</b><span>'+s.d+'</span><small>'+s.up.map(k=>UPG[k].n).join(' · ')+'</small></div></div>';}).join('');
   let sel=null;
   setModal('<h1>¡Tu gallina evoluciona!</h1><p>Elige una especialización <b>para toda la partida</b>: cambia cómo juegas y las mejoras que te salgan serán de ese estilo.</p><div class="spl">'+rows+'</div>',[{t:'Elige una especialización',f:()=>{
