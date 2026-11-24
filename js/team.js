@@ -23,19 +23,23 @@ const UEM={gold:'🪙',laser:'🔴',egg:'🥚',storm:'🪶',fire:'🔥',vamp:'�
 function newMember(hero){return{k:hero?'chicken':'chick',hero:!!hero,t:0,l:{},base:hero?1:0.55,fresh:true,skin:hero?SKIN:null};}
 function canUpg(m,k){
   const l=m.l[k]||0;
+  if(UPG[k].sp)return m.hero&&m.spec===UPG[k].sp&&l<UPG[k].max;
+  if((k==='laser'||k==='egg'||k==='storm')&&!m.hero)return false;
+  if(m.hero&&m.spec&&!specOK(k))return false;
   if(k==='robot')return m.t===0;if(k==='titan')return m.t===1;
   if(k==='phoenix')return !team.some(x=>(x.l.phoenix||0)>0);
   if(k==='flock')return m.hero&&l<UPG.flock.max;
   return l<UPG[k].max;
 }
 function memberStats(m){
-  const g=k=>m.l[k]||0,t=m.t,b=m.base;
-  const hp=30*b*Math.pow(1.35,g('vit'))*HM[t]*HPM*(1+0.25*rl('hp')),atk=6*b*Math.pow(1.3,g('power'))*AM[t]*(1+0.2*rl('dmg'));
-  const o={hp,atk,rate:0.7*Math.pow(0.9,g('speed'))*Math.pow(0.9,rl('spd')),spd:3.6*Math.pow(1.12,g('speed'))*Math.pow(1.1,rl('spd')),dmgMul:Math.pow(0.8,g('armor')),vamp:0.12*g('vamp')+0.08*rl('vamp'),
+  const g=k=>m.l[k]||0,t=m.t,b=m.base,sp=specMul(m);
+  const hp=30*b*Math.pow(1.35,g('vit'))*HM[t]*HPM*(1+0.25*rl('hp'))*sp.hp,atk=6*b*Math.pow(1.3,g('power'))*AM[t]*(1+0.2*rl('dmg'))*sp.atk;
+  const o={hp,atk,rate:0.7*Math.pow(0.9,g('speed'))*Math.pow(0.9,rl('spd')),spd:3.6*Math.pow(1.12,g('speed'))*Math.pow(1.1,rl('spd'))*sp.spd,dmgMul:Math.pow(0.8,g('armor'))*sp.dmg,vamp:0.12*g('vamp')+0.08*rl('vamp')+sp.vamp,
     fireDps:g('fire')?atk*0.35*(1+0.3*(g('fire')-1)):0,crit:Math.min(0.8,(g('gold')?0.15+0.12*g('gold'):0)+0.12*rl('crit')),phoenix:g('phoenix'),regen:hp*0.02*rl('regen'),rev:rl('rev'),laser:null,egg:null,storm:null};
   if(g('laser')){const l=g('laser');o.laser={cd:Math.max(1.5,4.2-0.5*l),n:1+Math.floor(l/2),dmg:atk*2.6*(1+0.25*(l-1))};}
   if(g('egg')){const l=g('egg');o.egg={cd:Math.max(2.2,5-0.5*l),dmg:atk*2.2*(1+0.3*(l-1)),rad:2+0.2*l};}
   if(g('storm')){const l=g('storm');o.storm={cd:Math.max(2.5,6-0.7*l),dmg:atk*1.3*(1+0.3*(l-1)),rad:3};}
+  if(m.hero&&m.spec)specStats(m,o);
   return o;
 }
 let INF_BASE=70,INF_G=1.35,INF_E=0.003;
@@ -54,9 +58,13 @@ function genInfEnemy(n){
   return t;
 }
 function genUpgrades(){
-  const av=Object.keys(UPG).filter(k=>team.some(m=>canUpg(m,k)));
-  for(let i=av.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[av[i],av[j]]=[av[j],av[i]];}
-  return av.slice(0,3).map(k=>({id:k}));
+  const av=Object.keys(UPG).filter(k=>specOK(k)&&team.some(m=>canUpg(m,k)));
+  const ex=av.filter(k=>UPG[k].sp),pk=[];
+  if(ex.length)pk.push(ex[(Math.random()*ex.length)|0]); /* siempre sale 1 de la especialidad */
+  const rest=av.filter(k=>!pk.includes(k));
+  while(pk.length<3&&rest.length)pk.push(rest.splice((Math.random()*rest.length)|0,1)[0]);
+  for(let i=pk.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[pk[i],pk[j]]=[pk[j],pk[i]];}
+  return pk.map(k=>({id:k}));
 }
 function applyTo(m,k){
   if(k==='robot')m.t=1;else if(k==='titan')m.t=2;else m.l[k]=(m.l[k]||0)+1;
@@ -71,6 +79,7 @@ function memberName(m){
 function memberDesc(m){
   const a=Object.keys(m.l).filter(k=>m.l[k]&&k!=='flock').map(k=>UPG[k].n+' '+m.l[k]);
   if(m.t)a.unshift(m.t===1?'Robot':'Titán');
+  if(m.hero&&m.spec)a.unshift(SPECS[m.spec].e+' '+SPECS[m.spec].n);
   return a.length?a.join(' · '):'Sin mejoras todavía';
 }
 
@@ -85,7 +94,7 @@ function mkUnit(side,e){
   if(e.l){
     const h=memberStats(e);hp=h.hp;atk=h.atk;rate=h.rate;spd=h.spd;
     if(e.hero){u.sc=sc*1.15;u.size*=1.15;u.top*=1.15;u.hero=true;}
-    Object.assign(u,{ref:e,invuln:0,dmgMul:h.dmgMul,vamp:h.vamp,fireDps:h.fireDps,crit:h.crit,phoenix:h.phoenix,regen:h.regen,rev:h.rev,ab:h,laserT:1.2,eggT:2,stormT:2.5,member:true});
+    Object.assign(u,{ref:e,invuln:0,dmgMul:h.dmgMul,vamp:h.vamp,fireDps:h.fireDps,crit:h.crit,phoenix:h.phoenix,regen:h.regen,rev:h.rev,ab:h,laserT:1.2,eggT:2,stormT:2.5,member:true,sk:h.sk||null,specCol:e.hero&&e.spec?SPECS[e.spec].col:null});
   }
   u.hp=hp;u.max=hp;u.atk=atk;u.rate=rate*(t?0.95:1);u.spd=spd;
   return u;
@@ -113,7 +122,7 @@ function rosterHTML(list){
 }
 function updateRosters(){
   const hero=team.find(m=>m.hero);let h='<b>TU EQUIPO</b>';
-  if(hero){h+='<span class="chip">'+TIERN[hero.t]+'⭐🐔</span>';Object.keys(hero.l).forEach(k=>{if(UEM[k]&&k!=='flock')h+='<span class="chip">'+UEM[k]+hero.l[k]+'</span>';});}
+  if(hero){h+='<span class="chip">'+TIERN[hero.t]+'⭐🐔'+(hero.spec?SPECS[hero.spec].e:'')+'</span>';Object.keys(hero.l).forEach(k=>{if(UEM[k]&&k!=='flock')h+='<span class="chip">'+UEM[k]+hero.l[k]+'</span>';});}
   Object.keys(RL).forEach(k=>{if(RL[k]&&REL[k])h+='<span class="chip">'+REL[k].e+(RL[k]>1?'×'+RL[k]:'')+'</span>';});const ch=team.filter(e=>!e.hero).length;if(ch)h+='<span class="chip">🐥×'+ch+'</span>';
   $('rosL').innerHTML=h;
   $('rosR').innerHTML='<b>ENEMIGOS · RONDA '+infN+'</b>'+rosterHTML(bteam);
