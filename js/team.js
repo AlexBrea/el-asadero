@@ -57,7 +57,7 @@ function genInfEnemy(n){
   }
   return t;
 }
-const OFFER_N=2; /* cuántas mejoras se ofrecen por ronda */
+const OFFER_N=3; /* cuántas mejoras se ofrecen por ronda */
 function genUpgrades(){
   const av=Object.keys(UPG).filter(k=>specOK(k)&&team.some(m=>canUpg(m,k)));
   const ex=av.filter(k=>UPG[k].sp),pk=[];

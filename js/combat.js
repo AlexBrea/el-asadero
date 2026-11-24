@@ -149,6 +149,10 @@ function updateFx(dt){
   for(const f of fx){
     f.t+=dt;
     if(f.k==='egg'&&!f.done&&f.t>=f.dur){f.done=true;explodeEgg(f);}
+    if(f.k==='bat'){
+      if(!f.hit&&f.t>=f.fly){f.hit=true;const t=f.tgt;if(t&&!t.dying&&!t.dead)hurt(f.src,t,f.dmg,{laser:true});if(!simming)burst(f.tx,f.ty,f.tz,8,['#d0102e','#3a0a14','#ffffff'],3.5,0.09,0.5);}
+      else if(f.hit&&!simming){f.bt+=dt;if(f.bt>=0.2){f.bt=0;burst(f.tx,f.ty,f.tz,3,['#d0102e','#ff5a6a'],2.5,0.07,0.4);}}
+    }
   }
   fx=fx.filter(f=>f.k==='egg'?!f.done:f.t<f.max);
 }
