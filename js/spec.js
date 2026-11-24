@@ -35,6 +35,29 @@ const SUPG={
  bolt:{sp:'sto',n:'Rayo del cielo',max:4,d:'Cada pocos segundos caen rayos sobre los enemigos',v:l=>(1+Math.ceil(l/2))+' rayos cada '+f1(Math.max(2.5,6-0.6*l))+' s'},
  eye:{sp:'sto',n:'Ojo del huracán',max:4,d:'Atacas y corres más rápido',v:l=>'+'+15*l+'% velocidad de ataque y carrera'}
 };
+/* habilidades definitivas: se desbloquean al llegar al nivel máximo de cada habilidad exclusiva */
+const ULT={
+ rage:{n:'Furia berserker',d:'Con menos del 35% de vida pegas un 50% más fuerte'},
+ cleave:{n:'Torbellino',d:'El arco llega mucho más lejos y pega un 50% más'},
+ warcry:{n:'Himno de guerra',d:'Recarga un 25% más rápida y además cura un 15% al equipo'},
+ thorns:{n:'Armadura de pinchos',d:'Devuelves el doble de daño'},
+ focus:{n:'Ojo de águila',d:'Tus láseres disparan 2 rayos más y pegan un 40% más'},
+ barrage:{n:'Bombardeo',d:'3 huevos más por salva y explosiones más grandes'},
+ mega:{n:'Huevo nuclear',d:'Explota más grande y vuelve a explotar poco después'},
+ overclock:{n:'Sobrecarga',d:'Todas tus habilidades recargan un 20% más rápido'},
+ drain:{n:'Aura carmesí',d:'Aura más grande que te cura mucho más'},
+ bats:{n:'Murciélagos explosivos',d:'Al morder, el murciélago explota y daña a los de alrededor'},
+ lust:{n:'Banquete de sangre',d:'Curas el doble por KO y pegas un 30% más durante 3 s'},
+ mist:{n:'Niebla densa',d:'+15% de esquiva y te curas un 5% al esquivar'},
+ ember:{n:'Infierno',d:'La quemadura dura 2 s más y quema casi el doble'},
+ spread:{n:'Pandemia',d:'Tus golpes incendian también a los enemigos de alrededor'},
+ volcano:{n:'Lava',d:'La erupción deja un charco de lava que quema durante 4 s'},
+ ashes:{n:'Cenizas explosivas',d:'Los enemigos ardiendo reciben +50% más y explotan al morir'},
+ cyclone:{n:'Tornado',d:'La tormenta atrae a los enemigos y se recarga un 30% antes'},
+ breeze:{n:'Viento a favor',d:'+10% de esquiva y +10% de velocidad'},
+ bolt:{n:'Tormenta eléctrica',d:'Cada rayo salta a 2 enemigos cercanos'},
+ eye:{n:'Vórtice',d:'Cada 9 s un torbellino te rodea y destruye a los cercanos'}
+};
 Object.assign(UPG,SUPG);
 const SPEC_ALWAYS=['robot','titan','phoenix','flock'];
 
@@ -55,20 +78,23 @@ function chooseSpec(m,id){
 function specMul(m){const s=m.hero&&m.spec?SPECS[m.spec]:null;return s||{hp:1,atk:1,dmg:1,spd:1,vamp:0,cd:1,dodge:0};}
 function specStats(m,o){
   const sp=SPECS[m.spec],g=k=>m.l[k]||0,sk={},atk=o.atk;
-  const cdm=sp.cd*(1-0.1*g('overclock'));
-  sk.dodge=Math.min(0.55,sp.dodge+0.08*g('mist')+0.06*g('breeze'));
+  const U={};sp.up.forEach(k=>{if(g(k)>=SUPG[k].max)U[k]=1;});sk.ult=U;
+  const cdm=sp.cd*(1-0.1*g('overclock'))*(U.overclock?0.8:1);
+  sk.dodge=Math.min(0.6,sp.dodge+0.08*g('mist')+0.06*g('breeze')+(U.mist?0.15:0)+(U.breeze?0.1:0));
   ['rage','cleave','thorns','lust','drain','ember','spread','ashes','cyclone','eye'].forEach(k=>{sk[k]=g(k);});
-  o.spd*=(1+0.15*g('eye'))*(1+0.06*g('breeze'));
-  if(g('warcry')){const l=g('warcry');sk.warcry={cd:Math.max(4,10-1.5*l)*cdm,mul:1.3+0.12*l};}
-  if(g('barrage')){const l=g('barrage');sk.barrage={cd:Math.max(3,7.5-0.6*l)*cdm,n:2+l,dmg:o.egg?o.egg.dmg*0.55:atk*1.6,rad:o.egg?o.egg.rad:2.2};}
-  if(g('mega')){const l=g('mega');sk.mega={cd:Math.max(5,12-1.3*l)*cdm,dmg:atk*5*(1+0.35*(l-1)),rad:4+0.3*l};}
-  if(g('drain')){const l=g('drain');sk.drainA={dps:atk*0.4*(1+0.3*(l-1)),rad:3+0.15*l};}
-  if(g('bats')){const l=g('bats');sk.bats={cd:Math.max(3,6.5-0.6*l)*cdm,n:2+l,dmg:atk*1.6*(1+0.2*(l-1))};}
-  if(g('volcano')){const l=g('volcano');sk.volcano={cd:Math.max(4,8.5-0.8*l)*cdm,dmg:atk*2.2*(1+0.3*(l-1)),rad:3.2+0.3*l};}
-  if(g('bolt')){const l=g('bolt');sk.bolt={cd:Math.max(2.5,6-0.6*l)*cdm,n:1+Math.ceil(l/2),dmg:atk*4.5*(1+0.3*(l-1))};}
-  if(o.laser){o.laser.cd*=cdm;o.laser.dmg*=1+0.3*g('focus');}
+  o.spd*=(1+0.15*g('eye'))*(1+0.06*g('breeze'))*(U.breeze?1.1:1);
+  if(g('warcry')){const l=g('warcry');sk.warcry={cd:Math.max(4,10-1.5*l)*cdm*(U.warcry?0.75:1),mul:1.3+0.12*l,heal:U.warcry?0.15:0};}
+  if(g('barrage')){const l=g('barrage');sk.barrage={cd:Math.max(3,7.5-0.6*l)*cdm,n:2+l+(U.barrage?3:0),dmg:o.egg?o.egg.dmg*0.55:atk*1.6,rad:(o.egg?o.egg.rad:2.2)+(U.barrage?0.8:0)};}
+  if(g('mega')){const l=g('mega');sk.mega={cd:Math.max(5,12-1.3*l)*cdm,dmg:atk*5*(1+0.35*(l-1)),rad:4+0.3*l+(U.mega?1.5:0),twice:!!U.mega};}
+  if(g('drain')){const l=g('drain');sk.drainA={dps:atk*0.4*(1+0.3*(l-1)),rad:3+0.15*l+(U.drain?1.5:0),heal:U.drain?0.5:0.2};}
+  if(g('bats')){const l=g('bats');sk.bats={cd:Math.max(3,6.5-0.6*l)*cdm,n:2+l,dmg:atk*1.6*(1+0.2*(l-1)),boom:!!U.bats};}
+  if(g('volcano')){const l=g('volcano');sk.volcano={cd:Math.max(4,8.5-0.8*l)*cdm,dmg:atk*2.2*(1+0.3*(l-1)),rad:3.2+0.3*l,lava:!!U.volcano};}
+  if(g('bolt')){const l=g('bolt');sk.bolt={cd:Math.max(2.5,6-0.6*l)*cdm,n:1+Math.ceil(l/2),dmg:atk*4.5*(1+0.3*(l-1)),chain:!!U.bolt};}
+  if(o.laser){o.laser.cd*=cdm;o.laser.dmg*=1+0.3*g('focus');if(U.focus){o.laser.n+=2;o.laser.dmg*=1.4;}}
   if(o.egg)o.egg.cd*=cdm;
-  if(o.storm){o.storm.cd*=cdm;o.storm.rad+=0.8*g('cyclone');o.storm.dmg*=1+0.2*g('cyclone');}
+  if(o.storm){o.storm.cd*=cdm;o.storm.rad+=0.8*g('cyclone');o.storm.dmg*=1+0.2*g('cyclone');if(U.cyclone)o.storm.cd*=0.7;}
+  sk.pull=!!U.cyclone;
+  if(U.eye)sk.eyeUlt={cd:9*cdm,dmg:atk*1.8,rad:3};
   o.sk=sk;
 }
 function specHaste(u){const s=u.sk;return s?1+s.rage*0.2*(1-u.hp/u.max)+0.15*s.eye:1;}
@@ -83,12 +109,12 @@ function skBeam(u,t,c1,c2,fromSky){
 /* habilidades activas de la especialización (se llama cada frame de combate para la gallina) */
 function specAbilities(u,alive,dt){
   const s=u.sk;if(!s)return;
-  if(!simming){u.auT=(u.auT||0)-dt;if(u.auT<=0){u.auT=0.14;const a=Math.random()*6.28;parts.push({x:u.x+Math.cos(a)*0.75,y:0.15,z:u.z+Math.sin(a)*0.75,vx:0,vy:1.7,vz:0,life:0.6,max:0.6,c:u.specCol,s:0.07,k:'p'});}}
+  if(!simming){u.auT=(u.auT||0)-dt;if(u.auT<=0){u.auT=Object.keys(s.ult||{}).length?0.07:0.14;const a=Math.random()*6.28;parts.push({x:u.x+Math.cos(a)*0.75,y:0.15,z:u.z+Math.sin(a)*0.75,vx:0,vy:1.7,vz:0,life:0.6,max:0.6,c:u.specCol,s:0.07,k:'p'});}}
   const en=alive.filter(e=>e.side!==u.side&&!e.dying&&!e.dead);if(!en.length)return;
   const rnd=a=>a[(Math.random()*a.length)|0];
   if(s.warcry&&skTick(u,'w',s.warcry.cd,dt)){
     fx.push({k:'ring',x:u.x,z:u.z,r:5,t:0,max:0.6,c:'255,150,60'});burst(u.x,1,u.z,18,['#ff9a3d','#ffd24a','#fff'],4,0.1,0.6);
-    alive.forEach(e=>{if(e.side===u.side&&!e.dying){e.buf=4;e.bufMul=s.warcry.mul;}});tone(150,320,0.3,'sawtooth',0.06);
+    alive.forEach(e=>{if(e.side===u.side&&!e.dying){e.buf=4;e.bufMul=s.warcry.mul;if(s.warcry.heal)e.hp=Math.min(e.max,e.hp+e.max*s.warcry.heal);}});tone(150,320,0.3,'sawtooth',0.06);
     floater(u.x,u.top+1.2,u.z,'¡GRITO DE GUERRA!','#ff9a3d');
   }
   if(s.barrage&&skTick(u,'b',s.barrage.cd,dt)){
@@ -96,12 +122,13 @@ function specAbilities(u,alive,dt){
   }
   if(s.mega&&skTick(u,'m',s.mega.cd,dt)){
     const t=rnd(en);fx.push({k:'egg',x0:u.x,z0:u.z,x1:t.x,z1:t.z,t:0,dur:1,dmg:s.mega.dmg,rad:s.mega.rad,side:u.side,src:u,big:true});
+    if(s.mega.twice)fx.push({k:'egg',x0:t.x,z0:t.z,x1:t.x,z1:t.z,t:0,dur:1.8,dmg:s.mega.dmg*0.6,rad:s.mega.rad,side:u.side,src:u,big:true});
   }
   if(s.drainA){
     if(skTick(u,'d',0.5,dt)){
       let tot=0;fx.push({k:'ring',x:u.x,z:u.z,r:s.drainA.rad,t:0,max:0.4,c:'208,16,46'});
       en.forEach(e=>{if(Math.hypot(e.x-u.x,e.z-u.z)<s.drainA.rad+e.size*0.4){const d=s.drainA.dps*0.5;tot+=d;hurt(u,e,d,{quiet:true});}});
-      if(tot&&u.hp>0)u.hp=Math.min(u.max,u.hp+tot*0.2);
+      if(tot&&u.hp>0)u.hp=Math.min(u.max,u.hp+tot*s.drainA.heal);
     }
   }
   if(s.bats&&skTick(u,'t',s.bats.cd,dt)){
@@ -109,18 +136,24 @@ function specAbilities(u,alive,dt){
     burst(u.x,u.top*0.9,u.z,10,['#2a1530','#d0102e','#4a1f3d'],3,0.08,0.5);
     for(let i=0;i<s.bats.n&&pool.length;i++){
       const t=pool.splice((Math.random()*pool.length)|0,1)[0];
-      fx.push({k:'bat',x0:u.x+(Math.random()-0.5)*0.7,y0:u.top*0.9+u.y,z0:u.z+(Math.random()-0.5)*0.7,tgt:t,tx:t.x,tz:t.z,ty:t.top*0.55,t:0,fly:0.5+0.07*i,max:1.25+0.07*i,dmg:s.bats.dmg,src:u,seed:Math.random()*6.28,px:u.x,pz:u.z,yaw:0,bt:0,hit:false});
+      fx.push({k:'bat',x0:u.x+(Math.random()-0.5)*0.7,y0:u.top*0.9+u.y,z0:u.z+(Math.random()-0.5)*0.7,tgt:t,tx:t.x,tz:t.z,ty:t.top*0.55,t:0,fly:0.5+0.07*i,max:1.25+0.07*i,dmg:s.bats.dmg,src:u,seed:Math.random()*6.28,px:u.x,pz:u.z,yaw:0,bt:0,hit:false,boom:s.bats.boom});
     }
     snd.laser();
   }
   if(s.volcano&&skTick(u,'v',s.volcano.cd,dt)){
     fx.push({k:'ring',x:u.x,z:u.z,r:s.volcano.rad,t:0,max:0.5,c:'255,110,30'});burst(u.x,0.8,u.z,24,['#ff5a1a','#ffb83d','#ffe36a'],6,0.13,0.7);snd.boom();
-    en.forEach(e=>{if(Math.hypot(e.x-u.x,e.z-u.z)<s.volcano.rad+e.size*0.4){hurt(u,e,s.volcano.dmg,{egg:true});if(!e.dying)e.burn={t:3+0.5*s.ember,dps:(u.fireDps||u.atk*0.3)*(1+0.4*s.ember),tick:0.5,sp:s.spread>0};}});
+    en.forEach(e=>{if(Math.hypot(e.x-u.x,e.z-u.z)<s.volcano.rad+e.size*0.4){hurt(u,e,s.volcano.dmg,{egg:true});if(!e.dying)e.burn={t:3+0.5*s.ember,dps:(u.fireDps||u.atk*0.3)*(1+0.4*s.ember),tick:0.5,sp:s.spread>0,by:u};}});
+    if(s.volcano.lava)fx.push({k:'lava',x:u.x,z:u.z,r:s.volcano.rad*0.9,t:0,max:4,tick:0.3,dps:s.volcano.dmg*0.12,src:u,side:u.side});
   }
   if(s.bolt&&skTick(u,'o',s.bolt.cd,dt)){
     const pool=en.slice();
-    for(let i=0;i<s.bolt.n&&pool.length;i++){const t=pool.splice((Math.random()*pool.length)|0,1)[0];skBeam(u,t,'255,210,60','255,245,150',true);burst(t.x,t.top*0.55,t.z,10,['#ffe36a','#ffffff','#b7a8ff'],4,0.1,0.5);hurt(u,t,s.bolt.dmg,{laser:true});}
+    for(let i=0;i<s.bolt.n&&pool.length;i++){const t=pool.splice((Math.random()*pool.length)|0,1)[0];skBeam(u,t,'255,210,60','255,245,150',true);burst(t.x,t.top*0.55,t.z,10,['#ffe36a','#ffffff','#b7a8ff'],4,0.1,0.5);hurt(u,t,s.bolt.dmg,{laser:true});
+      if(s.bolt.chain)en.filter(e=>e!==t&&!e.dying&&!e.dead).sort((a,b)=>Math.hypot(a.x-t.x,a.z-t.z)-Math.hypot(b.x-t.x,b.z-t.z)).slice(0,2).forEach(e=>{fx.push({k:'laser',x1:t.x,y1:t.top*0.55,z1:t.z,x2:e.x,y2:e.top*0.55,z2:e.z,t:0,max:0.32,c1:'255,210,60',c2:'255,245,150'});burst(e.x,e.top*0.55,e.z,6,['#ffe36a','#ffffff'],3,0.09,0.4);hurt(u,e,s.bolt.dmg*0.5,{laser:true});});}
     snd.laser();
+  }
+  if(s.eyeUlt&&skTick(u,'y',s.eyeUlt.cd,dt)){
+    fx.push({k:'ring',x:u.x,z:u.z,r:s.eyeUlt.rad,t:0,max:0.6,c:'183,168,255'});burst(u.x,0.8,u.z,28,['#b7a8ff','#ffffff','#d9ceff'],6,0.12,0.7);snd.boom();
+    en.forEach(e=>{const dx=e.x-u.x,dz=e.z-u.z,d=Math.hypot(dx,dz)||1;if(d<s.eyeUlt.rad+e.size*0.4){hurt(u,e,s.eyeUlt.dmg,{egg:true});e.kx+=dx/d*4;e.kz+=dz/d*4;}});
   }
 }
 /* ====== murciélagos 3D (habilidad de la vampira) ====== */
@@ -172,6 +205,6 @@ function showSpecPick(){
 function specStatsHTML(m,R){
   if(!m.hero||!m.spec)return '';
   const sp=SPECS[m.spec];let h=R('Especialización',sp.n);
-  sp.up.forEach(k=>{const l=m.l[k]||0;if(l)h+=R(SUPG[k].n+' ('+l+')',SUPG[k].v(l));});
+  sp.up.forEach(k=>{const l=m.l[k]||0;if(l)h+=R(SUPG[k].n+' ('+l+')',SUPG[k].v(l));if(l>=SUPG[k].max)h+=R('★ '+ULT[k].n,ULT[k].d);});
   return h;
 }
