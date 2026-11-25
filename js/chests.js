@@ -59,7 +59,7 @@ function curSkinBuff(){
   return lvSkinBuff(SKIN);
 }
 SKINS.forEach(sk=>{const b=lvSkinBuff(sk.id);if(b)sk.d+=' · +'+pct(b.v)+'% '+BTX[b.t];});
-/* panel de estadísticas extra en \"Mi gallina\" */
+/* panel de estadísticas extra en "Mi gallina" */
 function buffPanel(){
   ensureSh();const rows=[];
   const sk=SKINS.find(x=>x.id===SKIN),kb=curSkinBuff();
@@ -71,8 +71,10 @@ function buffPanel(){
     h+='<span class="bnr tot"><i>Total</i><em>'+buffTxt(heroBuffs())+'</em></span>';}
   return h;
 }
+function selBuff(t,id){const b=t==='skin'?curSkinBuff():cosBuff(catOf(id));return b?'<b style="color:#7bed9f">+'+pct(b.v)+'% '+BTX[b.t]+'</b>':'Sin bono';}
 const _showHen=showHen;
-showHen=function(){_showHen.apply(this,arguments);const cv=$('hcv');if(!cv)return;const d=document.createElement('div');d.className='bnp';d.innerHTML=buffPanel();cv.insertAdjacentElement('afterend',d);};
+showHen=function(){_showHen.apply(this,arguments);const cv=$('hcv');if(!cv)return;const d=document.createElement('div');d.className='bnp';d.innerHTML=buffPanel();cv.insertAdjacentElement('afterend',d);
+  const s=document.querySelector('#hng .sk.sel .ds');if(s&&/^✅/.test(s.textContent)){const t=hnSlot==='skin'?'skin':'cos',id=t==='skin'?SKIN:SH.eq[hnSlot];if(id)s.innerHTML=selBuff(t,id);}};
 const _memberStats=memberStats;
 memberStats=function(m){
   const o=_memberStats.apply(this,arguments);
