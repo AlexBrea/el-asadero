@@ -7,7 +7,7 @@ const REL={
  hp:{e:'🪨',n:'Corazón de piedra',d:'+25% de vida a todo tu equipo',max:3},
  spd:{e:'👟',n:'Espuelas veloces',d:'Atacan y corren un 10% más rápido',max:3},
  crit:{e:'🍀',n:'Trébol de la suerte',d:'+12% de probabilidad de crítico (x3 daño)',max:3},
- vamp:{e:'🦷',n:'Colmillo de lobo',d:'Roban vida: 8% del daño que hacen',max:3},
+ vamp:{e:'🦧',n:'Colmillo de lobo',d:'Roban vida: 8% del daño que hacen',max:3},
  regen:{e:'🍲',n:'Caldo de la abuela',d:'Regeneran un 2% de su vida por segundo',max:3},
  rev:{e:'🪽',n:'Segundo aliento',d:'Cada uno revive una vez por ronda con la mitad de vida',max:1},
  xp:{e:'🏆',n:'Copa dorada',d:'+1 XP de cuenta por cada ronda superada',max:3},
@@ -28,20 +28,21 @@ function advance(){
   infN++;prize=0;picksLeft=1;nextInfRound();
 }
 function toNext(){infN++;prize=2;picksLeft=2;nextInfRound();}
-/* ===== apuesta de reliquias (ronda 20): 50% ganas una más, 50% pierdes todas ===== */
-const GAMBLE_AT=20;
+/* ===== apuesta de reliquias (tras cada jefe: rondas 10, 20, 30...): 50% ganas una más, 50% pierdes todas ===== */
+const isGambleRound=()=>infN>=10&&infN%10===0;
+const relTxt=n=>n===1?'tu reliquia':'tus '+n+' reliquias';
 const relCount=()=>Object.keys(REL).reduce((t,k)=>t+rl(k),0);
-const gambleOK=()=>relCount()>=2&&Object.keys(REL).some(k=>rl(k)<REL[k].max);
-function afterBoss(){if(infN===GAMBLE_AT&&gambleOK()){startGamble();}else toNext();}
+const gambleOK=()=>relCount()>=1&&Object.keys(REL).some(k=>rl(k)<REL[k].max);
+function afterBoss(){if(isGambleRound()&&gambleOK()){startGamble();}else toNext();}
 function startGamble(){st='gamble';snapRun('gamble');showGamble();}
-function resumeGamble(){if(infN===GAMBLE_AT&&gambleOK()){buildArena();updatePips();startGamble();}else toNext();}
+function resumeGamble(){if(isGambleRound()&&gambleOK()){buildArena();updatePips();startGamble();}else toNext();}
 function showGamble(){
   icons.length=0;const n=relCount();
-  $('ptitle').textContent='🎲 ¡Apuesta! Juégate tus '+n+' reliquias para conseguir 1 más';
+  $('ptitle').textContent='🎲 ¡Apuesta! Juégate '+relTxt(n)+' para conseguir 1 más';
   const box=$('cards');box.innerHTML='';box.classList.remove('tgt');
   const mk=(e,nm,ds,fn,cls)=>{const d=document.createElement('div');d.className='card '+cls;d.innerHTML='<div class="em" style="height:clamp(54px,11vh,92px);display:grid;place-items:center;font-size:clamp(38px,9vw,60px)">'+e+'</div><div class="nm">'+nm+'</div><div class="ds">'+ds+'</div>';d.onclick=fn;box.appendChild(d);};
-  mk('🎲','Apostar','50%: ganas 1 reliquia al azar ('+(n+1)+' en total)<br>50%: pierdes las '+n+' que tienes',betRelics,'up');
-  mk('✋','Quedármelas','Sigues con tus '+n+' reliquias y continúas la partida',()=>{if(st!=='gamble')return;ensureAudio();snd.click();$('panel').classList.remove('on');toNext();},'');
+  mk('🎲','Apostar','50%: ganas 1 reliquia al azar ('+(n+1)+' en total)<br>50%: pierdes '+(n===1?'la que tienes':'las '+n+' que tienes'),betRelics,'up');
+  mk('✋','Quedármelas','Sigues con '+relTxt(n)+' y continúas la partida',()=>{if(st!=='gamble')return;ensureAudio();snd.click();$('panel').classList.remove('on');toNext();},'');
   $('panel').classList.add('on');
 }
 function betRelics(){
@@ -85,7 +86,7 @@ function betRelics(){
       done('🎉 ¡Has ganado '+REL[got].e+' '+REL[got].n+'!  Ahora tienes '+relCount()+' reliquias',gambleOK()?'Seguir ▶':'Continuar ▶',()=>{if(gambleOK()){st='gamble';snapRun('gamble');$('panel').classList.add('on');showGamble();}else toNext();},'¡VERDE!','#7bed9f');
     }else{
       snd.lose();
-      done('💥 Has perdido tus '+n+' reliquias','Continuar ▶',toNext,'¡ROJO!','#ff6b6b');
+      done('💥 Has perdido '+relTxt(n),'Continuar ▶',toNext,'¡ROJO!','#ff6b6b');
     }
   },3600);
 }
