@@ -1426,5 +1426,107 @@
     ["#fff2a8", "#e0a91a", "#9a6a00", "#a87400", "#e8b92d", "#fff0a0"],
     ["#f4ffff", "#5fd6f2", "#2b7fc7", "#2a79b8", "#73dcf5", "#eaffff"],
     ["#8a8f96", "#555a61", "#3a3e44", "#3a3e44", "#5a5f66", "#7a7f86"]
-  ]
+  ],
+  "chests": {
+    "weights": {
+      "n": {
+        "rare": 70,
+        "epic": 26,
+        "legend": 4
+      },
+      "e": {
+        "rare": 20,
+        "epic": 55,
+        "legend": 25
+      }
+    },
+    "skins": [
+      {
+        "id": "sakura",
+        "n": "Sakura",
+        "lvl": 9999,
+        "d": "Pétalos de cerezo",
+        "rar": "rare",
+        "price": 0,
+        "pal": {
+          "body": "#ffd0e0",
+          "head": "#ffe1ec",
+          "wing": "#ff8fb8",
+          "tail": "#ff8fb8"
+        }
+      },
+      {
+        "id": "noche",
+        "n": "Noche estrellada",
+        "lvl": 9999,
+        "d": "Vuela de madrugada",
+        "rar": "rare",
+        "price": 0,
+        "pal": {
+          "body": "#16183a",
+          "head": "#1e2250",
+          "wing": "#3b3f9c",
+          "tail": "#3b3f9c",
+          "glow": ["tail"]
+        }
+      },
+      {
+        "id": "cristal",
+        "n": "Cristal",
+        "lvl": 9999,
+        "d": "Plumas de gema",
+        "rar": "epic",
+        "price": 0,
+        "pal": {
+          "body": "#7fe8ff",
+          "head": "#b6f4ff",
+          "wing": "#b48bff",
+          "tail": "#b48bff",
+          "glow": ["wing", "tail"]
+        }
+      },
+      {
+        "id": "solar",
+        "n": "Solar",
+        "lvl": 9999,
+        "d": "Brilla como el sol",
+        "rar": "legend",
+        "price": 0,
+        "pal": {
+          "body": "#fff3b0",
+          "head": "#ffffff",
+          "wing": "#ffd24a",
+          "tail": "#ff9d1e",
+          "glow": ["body", "wing", "tail"]
+        }
+      }
+    ],
+    "maxLevel": 5,
+    "copiesRequired": [1, 2, 4, 8, 16],
+    "upgradeCosts": [0, 0, 400, 900, 1800, 3600],
+    "costMultipliers": {
+      "rare": 1,
+      "epic": 1.4,
+      "legend": 2
+    },
+    "bonusValues": {
+      "common": 0.015,
+      "rare": 0.03,
+      "epic": 0.045,
+      "legend": 0.07
+    },
+    "bonusLabels": {
+      "dmg": "daño",
+      "hp": "vida",
+      "crit": "prob. crítico",
+      "def": "defensa",
+      "spd": "velocidad",
+      "vamp": "robo de vida"
+    },
+    "slotBonuses": {
+      "hat": ["crit", "dmg"],
+      "shoes": ["spd", "hp"],
+      "suit": ["def", "hp"]
+    }
+  }
 }

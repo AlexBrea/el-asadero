@@ -386,9 +386,61 @@ async function main() {
     await evaluate('window.__testGame.session.showPass()');
     assert.equal(await evaluate("document.querySelectorAll('#shl .sk').length"), 20);
     assert.ok(await evaluate('window.__testGame.session.SH.dq.m.length===3'));
+    // Chests must survive the modular merge, including duplicate copies and persistence.
+    await evaluate("document.querySelector('#tabbar [data-t=chest]').click()");
+    assert.ok(
+      await evaluate(
+        "document.querySelectorAll('#skl .spc').length===window.__testGame.session.CS.length",
+      ),
+    );
+    assert.equal(
+      await evaluate("document.getElementById('mbox').textContent.includes('__COIN__')"),
+      false,
+    );
+    const chest = await evaluate(`(()=>{
+      const game=window.__testGame.session;
+      game.SH.ky={n:0,e:0};
+      const before=JSON.stringify(game.SH);
+      game.openChest('n');
+      if(JSON.stringify(game.SH)!==before) throw new Error('Opening without a key changed inventory');
+      game.SH.ky={n:1,e:1};
+      game.rollSkin=()=>game.CS.find(s=>s.id==='sakura');
+      game.openChest('n');
+      return {keys:game.SH.ky.n,copies:game.skCopies('sakura')};
+    })()`);
+    assert.deepEqual(chest, { keys: 0, copies: 1 });
+    await waitFor("!!document.getElementById('rvc')");
+    await send('Emulation.setEmulatedMedia', {
+      features: [{ name: 'prefers-reduced-motion', value: 'reduce' }],
+    });
+    await evaluate(
+      "window.__testGame.session.showChests();window.__testGame.session.openChest('e')",
+    );
+    assert.ok(await evaluate("!!document.getElementById('rvc')"));
+    const progression = await evaluate(`(()=>{
+      const game=window.__testGame.session;
+      game.SH.c=10000;
+      const cost=game.costFor('sakura',2);
+      game.upgradeSkin('sakura');
+      if(game.SH.c!==10000-cost) throw new Error('Incorrect skin upgrade cost');
+      game.SKIN='sakura';
+      const hero=game.newMember(true);
+      const stats=game.memberStats(hero),base=game._memberStats(hero);
+      if(!['hp','atk','crit','vamp','dmgMul','spd'].some(key=>stats[key]!==base[key])) throw new Error('Skin bonus was not applied');
+      const restored=game.shopClean(JSON.parse(JSON.stringify(game.SH)));
+      if(JSON.stringify(restored.sc)!==JSON.stringify(game.SH.sc)) throw new Error('Lost skin copies');
+      if(restored.sl.sakura!==2 || restored.ky.n!==0 || restored.ky.e!==0) throw new Error('Lost chest progression');
+      game.SH.px=6000;game.SH.bp=0;
+      game.claimPass();game.claimPass();
+      return {level:game.skLvl('sakura'),copies:game.skCopies('sakura'),keys:game.SH.ky,finite:Number.isFinite(stats.hp)&&Number.isFinite(stats.atk)};
+    })()`);
+    assert.deepEqual(progression, { level: 2, copies: 2, keys: { n: 2, e: 1 }, finite: true });
+    await evaluate('window.__testGame.session.showHen()');
+    assert.ok(await evaluate("!!document.querySelector('.bnp')"));
+    assert.ok(await evaluate('!(/\\p{Extended_Pictographic}/u.test(document.body.innerText))'));
     assert.equal(errors.length, 0, errors.join('\n'));
     console.log(
-      'PASS: real Chrome startup, 5 viewports, motion timing, reduced motion, keyboard, combat, boss rewards, 6 specializations, saved runs, shop and battle pass.',
+      'PASS: real Chrome startup, 5 viewports, motion timing, reduced motion, keyboard, combat, boss rewards, 6 specializations, saved runs, shop, battle pass, chests, skin upgrades and inventory persistence.',
     );
   } finally {
     clearTimeout(timer);

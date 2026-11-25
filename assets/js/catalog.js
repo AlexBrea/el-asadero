@@ -84,6 +84,27 @@ export function validateCatalog(value) {
     require(positive(cosmetic.price), `precio de cosmético ${cosmetic.id}`);
     require(!cosmetic.slot || slots.has(cosmetic.slot), `equipamiento de ${cosmetic.id}`);
   }
+  const { chests } = value;
+  require(isRecord(chests) && isRecord(chests.weights), 'catálogo de cofres');
+  require(Number.isInteger(chests.maxLevel) && chests.maxLevel > 0, 'nivel máximo de skins');
+  require(Array.isArray(chests.copiesRequired) &&
+    chests.copiesRequired.length === chests.maxLevel &&
+    chests.copiesRequired.every(
+      (count, index, counts) =>
+        Number.isInteger(count) && count > 0 && (index === 0 || count > counts[index - 1]),
+    ), 'copias para mejorar skins');
+  for (const kind of ['n', 'e']) {
+    const weights = chests.weights[kind];
+    require(isRecord(weights) &&
+      Object.keys(weights).every((rarity) => Object.hasOwn(value.cosmeticRarities, rarity)) &&
+      Object.values(weights).every(positive) &&
+      Math.abs(Object.values(weights).reduce((sum, weight) => sum + weight, 0) - 100) <
+        1e-8, `probabilidades de cofre ${kind}`);
+  }
+  require(Array.isArray(chests.skins) &&
+    chests.skins.every(
+      (skin) => typeof skin.id === 'string' && Object.hasOwn(value.cosmeticRarities, skin.rar),
+    ), 'skins de cofres');
   const { balance } = value;
   for (const key of ['healthMultiplier', 'enemyBase', 'enemyGrowth', 'enemyExponent']) {
     require(positive(balance[key]), `balance.${key}`);

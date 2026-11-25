@@ -17,6 +17,7 @@ Para las herramientas de desarrollo, utiliza Node 24 (`nvm use`) y ejecuta `npm 
 - `assets/js/main.js` y `config.js`: arranque, carga de datos y errores de inicio.
 - `assets/js/game.js`: composición de una sesión e instalación de sus dependencias.
 - `assets/js/features/`: módulos de combate, rondas, modelos, cámara, audio, especializaciones, reliquias, tienda, logros, cuenta y guardado. Comparten únicamente el registro de su sesión; no dependen de variables globales.
+- `assets/js/features/chests.js`, `assets/css/chests.css` y `chests` en el catálogo: cofres, llaves, niveles de skins y bonos del equipo.
 - `assets/js/integration.js`: conecta estas funciones con las rarezas ponderadas, la interfaz accesible y la entrada al ring.
 - `assets/js/upgrade-ui.js`: cartas de mejora y explicación de las probabilidades.
 - `assets/js/loop.js` y `background-ticker.js`: reloj compartido para primer y segundo plano, pasos acotados y limpieza del worker.

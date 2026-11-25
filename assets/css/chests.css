@@ -1,0 +1,121 @@
+.chrow {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 6px 0 10px;
+}
+.chb {
+  flex: 1;
+  max-width: 210px;
+  background: linear-gradient(160deg, #4b3a86, #2c2152);
+  border: 3px solid #6a58b8;
+  border-radius: 16px;
+  padding: 8px 6px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.chb.ep {
+  border-color: #c77dff;
+  box-shadow: 0 0 14px #c77dff66;
+}
+.chb b {
+  font-size: 15px;
+}
+.chb small {
+  font-size: 11px;
+  color: #d9ceff;
+  font-weight: 700;
+  line-height: 1.25;
+}
+.chc {
+  width: 140px;
+  height: 110px;
+  display: block;
+}
+.chc.big {
+  width: 220px;
+  height: 172px;
+  margin: 6px auto;
+}
+.cbt {
+  background: linear-gradient(#ffd24a, #ff9d1e);
+  color: #2a1448;
+  border: none;
+  border-radius: 12px;
+  padding: 7px 12px;
+  font-weight: 900;
+  font-size: 13px;
+  font-family: inherit;
+  box-shadow: 0 3px 0 #a35b00;
+  cursor: pointer;
+  margin-top: 4px;
+}
+.cbt:active {
+  transform: translateY(2px);
+}
+.cbt.dis {
+  background: #ffffff1c;
+  color: #d9ceff;
+  box-shadow: none;
+  cursor: default;
+}
+.cbt.gr {
+  background: linear-gradient(#7bed9f, #2ec866);
+  box-shadow: 0 3px 0 #17803d;
+  color: #07381a;
+}
+.spc.lock {
+  opacity: 0.5;
+  filter: grayscale(0.8);
+}
+.spb {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: none;
+}
+.bnp {
+  background: #ffffff14;
+  border: 2px solid #6a58b8;
+  border-radius: 12px;
+  padding: 6px 10px;
+  margin: 0 0 8px;
+  text-align: left;
+  font-size: 12px;
+}
+.bnp b {
+  display: block;
+  color: #ffe08a;
+  font-size: 13px;
+  margin-bottom: 3px;
+}
+.bnr {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 1px 0;
+  color: #ece6ff;
+  font-weight: 700;
+}
+.bnr i {
+  font-style: normal;
+}
+.bnr em {
+  font-style: normal;
+  color: #7bed9f;
+  font-weight: 900;
+  text-align: right;
+}
+.bnr.tot {
+  border-top: 1px solid #ffffff22;
+  margin-top: 3px;
+  padding-top: 3px;
+}
+#tabbar button {
+  min-width: 0;
+}
+#tabbar button span {
+  white-space: nowrap;
+}

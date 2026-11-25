@@ -40,6 +40,12 @@ test('catalog validation rejects broken cross-references and non-finite balance 
     (value) => {
       value.cosmetics[0].slot = 'missing';
     },
+    (value) => {
+      value.chests.weights.n.rare = 71;
+    },
+    (value) => {
+      value.chests.copiesRequired[1] = 0;
+    },
   ]) {
     const invalid = structuredClone(catalog);
     corrupt(invalid);

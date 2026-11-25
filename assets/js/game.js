@@ -24,6 +24,7 @@ import { installAuth } from './features/auth.js';
 import { installEffects } from './features/effects.js';
 import { installCombat } from './features/combat.js';
 import { installMain } from './features/main.js';
+import { installChests } from './features/chests.js';
 
 /**
  * Assemble one session in dependency order, then apply the shared UI and timing policies.
@@ -54,6 +55,7 @@ export function startGame() {
   installEffects(game);
   installCombat(game);
   installMain(game);
+  installChests(game);
   const cleanup = installIntegration(game);
   Object.defineProperty(window, '__game', { configurable: true, value: game.getDebugApi() });
   game.boot();
