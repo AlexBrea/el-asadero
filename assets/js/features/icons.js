@@ -350,8 +350,7 @@ export function installIcons(game) {
     };
   })();
   (function () {
-    const baseMk = game.mkUnit,
-      baseApply = game.applyTo;
+    const baseMk = game.mkUnit;
     game.mkUnit = function (side, e) {
       const u = baseMk(side, e);
       if (!e || !e.l || u.dead) {
@@ -387,19 +386,6 @@ export function installIcons(game) {
         });
       }
       return u;
-    };
-    game.applyTo = function (m, k) {
-      baseApply(m, k);
-      if (game.simming || !m || !m.l || !game.UPG[k]) {
-        return;
-      }
-      if (k === 'gold') {
-        game.toast('__COIN__ ¡Pico de oro nivel ' + (m.l.gold || 0) + '! Le crece el pico');
-      } else if (k === 'vit' && m.hero) {
-        game.toast(
-          icon('heart') + ' ¡Súper plumaje nivel ' + (m.l.vit || 0) + '! Tu gallina crece',
-        );
-      }
     };
   })();
   (function () {

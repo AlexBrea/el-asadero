@@ -527,6 +527,10 @@ export function installChests(game) {
       sk.d += ' · +' + game.pct(b.v) + '% ' + game.BTX[b.t];
     }
   });
+  game.selBuff = function selBuff(t, id) {
+    const b = t === 'skin' ? game.curSkinBuff() : game.cosBuff(game.catOf(id));
+    return b ? '<b style="color:#7bed9f">+' + game.pct(b.v) + '% ' + game.BTX[b.t] + '</b>' : 'Sin bono';
+  };
   game._showHen = game.showHen;
   game.showHen = function () {
     game._showHen.apply(this, arguments);
@@ -538,6 +542,15 @@ export function installChests(game) {
     d.className = 'bnp';
     d.innerHTML = game.buffPanel();
     cv.insertAdjacentElement('afterend', d);
+    /* skins/cosméticos puestos muestran su bono en vez del tick */
+    const s = document.querySelector('#hng .sk.sel .ds');
+    if (s && /Puest[oa]/.test(s.textContent)) {
+      const t = game.hnSlot === 'skin' ? 'skin' : 'cos',
+        id = t === 'skin' ? game.SKIN : game.SH.eq[game.hnSlot];
+      if (id) {
+        s.innerHTML = game.selBuff(t, id);
+      }
+    }
   };
   game._memberStats = game.memberStats;
   game.memberStats = function (m) {
