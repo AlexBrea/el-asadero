@@ -46,11 +46,33 @@ function heroBuffs(){
   ensureSh();
   const b={dmg:0,hp:0,crit:0,def:0,spd:0,vamp:0};
   ['hat','shoes','suit'].forEach(s=>{const x=catOf(SH.eq[s]);if(x&&SLOTB[x.slot]){const c=cosBuff(x);b[c.t]+=c.v;}});
-  if(chestSkin(SKIN)&&SH.own[SKIN]){const k=skinBuff(SKIN,skLvl(SKIN));b[k.t]+=k.v;}
+  const k=curSkinBuff();if(k)b[k.t]+=k.v;
   return b;
 }
 const buffTxt=b=>{const a=Object.keys(b).filter(k=>b[k]>0).map(k=>'+'+pct(b[k])+'% '+BTX[k]);return a.length?a.join(' · '):'ninguno (equipa cosméticos o una skin de cofre)';};
 CAT.forEach(x=>{if(SLOTB[x.slot]){const c=cosBuff(x);x.d+=' · +'+pct(c.v)+'% '+BTX[c.t];}});
+/* skins de nivel (no de cofre): bono fijo según lo difícil de conseguir */
+const lvRar=l=>l<=6?'common':l<=15?'rare':l<=25?'epic':'legend';
+function lvSkinBuff(id){const sk=SKINS.find(x=>x.id===id);if(!sk||sk.lvl>=9999||id==='classic')return null;const t=['dmg','hp','crit','spd','def'][hashId(id)%5];return{t,v:BV[lvRar(sk.lvl)]*0.8*(t==='spd'?0.8:1)};}
+function curSkinBuff(){
+  if(chestSkin(SKIN)&&SH.own[SKIN])return skinBuff(SKIN,skLvl(SKIN));
+  return lvSkinBuff(SKIN);
+}
+SKINS.forEach(sk=>{const b=lvSkinBuff(sk.id);if(b)sk.d+=' · +'+pct(b.v)+'% '+BTX[b.t];});
+/* panel de estadísticas extra en \"Mi gallina\" */
+function buffPanel(){
+  ensureSh();const rows=[];
+  const sk=SKINS.find(x=>x.id===SKIN),kb=curSkinBuff();
+  if(sk&&kb)rows.push(['🎨 Skin '+sk.n+(chestSkin(SKIN)?' (nv '+skLvl(SKIN)+')':''),kb]);
+  [['hat','🎩'],['shoes','👟'],['suit','🧥']].forEach(([sl,ic])=>{const x=catOf(SH.eq[sl]);if(x&&SLOTB[x.slot])rows.push([ic+' '+x.n,cosBuff(x)]);});
+  let h='<b>📊 Estadísticas extra</b>';
+  if(!rows.length)h+='<span class="bnr">Sin bonos todavía: equipa cosméticos o una skin.</span>';
+  else{rows.forEach(r=>{h+='<span class="bnr"><i>'+r[0]+'</i><em>+'+pct(r[1].v)+'% '+BTX[r[1].t]+'</em></span>';});
+    h+='<span class="bnr tot"><i>Total</i><em>'+buffTxt(heroBuffs())+'</em></span>';}
+  return h;
+}
+const _showHen=showHen;
+showHen=function(){_showHen.apply(this,arguments);const cv=$('hcv');if(!cv)return;const d=document.createElement('div');d.className='bnp';d.innerHTML=buffPanel();cv.insertAdjacentElement('afterend',d);};
 const _memberStats=memberStats;
 memberStats=function(m){
   const o=_memberStats.apply(this,arguments);
@@ -104,6 +126,8 @@ showShop=function(){if(shSlot==='skin')shSlot='hat';_showShop.apply(this,argumen
   +'.cbt{background:linear-gradient(#ffd24a,#ff9d1e);color:#2a1448;border:none;border-radius:12px;padding:7px 12px;font-weight:900;font-size:13px;font-family:inherit;box-shadow:0 3px 0 #a35b00;cursor:pointer;margin-top:4px}'
   +'.cbt:active{transform:translateY(2px)}.cbt.dis{background:#ffffff1c;color:#d9ceff;box-shadow:none;cursor:default}.cbt.gr{background:linear-gradient(#7bed9f,#2ec866);box-shadow:0 3px 0 #17803d;color:#07381a}'
   +'.spc.lock{opacity:.5;filter:grayscale(.8)}.spb{display:flex;flex-direction:column;gap:4px;flex:none}'
+  +'.bnp{background:#ffffff14;border:2px solid #6a58b8;border-radius:12px;padding:6px 10px;margin:0 0 8px;text-align:left;font-size:12px}.bnp b{display:block;color:#ffe08a;font-size:13px;margin-bottom:3px}'
+  +'.bnr{display:flex;justify-content:space-between;gap:8px;padding:1px 0;color:#ece6ff;font-weight:700}.bnr i{font-style:normal}.bnr em{font-style:normal;color:#7bed9f;font-weight:900;text-align:right}.bnr.tot{border-top:1px solid #ffffff22;margin-top:3px;padding-top:3px}'
   +'#tabbar button{min-width:0}#tabbar button span{white-space:nowrap}';
   document.head.appendChild(st);
 })();
