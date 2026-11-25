@@ -148,10 +148,11 @@ function claimAfter(){if(passOpen)showPass();else{const h=$('home');if(h&&h.clas
   st.textContent='#home{position:fixed;inset:0;z-index:5;display:none;flex-direction:column;align-items:center;gap:8px;padding:calc(10px + env(safe-area-inset-top)) 14px calc(84px + env(safe-area-inset-bottom));background:radial-gradient(ellipse at 50% 40%,#4d3796 0%,#291c55 55%,#130c2b 100%);overflow-y:auto}'
   +'#home.on{display:flex}'
   +'#home .hr{display:flex;width:100%;max-width:560px;align-items:center;justify-content:space-between;gap:10px;flex:none}'
-  +'#home .hb{width:50px;height:50px;border-radius:16px;background:linear-gradient(#ffd24a,#ff9d1e);border:3px solid #fff6;font-size:26px;cursor:pointer;box-shadow:0 4px 0 #a35b00;font-family:inherit;color:#2a1448}'
+  +'#home .hg{display:flex;gap:6px;align-items:center;flex:none}#home .hg .coin{margin:0;padding:2px 10px}#home .hb.out{background:linear-gradient(#ff8a98,#e0455a);box-shadow:0 4px 0 #8f1f2f}'
+  +'#home .hb{width:44px;height:44px;border-radius:14px;background:linear-gradient(#ffd24a,#ff9d1e);border:3px solid #fff6;font-size:26px;cursor:pointer;box-shadow:0 4px 0 #a35b00;font-family:inherit;color:#2a1448}'
   +'#home .hb.alt{background:linear-gradient(#6fd3ff,#2d8fe0);box-shadow:0 4px 0 #145a9a}'
   +'#home .hb:active{transform:translateY(3px)}'
-  +'#home .ttl{font-weight:900;font-size:clamp(20px,5vw,30px);color:#ffe08a;text-shadow:0 3px 0 #0008;letter-spacing:1px;text-align:center;line-height:1}'
+  +'#home .ttl{flex:1;min-width:0;font-weight:900;font-size:clamp(14px,4.2vw,28px);color:#ffe08a;text-shadow:0 3px 0 #0008;letter-spacing:1px;text-align:center;line-height:1}'
   +'#home .ttl small{display:block;font-size:11px;color:#c9bff0;letter-spacing:0;text-shadow:none;margin-top:3px}'
   +'#home .hpass{width:100%;max-width:560px;flex:none;display:flex;align-items:center;gap:10px;background:#ffffff16;border:2px solid #ffd24a;border-radius:16px;padding:7px 12px;cursor:pointer;text-align:left}'
   +'#home .hpass .pm{flex:1;min-width:0;font-weight:900;font-size:14px}#home .hpass .pm small{color:#c9bff0;font-size:11px;font-weight:700}'
@@ -172,12 +173,12 @@ function showHome(){
   const el=$('home');if(!el)return;
   shopRoll();tabCur='game';
   const rn=getRun(),hasRun=!!(rn&&!rn.x&&rn.tm),t=bpTier(),pend=t-SH.bp,pc=t>=SH_TOP?100:Math.round((SH.px%PX_TIER)/PX_TIER*100);
-  let h='<div class="hr">'+(ONLINE?'<button class="hb" id="hrank" aria-label="Ranking">🏆</button>':'<span style="width:50px"></span>')+'<div class="ttl">EL ASADERO<small>Rondas infinitas</small></div>'+coinChip()+'</div>'
+  let h='<div class="hr"><div class="hg">'+(ONLINE?'<button class="hb" id="hrank" aria-label="Ranking">🏆</button>':'')+'<button class="hb alt" id="hach" aria-label="Logros">🏅</button></div><div class="ttl">EL ASADERO</div><div class="hg">'+coinChip()+(ONLINE?'<button class="hb out" id="hout" aria-label="Salir">🚪</button>':'')+'</div></div>'
    +'<div class="hpass" id="hpass"><span style="font-size:26px">🎟️</span><div class="pm">Pase de batalla · Nivel '+t+'/'+SH_TOP+'<div class="xpbar"><i style="width:'+pc+'%"></i></div><small>'+(t>=SH_TOP?'¡Completado!':SH.px%PX_TIER+' / '+PX_TIER+' puntos')+'</small></div>'+(pend>0?'<button class="go" id="hpclaim">🎁 Recoger +'+passGain()+' 🪙</button>':'<span class="go dis" style="padding:7px 10px">Ver</span>')+'</div>'
    +'<div class="hhen"><canvas id="hcv2"></canvas></div>'
    +'<div class="hname">'+(CNAME?esc(CNAME):'Tu gallina')+'<small>⭐ Nivel '+lvOf(XP)+' · '+titleOf(lvOf(XP))+(ONLINE?' · 🏆 '+(BEST||0):'')+'</small></div>'
    +'<div class="hmis" id="hmis"></div>'
-   +'<div class="hplay">'+(hasRun?'<button class="btn" id="hcont">▶ Continuar · ronda '+rn.n+'</button>':'')+'<button class="btn" id="hnew">'+(hasRun?'🆕 Nueva partida':'¡JUGAR!')+'</button><button class="btn alt" id="hach">🏅 Logros</button>'+(ONLINE?'<button class="btn alt" id="hout">Salir</button>':'')+'</div>';
+   +'<div class="hplay">'+(hasRun?'<button class="btn" id="hcont">▶ Continuar · ronda '+rn.n+'</button>':'')+'<button class="btn'+(hasRun?' alt':'')+'" id="hnew">'+(hasRun?'🆕 Nueva partida':'¡JUGAR!')+'</button></div>';
   el.innerHTML=h;
   $('modal').classList.add('off');el.classList.add('on');
   const box=$('hmis');
