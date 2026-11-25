@@ -92,17 +92,20 @@ function drawFaces(c,faces){
   };
 })();
 
-/* ---- crecimiento visual: cada mejora hace crecer a la gallina; el Pico de oro agranda el pico ---- */
+/* ---- crecimiento visual: Súper plumaje (vida) hace crecer y esponjar a la gallina; Pico de oro agranda el pico ---- */
 (function(){
   const baseMk=mkUnit,baseApply=applyTo;
-  const total=e=>{let n=0;for(const k in e.l)if(k!=='flock'&&UPG[k])n+=e.l[k]||0;return n;};
   mkUnit=function(side,e){
     const u=baseMk(side,e);
     if(!e||!e.l||u.dead)return u;
-    const n=total(e),gr=1+Math.min(0.6,0.03*n);          /* hasta +60% de tamaño */
+    const v=e.l.vit||0,gr=1+Math.min(0.9,0.06*v);          /* hasta +90% de tamaño */
     if(gr>1){u.sc*=gr;u.size*=gr;u.top*=gr;}
+    if(v>0&&Array.isArray(u.model)){                          /* más esponjosa: cuerpo más ancho */
+      const fl=1+Math.min(0.5,0.05*v);
+      u.model=u.model.map(p=>p.role==='body'?Object.assign({},p,{s:[p.s[0],p.s[1],p.s[2]*fl]}):p);
+    }
     const g=e.l.gold||0;
-    if(g>0&&Array.isArray(u.model)){                        /* pico dorado más largo y grueso */
+    if(g>0&&Array.isArray(u.model)){                          /* pico dorado más largo y grueso */
       const f=1+0.3*g;
       u.model=u.model.map(p=>{
         if(!p.beak)return p;
@@ -115,8 +118,7 @@ function drawFaces(c,faces){
   applyTo=function(m,k){
     baseApply(m,k);
     if(simming||!m||!m.l||!UPG[k])return;
-    const g=m.l[k]||0;
-    if(k==='gold')toast('🪙 ¡Pico de oro nivel '+g+'! Le crece el pico');
-    else if(m.hero)toast('🐔 ¡'+UPG[k].n+'! Tu gallina crece');
+    if(k==='gold')toast('🪙 ¡Pico de oro nivel '+(m.l.gold||0)+'! Le crece el pico');
+    else if(k==='vit'&&m.hero)toast('❤️ ¡Súper plumaje nivel '+(m.l.vit||0)+'! Tu gallina crece');
   };
 })();
