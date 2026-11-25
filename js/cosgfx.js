@@ -115,3 +115,17 @@ function cosAcc(cs,base,parts){
       });break;
   }
 }
+/* getModel con cosméticos: el héroe (gallina con skin, nivel 0) lleva SH.eq salvo que se indique otro conjunto (cs) */
+const getModelBase=getModel;
+getModel=function(k,tier,gold,skin,spec,cs){
+  const mo=getModelBase(k,tier,gold,skin,spec);
+  if(k!=='chicken'||tier!==0)return mo;
+  if(cs===undefined)cs=skin?cosOf():null;
+  if(!cs||!(cs.hat||cs.shoes||cs.suit))return mo;
+  const id='X'+k+(gold?'G':'')+(skin||'')+(spec?'S'+spec:'')+'C'+(cs.hat||'')+'.'+(cs.shoes||'')+'.'+(cs.suit||'');
+  if(mcache[id])return mcache[id];
+  const parts=mo.parts.slice();cosAcc(cs,SP[k].mk(),parts);
+  let top=0,hw=0;
+  parts.forEach(p=>{top=Math.max(top,p.c[1]+p.s[1]/2);hw=Math.max(hw,Math.abs(p.c[2])+p.s[2]/2);});
+  return mcache[id]={parts,size:mo.size,top,hw,rbw:mo.rbw};
+};
