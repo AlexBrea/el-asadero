@@ -18,6 +18,7 @@ function update(dt){
   }
   updateFx(sdt);
   units.forEach(u=>updateAnim(u,sdt));
+  bossFlames(sdt);
   if(units.some(u=>u.dead))units=units.filter(u=>!u.dead);
   for(const p of parts){p.life-=sdt;p.x+=p.vx*sdt;p.y+=p.vy*sdt;p.z+=p.vz*sdt;if(p.k==='s')p.vy-=12*sdt;else{p.vx*=0.95;p.vz*=0.95;}if(p.y<0&&p.k==='s'){p.y=0;p.vy*=-0.3;}}
   for(let i=parts.length-1;i>=0;i--)if(parts[i].life<=0)parts.splice(i,1);
@@ -25,6 +26,18 @@ function update(dt){
   for(let i=floaters.length-1;i>=0;i--)if(floaters[i].life<=0)floaters.splice(i,1);
   shake*=Math.exp(-dt*6);
   decor.forEach(d=>{if(d.bob)d.y=1.4+Math.max(0,Math.sin(TT*(st==='fight'?7:2.5)+d.seed))*(st==='fight'?0.35:0.08);});
+}
+/* llamas rojas que suben de los jefes */
+function bossFlames(dt){
+  if(simming)return;
+  const C=['#ff1a2a','#ff3a1a','#e0102a','#ff5a1a'];
+  for(const u of units){
+    if(!u.boss||u.dying||u.dead||u.spawnT<1)continue;
+    if(Math.random()<dt*55){
+      const a=Math.random()*6.28,r=u.size*(0.3+Math.random()*0.35);
+      parts.push({x:u.x+Math.cos(a)*r,y:0.1+Math.random()*u.top*0.95+u.y,z:u.z+Math.sin(a)*r,vx:(Math.random()-0.5)*0.5,vy:1.1+Math.random()*1.3,vz:(Math.random()-0.5)*0.5,life:0.8,max:0.8,c:C[(Math.random()*C.length)|0],s:0.13+Math.random()*0.14,k:Math.random()<0.75?'bf':'p'});
+    }
+  }
 }
 function render(){
   setCam(TT);
@@ -37,7 +50,20 @@ function render(){
     ctx.fillStyle='rgba(20,10,40,'+(0.35*k*u.alpha)+')';
     ctx.beginPath();ctx.ellipse(p[0],p[1],rx,rx*0.4,0,0,7);ctx.fill();
     ctx.strokeStyle=u.side?'rgba(255,84,104,'+(0.9*k*u.alpha)+')':'rgba(82,168,255,'+(0.9*k*u.alpha)+')';ctx.lineWidth=3;ctx.stroke();
+    if(u.boss){                                  /* aura roja en llamas de los jefes */
+      const pl=0.8+0.2*Math.sin(TT*5+u.seed),c0=proj(u.x,u.top*0.5+u.y,u.z);
+      if(c0){const R=u.size*1.2*F/c0[2],g=ctx.createRadialGradient(c0[0],c0[1],R*0.15,c0[0],c0[1],R);
+        g.addColorStop(0,'rgba(230,20,40,'+(0.7*pl*u.alpha)+')');g.addColorStop(0.6,'rgba(200,10,30,'+(0.38*pl*u.alpha)+')');g.addColorStop(1,'rgba(180,0,20,0)');
+        ctx.fillStyle=g;ctx.beginPath();ctx.arc(c0[0],c0[1],R,0,7);ctx.fill();}
+      ctx.strokeStyle='rgba(255,40,50,'+(0.55*pl*k*u.alpha)+')';ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(p[0],p[1],rx*1.12,rx*0.45,0,0,7);ctx.stroke();
+    }
   }
+  for(const p of parts){                       /* llamas de jefe, detrás del cuerpo */
+    if(p.k!=='bf')continue;
+    const q=proj(p.x,p.y,p.z);if(!q)continue;const r=Math.max(2,p.s*F/q[2]*1.5),k=Math.max(0,p.life/p.max);
+    ctx.globalAlpha=k*0.85;ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(q[0],q[1],r*(1.5-0.6*k),0,7);ctx.fill();
+  }
+  ctx.globalAlpha=1;
   // anillos en el suelo
   for(const f of fx){
     if(f.k!=='ring')continue;
@@ -74,6 +100,7 @@ function render(){
     }
   }
   for(const p of parts){
+    if(p.k==='bf')continue;
     const q=proj(p.x,p.y,p.z);if(!q)continue;const r=Math.max(1.5,p.s*F/q[2]),k=Math.max(0,p.life/p.max);
     if(p.k==='p'){ctx.globalAlpha=k*0.7;ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(q[0],q[1],r*(1.6-k),0,7);ctx.fill();}
     else{ctx.globalAlpha=Math.min(1,k*1.5);ctx.fillStyle=p.c;ctx.fillRect(q[0]-r,q[1]-r,r*2,r*2);}
@@ -84,7 +111,7 @@ function render(){
   for(const u of units){
     if(u.dying||u.dead||u.spawnT<1)continue;
     if(fp&&u.hero)continue;
-    const mk=u.hero?((u.ref&&u.ref.spec?SPECS[u.ref.spec].n+' · ':'')+(CNAME||'⭐')):u.boss?'👹':'';if(mk){const q=proj(u.x,u.top+0.85+u.y,u.z);if(q){const fs=Math.max(14,Math.min(30,F/q[2]*0.5));ctx.font='900 '+fs+'px sans-serif';ctx.lineWidth=4;ctx.strokeStyle='#1b1330';ctx.strokeText(mk,q[0],q[1]-26);ctx.fillStyle='#ffd24a';ctx.fillText(mk,q[0],q[1]-26);}}
+    const mk=u.hero?((u.ref&&u.ref.spec?SPECS[u.ref.spec].n+' · ':'')+(CNAME||'⭐')):'';if(mk){const q=proj(u.x,u.top+0.85+u.y,u.z);if(q){const fs=Math.max(14,Math.min(30,F/q[2]*0.5));ctx.font='900 '+fs+'px sans-serif';ctx.lineWidth=4;ctx.strokeStyle='#1b1330';ctx.strokeText(mk,q[0],q[1]-26);ctx.fillStyle='#ffd24a';ctx.fillText(mk,q[0],q[1]-26);}}
     const q=proj(u.x,u.top+0.3+u.y,u.z);if(!q)continue;
     bars.push({u,x:q[0],y:q[1],d:q[2],w:Math.max(36,Math.min(86,u.size*1.0*F/q[2]))});
   }

@@ -122,3 +122,11 @@ function drawFaces(c,faces){
     else if(k==='vit'&&m.hero)toast('❤️ ¡Súper plumaje nivel '+(m.l.vit||0)+'! Tu gallina crece');
   };
 })();
+
+/* ---- los jefes ya no llevan emoji de demonio (llevan aura roja) ---- */
+(function(){
+  const strip=t=>String(t).replace(/👹\s?/g,'');
+  const rh=rosterHTML,bn=banner;
+  rosterHTML=function(){return strip(rh.apply(this,arguments));};
+  banner=function(t,c){return bn.call(this,strip(t),c);};
+})();
