@@ -1,0 +1,4 @@
+node_modules/
+chrome-extension/
+package-lock.json
+coverage/
