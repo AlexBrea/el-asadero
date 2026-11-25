@@ -91,3 +91,32 @@ function drawFaces(c,faces){
     c.restore();
   };
 })();
+
+/* ---- crecimiento visual: cada mejora hace crecer a la gallina; el Pico de oro agranda el pico ---- */
+(function(){
+  const baseMk=mkUnit,baseApply=applyTo;
+  const total=e=>{let n=0;for(const k in e.l)if(k!=='flock'&&UPG[k])n+=e.l[k]||0;return n;};
+  mkUnit=function(side,e){
+    const u=baseMk(side,e);
+    if(!e||!e.l||u.dead)return u;
+    const n=total(e),gr=1+Math.min(0.6,0.03*n);          /* hasta +60% de tamaño */
+    if(gr>1){u.sc*=gr;u.size*=gr;u.top*=gr;}
+    const g=e.l.gold||0;
+    if(g>0&&Array.isArray(u.model)){                        /* pico dorado más largo y grueso */
+      const f=1+0.3*g;
+      u.model=u.model.map(p=>{
+        if(!p.beak)return p;
+        const s=[p.s[0]*f,p.s[1]*(1+0.14*g),p.s[2]*(1+0.14*g)];
+        return Object.assign({},p,{s,c:[p.c[0]+(s[0]-p.s[0])/2,p.c[1]-(s[1]-p.s[1])*0.1,p.c[2]]});
+      });
+    }
+    return u;
+  };
+  applyTo=function(m,k){
+    baseApply(m,k);
+    if(simming||!m||!m.l||!UPG[k])return;
+    const g=m.l[k]||0;
+    if(k==='gold')toast('🪙 ¡Pico de oro nivel '+g+'! Le crece el pico');
+    else if(m.hero)toast('🐔 ¡'+UPG[k].n+'! Tu gallina crece');
+  };
+})();
