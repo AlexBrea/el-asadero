@@ -62,10 +62,10 @@ function roundOver(pw){
   st='rounddone';
   if(pw){
     snd.win();banner(infN%10===0?'¡JEFE DERROTADO!':'¡RONDA '+infN+' SUPERADA!','#7bed9f');
-    if(infN>BEST)BEST=infN;saveProg();awardXP(1+rl('xp'),true);ST.r++;if(infN%10===0)ST.b++;achCheck();saveStats();snapRun('won');
+    if(infN>BEST)BEST=infN;saveProg();awardXP(1+rl('xp'),true);ST.r++;if(infN%10===0)ST.b++;achCheck();saveStats();shopRound(true,infN%10===0);snapRun('won');
     later(()=>winPanel(phoenixLost.length?'¡Ganaste! Pero perdiste el Huevo fénix de '+[...new Set(phoenixLost)].map(memberName).join(' y '):null),1800);
   }else{
-    snd.lose();banner('¡HAS CAÍDO!','#ff6b6b');saveProg();clearRun();saveStats();
+    snd.lose();banner('¡HAS CAÍDO!','#ff6b6b');saveProg();clearRun();saveStats();shopRound(false);
     later(()=>{
       st='levelend';const rs=infN-1;
       setModal('<div class="big">🐔💀</div><h1>Fin de la partida</h1><p>Superaste <b>'+rs+'</b> '+(rs===1?'ronda':'rondas')+(rs>0&&rs>=BEST?' · ¡NUEVO RÉCORD! 🏆':'')+'<br>Récord: '+BEST+'</p>'+xpEndHTML(),[{t:'Jugar otra vez',f:startInf}].concat(ONLINE?[{t:'🏆 Ranking',cls:'alt',f:showRanking}]:[]).concat([{t:'Menú',cls:'alt',f:showMenu}]));

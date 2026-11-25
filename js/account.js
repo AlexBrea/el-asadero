@@ -19,11 +19,12 @@ function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
 function loadProfile(uid,data,pd){
   UID=uid;CNAME=cleanName(pd&&typeof pd.name==='string'&&pd.name?pd.name:lsGet('asadero_name_'+uid));
   ST=stMax(pj(lsGet('asadero_st_'+uid)),pd&&pd.st);
+  shopLoad(pd&&pd.st&&pd.st.sh);
   {const a=pj(lsGet('asadero_run_'+uid)),b=pj(pd&&pd.run);if(b&&(!a||(b.ts||0)>(a.ts||0)))lsSet('asadero_run_'+uid,JSON.stringify(b));}
   const lx=Math.floor(+lsGet('asadero_xp_'+uid)||0),cx=Math.floor(+(data&&data.xp)||0);
   XP=Math.max(lx,cx);
   const sk=(data&&data.skin)||lsGet('asadero_skin_'+uid)||'classic',L=lvOf(XP);
-  SKIN=SKINS.some(x=>x.id===sk&&L>=x.lvl)?sk:'classic';
+  SKIN=SKINS.some(x=>x.id===sk&&(L>=x.lvl||SH.own[x.id]))?sk:'classic';
   achPrev=achSet();
 }
 function saveProfile(){

@@ -6,7 +6,7 @@ function saveStats(){lsSet('asadero_st_'+UID,JSON.stringify(ST));cloudProfile();
 function cloudProfile(now){
   if(!ONLINE||!fbAuth.currentUser)return Promise.resolve();
   clearTimeout(cpT);
-  const go=()=>fbDb.collection('players').doc(fbAuth.currentUser.uid).set({name:CNAME,st:ST,run:lsGet('asadero_run_'+UID)||'',ts:Date.now()}).catch(e=>console.warn('Datos no guardados en la nube',e&&e.code));
+  const go=()=>fbDb.collection('players').doc(fbAuth.currentUser.uid).set({name:CNAME,st:Object.assign({},ST,{sh:SH}),run:lsGet('asadero_run_'+UID)||'',ts:Date.now()}).catch(e=>console.warn('Datos no guardados en la nube',e&&e.code));
   if(now)return go();
   cpT=setTimeout(()=>{if(fbAuth.currentUser)go();},2500);
   return Promise.resolve();
@@ -54,11 +54,11 @@ function resumeRun(){
 
 function showMenu(){
   if(mode==='inf')cloudSave();
-  resetBattle();mode='menu';TH=THEMES[0];hideScreens();closeStats();
+  resetBattle();mode='menu';tabCur='game';TH=THEMES[0];hideScreens();closeStats();
   $('lvl').innerHTML='EL ASADERO<small>Rondas infinitas</small>';$('pips').innerHTML='';$('rosL').style.display=$('rosR').style.display='none';
   const a=newMember(true);a.fresh=false;team=[a];bteam=[{k:'gorilla',t:0},{k:'cat',t:0}];buildArena();units.forEach(u=>u.spawnT=1);team=[];bteam=[];
-  const rn=getRun(),hasRun=!!(rn&&!rn.x&&rn.tm),btns=[...(hasRun?[{t:'▶ Continuar · ronda '+rn.n,f:resumeRun}]:[]),{t:hasRun?'🆕 Nueva partida':'¡JUGAR!',f:newGame},{t:'🏅 Logros',cls:'alt',f:showAch},{t:'👤 Perfil',cls:'alt',f:showProfile}];
+  const rn=getRun(),hasRun=!!(rn&&!rn.x&&rn.tm),btns=[...(hasRun?[{t:'▶ Continuar · ronda '+rn.n,f:resumeRun}]:[]),{t:hasRun?'🆕 Nueva partida':'¡JUGAR!',f:newGame},{t:'🏅 Logros',cls:'alt',f:showAch}];
   if(ONLINE){btns.push({t:'🏆 Ranking',cls:'alt',f:showRanking});btns.push({t:'Salir',cls:'alt',f:doSignOut});}
-  setModal('<div class="big">🐔⚔️🦍</div><h1>EL ASADERO</h1>'+profHTML()+'<p>Empiezas con <b>una sola gallina</b>. Cada ronda eliges una mejora: ataques especiales como el pico de oro, rayos láser o huevos explosivos.<br>Los pollitos que te ayudan también se pueden mejorar. ¿Hasta qué ronda llegas?<br><br>'+(ONLINE?'Jugador: <b>'+esc(USER)+'</b>'+(BEST?' · 🏆 récord: <b>'+BEST+'</b>':''):'<small>Modo sin conexión: no se guarda el ranking</small>')+'</p>',btns);
+  setModal('<div class="big">🐔⚔️🦍</div><h1>EL ASADERO</h1>'+profHTML()+menuShopHTML()+'<p>Empiezas con <b>una sola gallina</b>. Cada ronda eliges una mejora: ataques especiales como el pico de oro, rayos láser o huevos explosivos.<br>Los pollitos que te ayudan también se pueden mejorar. ¿Hasta qué ronda llegas?<br><br>'+(ONLINE?'Jugador: <b>'+esc(USER)+'</b>'+(BEST?' · 🏆 récord: <b>'+BEST+'</b>':''):'<small>Modo sin conexión: no se guarda el ranking</small>')+'</p>',btns);
 }
 function goHome(){showMenu();}
