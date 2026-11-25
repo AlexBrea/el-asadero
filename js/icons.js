@@ -92,9 +92,9 @@ function drawFaces(c,faces){
   };
 })();
 
-/* ---- crecimiento visual: Súper plumaje (vida) hace crecer y esponjar a la gallina; Pico de oro agranda el pico ---- */
+/* ---- crecimiento visual: Súper plumaje (vida) hace crecer y esponjar a la gallina; Pico de oro agranda el pico (sin avisos) ---- */
 (function(){
-  const baseMk=mkUnit,baseApply=applyTo;
+  const baseMk=mkUnit;
   mkUnit=function(side,e){
     const u=baseMk(side,e);
     if(!e||!e.l||u.dead)return u;
@@ -114,12 +114,6 @@ function drawFaces(c,faces){
       });
     }
     return u;
-  };
-  applyTo=function(m,k){
-    baseApply(m,k);
-    if(simming||!m||!m.l||!UPG[k])return;
-    if(k==='gold')toast('🪙 ¡Pico de oro nivel '+(m.l.gold||0)+'! Le crece el pico');
-    else if(k==='vit'&&m.hero)toast('❤️ ¡Súper plumaje nivel '+(m.l.vit||0)+'! Tu gallina crece');
   };
 })();
 
