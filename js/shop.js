@@ -232,29 +232,38 @@ function showHen(){
 }
 /* showProfile (menú antiguo) ahora lleva a "Mi gallina" */
 showProfile=function(){showHen();};
-/* ---- moneda 3D dorada con una gallina en el centro ---- */
+/* ---- moneda 3D dorada ---- */
 (function(){const st=document.createElement('style');st.textContent='.c3{display:inline-block;width:1.7em;height:1.7em;vertical-align:-0.5em;margin:0 1px}';document.head.appendChild(st);})();
-const COIN_HEN=['.....##..','....####.','.#..#####','.##.###..','.#######.','..######.','...####..','....#.#..','...##.##.'];
-let coinCache=null;
-const coinYaw=()=>Math.PI/2+Math.sin(TT*1.6)*0.65;
-function coinSpec(){
-  if(coinCache)return coinCache;
-  const P=[],t=0.1,R=0.5,GD='#e8a812',EM='#8a4e00';
-  const GL={glow:true};
-  P.push(B([0,R,0],[t,R*2,R*1.3],GD,'body',GL));
-  P.push(B([0,R,0],[t,R*1.3,R*2],GD,'body',GL));
-  P.push(B([0,R,0],[t,R*1.75,R*1.75],GD,'body',GL));
-  /* cara elevada, más clara */
-  P.push(B([0,R,0],[t+0.05,R*1.3,R*1.5],'#ffc92e','body',GL));
-  P.push(B([0,R,0],[t+0.05,R*1.5,R*1.3],'#ffc92e','body',GL));
-  const c=0.075;
-  COIN_HEN.forEach((row,ri)=>{for(let ci=0;ci<9;ci++)if(row[ci]==='#'){
-    const y=R+(4-ri)*c,z=(ci-4)*c;
-    P.push(B([t/2+0.04,y,-z],[0.04,c,c],EM,'body'));
-    P.push(B([-t/2-0.04,y,z],[0.04,c,c],EM,'body'));
-  }});
-  const b=boundsOf(P);return coinCache=[Object.assign({},b,{robot:false,rbw:false})];
+/* moneda dorada redonda: cilindro girando, dibujado en 2D con perspectiva */
+const coins=[];
+function drawCoin(cv){
+  const dpr=Math.min(2,window.devicePixelRatio||1),w=cv.clientWidth||24,h=cv.clientHeight||24;
+  if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);}
+  const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,w,h);
+  if(cv._p===undefined)cv._p=Math.random()*6.28;
+  const a=TT*2.4+cv._p,cs=Math.cos(a),sn=Math.sin(a);
+  const r=Math.min(w,h)*0.45,th=r*0.3,cx=w/2,cy=h/2;
+  const rx=Math.max(r*Math.abs(cs),r*0.05),sg=cs>=0?1:-1;
+  const nx=cx+sg*sn*th/2,fx=cx-sg*sn*th/2;
+  /* cara lejana */
+  c.fillStyle='#a56a00';c.beginPath();c.ellipse(fx,cy,rx,r,0,0,7);c.fill();
+  /* canto */
+  const g=c.createLinearGradient(0,cy-r,0,cy+r);g.addColorStop(0,'#ffe27a');g.addColorStop(0.5,'#d99a0a');g.addColorStop(1,'#8f5a00');
+  c.fillStyle=g;c.beginPath();c.moveTo(fx,cy-r);c.lineTo(nx,cy-r);c.lineTo(nx,cy+r);c.lineTo(fx,cy+r);c.closePath();c.fill();
+  /* cara cercana */
+  const fg=c.createRadialGradient(nx-rx*0.35,cy-r*0.4,r*0.05,nx,cy,r*1.05);
+  fg.addColorStop(0,'#fff6b0');fg.addColorStop(0.35,'#ffd23a');fg.addColorStop(1,'#d08c00');
+  c.fillStyle=fg;c.beginPath();c.ellipse(nx,cy,rx,r,0,0,7);c.fill();
+  c.lineWidth=Math.max(1,r*0.07);c.strokeStyle='#a86b00';c.stroke();
+  /* aro interior y brillo */
+  c.lineWidth=Math.max(1,r*0.06);c.strokeStyle='rgba(150,90,0,.75)';c.beginPath();c.ellipse(nx,cy,rx*0.74,r*0.74,0,0,7);c.stroke();
+  c.fillStyle='rgba(255,255,255,.45)';c.beginPath();c.ellipse(nx-rx*0.32,cy-r*0.4,rx*0.18,r*0.1,-0.5,0,7);c.fill();
+  c.fillStyle='rgba(60,30,0,'+((1-Math.abs(cs))*0.28).toFixed(3)+')';c.beginPath();c.ellipse(nx,cy,rx,r,0,0,7);c.fill();
 }
+function drawCoins(){
+  for(let i=coins.length-1;i>=0;i--){if(!coins[i].isConnected){coins.splice(i,1);continue;}drawCoin(coins[i]);}
+}
+document.addEventListener('DOMContentLoaded',()=>{const base=renderIcons;renderIcons=function(){base.apply(this,arguments);drawCoins();};});
 function coinify(root){
   if(!root)return;
   const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),L=[];
@@ -262,7 +271,7 @@ function coinify(root){
   L.forEach(n=>{
     const parts=n.nodeValue.split('🪙'),f=document.createDocumentFragment();
     parts.forEach((s,i)=>{
-      if(i>0){const cv=document.createElement('canvas');cv.className='c3';f.appendChild(cv);icons.push({cv,spec:coinSpec,yaw:coinYaw});}
+      if(i>0){const cv=document.createElement('canvas');cv.className='c3';f.appendChild(cv);coins.push(cv);}
       if(s)f.appendChild(document.createTextNode(s));
     });
     n.parentNode.replaceChild(f,n);
