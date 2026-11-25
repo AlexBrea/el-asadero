@@ -41,7 +41,7 @@ function renderIcons(){
     const fit=Math.min(1.05/mx,1.5/sz);
     const faces=[];
     ents.forEach((e,i)=>{
-      const x=0,z=0,yaw=TT*1.1+i*0.7;
+      const x=0,z=0,yaw=ic.yaw?ic.yaw():TT*1.1+i*0.7;
       entFaces({model:e.parts,x,z,y:0,yaw,sc:fit,robot:e.robot,rbw:e.rbw,gait:TT*2,wk:0,state:'idle',seed:i,hw:0.3},faces);
       const p=proj(x,0,z);if(p){c.fillStyle='rgba(0,0,0,.35)';c.beginPath();c.ellipse(p[0],p[1],e.size*fit*0.55*F/p[2],e.size*fit*0.2*F/p[2],0,0,7);c.fill();}
     });
@@ -55,7 +55,7 @@ function drawFaces(c,faces){
   for(const f of faces){
     const p=f.p;c.globalAlpha=f.a;c.fillStyle=f.c;
     c.beginPath();c.moveTo(p[0],p[1]);c.lineTo(p[2],p[3]);c.lineTo(p[4],p[5]);c.lineTo(p[6],p[7]);c.closePath();c.fill();
-    c.strokeStyle='rgba(15,8,30,.35)';c.stroke();
+    c.strokeStyle='rgba(15,8,32,.35)';c.stroke();
   }
   c.globalAlpha=1;
 }

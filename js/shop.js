@@ -189,3 +189,42 @@ function showHen(){
 }
 /* showProfile (menú antiguo) ahora lleva a "Mi gallina" */
 showProfile=function(){showHen();};
+/* ---- moneda 3D dorada con una gallina en el centro ---- */
+(function(){const st=document.createElement('style');st.textContent='.c3{display:inline-block;width:1.7em;height:1.7em;vertical-align:-0.5em;margin:0 1px}';document.head.appendChild(st);})();
+const COIN_HEN=['.....##..','....####.','.#..#####','.##.###..','.#######.','..######.','...####..','....#.#..','...##.##.'];
+let coinCache=null;
+const coinYaw=()=>Math.PI/2+Math.sin(TT*1.6)*0.65;
+function coinSpec(){
+  if(coinCache)return coinCache;
+  const P=[],t=0.1,R=0.5,GD='#e8a812',EM='#8a4e00';
+  const GL={glow:true};
+  P.push(B([0,R,0],[t,R*2,R*1.3],GD,'body',GL));
+  P.push(B([0,R,0],[t,R*1.3,R*2],GD,'body',GL));
+  P.push(B([0,R,0],[t,R*1.75,R*1.75],GD,'body',GL));
+  /* cara elevada, más clara */
+  P.push(B([0,R,0],[t+0.05,R*1.3,R*1.5],'#ffc92e','body',GL));
+  P.push(B([0,R,0],[t+0.05,R*1.5,R*1.3],'#ffc92e','body',GL));
+  const c=0.075;
+  COIN_HEN.forEach((row,ri)=>{for(let ci=0;ci<9;ci++)if(row[ci]==='#'){
+    const y=R+(4-ri)*c,z=(ci-4)*c;
+    P.push(B([t/2+0.04,y,-z],[0.04,c,c],EM,'body'));
+    P.push(B([-t/2-0.04,y,z],[0.04,c,c],EM,'body'));
+  }});
+  const b=boundsOf(P);return coinCache=[Object.assign({},b,{robot:false,rbw:false})];
+}
+function coinify(root){
+  if(!root)return;
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),L=[];
+  let n;while((n=w.nextNode()))if(n.nodeValue.indexOf('🪙')>=0)L.push(n);
+  L.forEach(n=>{
+    const parts=n.nodeValue.split('🪙'),f=document.createDocumentFragment();
+    parts.forEach((s,i)=>{
+      if(i>0){const cv=document.createElement('canvas');cv.className='c3';f.appendChild(cv);icons.push({cv,spec:coinSpec,yaw:coinYaw});}
+      if(s)f.appendChild(document.createTextNode(s));
+    });
+    n.parentNode.replaceChild(f,n);
+  });
+  for(let i=icons.length-1;i>=0;i--)if(icons[i].cv&&!icons[i].cv.isConnected)icons.splice(i,1);
+}
+wrapFn('setModal',()=>coinify($('mbox')));
+wrapFn('toast',()=>coinify($('toast')));
