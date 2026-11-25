@@ -209,7 +209,27 @@ async function main() {
     }
     await waitFor('!!window.__testGame');
     assert.equal(await evaluate("document.querySelector('#mbox h1').textContent"), 'EL ASADERO');
-    await evaluate("document.getElementById('hnew').click()");
+    const playPoint = await evaluate(`(()=>{
+      const button=document.getElementById('hnew');
+      button.scrollIntoView({block:'center'});
+      const rect=button.getBoundingClientRect();
+      const x=rect.x+rect.width/2,y=rect.y+rect.height/2;
+      const target=document.elementFromPoint(x,y);
+      if(!target || !button.contains(target)) throw new Error('Play is covered by '+target?.outerHTML);
+      return {x,y};
+    })()`);
+    await send('Input.dispatchMouseEvent', {
+      type: 'mousePressed',
+      ...playPoint,
+      button: 'left',
+      clickCount: 1,
+    });
+    await send('Input.dispatchMouseEvent', {
+      type: 'mouseReleased',
+      ...playPoint,
+      button: 'left',
+      clickCount: 1,
+    });
     assert.equal(await evaluate('window.__testGame.st'), 'entrance');
     assert.ok(await evaluate('window.__testGame.units.find(u=>u.hero).z>6'));
     await new Promise((resolve) => setTimeout(resolve, 700));
@@ -438,9 +458,60 @@ async function main() {
     await evaluate('window.__testGame.session.showHen()');
     assert.ok(await evaluate("!!document.querySelector('.bnp')"));
     assert.ok(await evaluate('!(/\\p{Extended_Pictographic}/u.test(document.body.innerText))'));
+    await evaluate("document.getElementById('toast').style.visibility='hidden'");
+    // Every menu uses one scroll surface and fits narrow phones through desktop widths.
+    await send('Emulation.setEmulatedMedia', {
+      features: [{ name: 'prefers-reduced-motion', value: 'reduce' }],
+    });
+    for (const [width, height] of [
+      [320, 568],
+      [360, 740],
+      [390, 844],
+      [600, 900],
+      [768, 1024],
+      [1024, 768],
+      [1440, 900],
+      [844, 390],
+    ]) {
+      await viewport(width, height);
+      for (const screen of ['showMenu', 'showShop', 'showHen', 'showChests', 'showPass']) {
+        await evaluate(`window.__testGame.session.${screen}()`);
+        if (screen === 'showMenu')
+          await evaluate(`(()=>{
+          const game=window.__testGame.session,online=game.ONLINE;
+          game.ONLINE=true;game.showHome();game.ONLINE=online;
+        })()`);
+        await new Promise((resolve) => setTimeout(resolve, 140));
+        const layout = await evaluate(`(()=>{
+          const root=document.querySelector('#home.on')||document.getElementById('mbox');
+          const box=root.getBoundingClientRect();
+          const small=[...root.querySelectorAll('button')].filter(button=>{
+            const rect=button.getBoundingClientRect();
+            return rect.width>0 && rect.height>0 && (rect.width<43 || rect.height<43);
+          }).map(button=>button.id||button.textContent.trim());
+          return {overflow:root.scrollWidth-root.clientWidth,left:box.left,right:box.right,small,
+            nested:[...root.querySelectorAll('.skg,#skl')].some(grid=>grid.scrollHeight>grid.clientHeight+1),
+            playBottom:document.querySelector('#home.on #hnew')?.getBoundingClientRect().bottom};
+        })()`);
+        assert.ok(
+          layout.overflow <= 1,
+          screen + ' overflows at ' + width + ': ' + JSON.stringify(layout),
+        );
+        assert.ok(
+          layout.left >= 0 && layout.right <= width + 1,
+          screen + ' escapes viewport at ' + width,
+        );
+        assert.equal(layout.nested, false, screen + ' has nested scrolling at ' + width);
+        assert.deepEqual(layout.small, [], screen + ' has small tap controls at ' + width);
+        if (screen === 'showMenu' && height > 500)
+          assert.ok(layout.playBottom < height - 72, 'Play is below navigation at ' + width);
+        if ((width === 390 || width === 1440) && screen !== 'showPass')
+          await screenshot(screen + '-' + width);
+      }
+    }
     assert.equal(errors.length, 0, errors.join('\n'));
     console.log(
-      'PASS: real Chrome startup, 5 viewports, motion timing, reduced motion, keyboard, combat, boss rewards, 6 specializations, saved runs, shop, battle pass, chests, skin upgrades and inventory persistence.',
+      'PASS: real Chrome startup, responsive menus at 8 sizes, motion timing, reduced motion, keyboard, combat, boss rewards, 6 specializations, saved runs, shop, battle pass, chests, skin upgrades and inventory persistence.',
     );
   } finally {
     clearTimeout(timer);

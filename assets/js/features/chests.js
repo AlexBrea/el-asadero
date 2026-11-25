@@ -222,7 +222,7 @@ export function installChests(game) {
     const k = game.SH.ky;
     const h =
       '<div class="tabv"><h1>' +
-      icon('gift') +
+      icon('chest') +
       ' Cofres</h1>' +
       game.coinChip() +
       (' <div class="coin">' + icon('lock') + ' <b>') +

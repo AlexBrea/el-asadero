@@ -232,7 +232,7 @@ export function installShop(game) {
     game.shopRoll();
     const h =
       '<div class="tabv"><h1>' +
-      icon('gift') +
+      icon('shop') +
       ' Tienda</h1>' +
       game.coinChip() +
       '<p class="sm">Las monedas se consiguen con las misiones y el pase de batalla (pantalla Jugar).</p>' +
@@ -393,19 +393,19 @@ export function installShop(game) {
         : '') +
       ('<button class="hb alt" id="hach" aria-label="Logros">' +
         icon('medal') +
-        '</button></div><div class="ttl">EL ASADERO</div><div class="hg">') +
+        '</button></div><h1 class="ttl">EL ASADERO</h1><div class="hg">') +
       game.coinChip() +
       (game.ONLINE
         ? '<button class="hb out" id="hout" aria-label="Salir">' + icon('logout') + '</button>'
         : '') +
       '</div></div>' +
-      ('<div class="hpass" id="hpass"><span style="font-size:26px">' +
+      ('<div class="home-grid"><section class="home-progress" aria-label="Progreso y recompensas"><section class="hpass" id="hpass"><span class="pass-icon">' +
         icon('gift') +
-        '</span><div class="pm">Pase de batalla · Nivel ') +
+        '</span><div class="pm"><h2>Pase de batalla</h2><span>Nivel ') +
       t +
       '/' +
       game.SH_TOP +
-      '<div class="xpbar"><i style="width:' +
+      '</span><div class="xpbar"><i style="width:' +
       pc +
       '%"></i></div><small>' +
       (t >= game.SH_TOP
@@ -418,9 +418,9 @@ export function installShop(game) {
           ' Recoger +' +
           game.passGain() +
           ' __COIN__</button>'
-        : '<span class="go dis" style="padding:7px 10px">Ver</span>') +
-      '</div>' +
-      '<div class="hhen"><canvas id="hcv2"></canvas></div>' +
+        : '<button class="go" id="hpview">Ver pase</button>') +
+      '</section><section class="home-missions" aria-labelledby="missions-title"><div class="section-heading"><h2 id="missions-title">Misiones diarias</h2><span>Se renuevan cada día</span></div><div class="hmis" id="hmis"></div></section></section>' +
+      '<section class="home-hero" aria-label="Tu próxima partida"><p class="home-eyebrow">El ring te espera</p><div class="hhen"><canvas id="hcv2"></canvas></div>' +
       '<div class="hname">' +
       (game.CNAME ? game.esc(game.CNAME) : 'Tu gallina') +
       ('<small>' + icon('star') + ' Nivel ') +
@@ -429,7 +429,6 @@ export function installShop(game) {
       game.titleOf(game.lvOf(game.XP)) +
       (game.ONLINE ? ' · ' + icon('trophy') + ' ' + (game.BEST || 0) : '') +
       '</small></div>' +
-      '<div class="hmis" id="hmis"></div>' +
       '<div class="hplay">' +
       (hasRun
         ? '<button class="btn" id="hcont">' +
@@ -442,7 +441,7 @@ export function installShop(game) {
       (hasRun ? ' alt' : '') +
       '" id="hnew">' +
       (hasRun ? icon('sparkles') + ' Nueva partida' : '¡JUGAR!') +
-      '</button></div>';
+      '</button></div></section></div>';
     el.innerHTML = h;
     game.$('modal').classList.add('off');
     el.classList.add('on');
@@ -465,6 +464,7 @@ export function installShop(game) {
         '</span>';
       const b = document.createElement('button');
       b.className = 'go' + (ok && !m.cl ? '' : ' dis');
+      b.disabled = !ok || !!m.cl;
       b.innerHTML = m.cl ? icon('check') : ok ? '__COIN__ +' + d.g : '__COIN__ ' + d.g;
       if (ok && !m.cl) {
         b.onclick = () => {
@@ -493,11 +493,7 @@ export function installShop(game) {
     on('hnew', game.newGame);
     on('hach', game.showAch);
     on('hout', game.doSignOut);
-    game.$('hpass').onclick = () => {
-      game.ensureAudio();
-      game.snd.click();
-      game.showPass();
-    };
+    on('hpview', game.showPass);
     game.icons.push({ cv: game.$('hcv2'), spec: game.heroPrev });
     game.coinify(el);
     game.tabSync();
@@ -510,12 +506,12 @@ export function installShop(game) {
     const h =
       '<div class="tabv"><h1>' +
       icon('chicken') +
-      ' Mi gallina</h1>' +
+      ' Mi gallina</h1><div class="hen-layout"><section class="hen-overview" aria-label="Vista de tu gallina">' +
       game.profHTML() +
-      '<input class="inp" id="cname" maxlength="12" placeholder="Ponle nombre a tu pollo" autocomplete="off" spellcheck="false" value="' +
+      '<label class="field-label" for="cname">Nombre de tu gallina</label><input class="inp" id="cname" maxlength="12" placeholder="Ponle nombre a tu pollo" autocomplete="off" spellcheck="false" value="' +
       game.CNAME +
       '" style="margin-bottom:8px"><canvas class="ic hen" id="hcv"></canvas>' +
-      '<div class="stabs sl">' +
+      '</section><section class="hen-equipment" aria-label="Equipamiento"><h2>Equipamiento</h2><div class="stabs sl">' +
       game.SLOTS.map(
         (s) =>
           '<button data-sl="' +
@@ -528,7 +524,7 @@ export function installShop(game) {
           s.n +
           '</button>',
       ).join('') +
-      '</div><div class="skg" id="hng"></div></div>';
+      '</div><div class="skg" id="hng"></div></section></div></div>';
     game.setModal(h, []);
     game.$('mbox').classList.add('hn');
     game.$('cname').oninput = (e) => {

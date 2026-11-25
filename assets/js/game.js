@@ -2,6 +2,7 @@
 import { DATA } from './config.js';
 import { createGameLoop } from './loop.js';
 import { installIntegration } from './integration.js';
+import { installLayout } from './layout.js';
 import { installCamera } from './features/camera.js';
 import { installModels } from './features/models.js';
 import { installCosgfx } from './features/cosgfx.js';
@@ -57,6 +58,7 @@ export function startGame() {
   installMain(game);
   installChests(game);
   const cleanup = installIntegration(game);
+  installLayout(game);
   Object.defineProperty(window, '__game', { configurable: true, value: game.getDebugApi() });
   game.boot();
   const loop = createGameLoop({

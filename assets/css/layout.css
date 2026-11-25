@@ -1,0 +1,557 @@
+/* Layout only: the existing palette and component surfaces remain in their owning files. */
+:root {
+  --nav-height: 76px;
+  --page-width: 1080px;
+  --page-gap: clamp(16px, 3vw, 32px);
+}
+html,
+body {
+  height: 100%;
+  height: 100dvh;
+}
+body {
+  user-select: auto;
+  -webkit-user-select: auto;
+}
+button,
+[role='button'] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+[role='button']:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+}
+#home,
+#mbox,
+#drawer .dbody,
+#panel {
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+#home {
+  gap: 24px;
+  padding: max(20px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right))
+    calc(var(--nav-height) + 24px + env(safe-area-inset-bottom))
+    max(24px, env(safe-area-inset-left));
+}
+#home .hr {
+  width: 100%;
+  max-width: var(--page-width);
+  min-height: 52px;
+  gap: 16px;
+  flex: none;
+}
+#home .hg {
+  flex: 1;
+  min-width: 0;
+}
+#home .hg:last-child {
+  justify-content: flex-end;
+}
+#home .ttl {
+  font-size: clamp(20px, 3vw, 30px);
+  letter-spacing: -0.7px;
+  white-space: nowrap;
+}
+#home .hb {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+#home .coin {
+  margin: 0;
+  white-space: nowrap;
+}
+.home-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: var(--page-gap);
+  align-items: center;
+  width: 100%;
+  max-width: var(--page-width);
+  margin: auto;
+}
+.home-hero {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  padding-block: 16px;
+  text-align: center;
+}
+.home-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+#home .hhen {
+  width: 100%;
+  max-width: 440px;
+  height: clamp(200px, 34dvh, 320px);
+  margin: 8px auto;
+}
+#home .hhen canvas {
+  width: 100%;
+  height: 100%;
+}
+#home .hname {
+  font-size: 24px;
+  margin: 0 0 20px;
+  overflow-wrap: anywhere;
+}
+#home .hname small {
+  font-size: 13px;
+  margin-top: 8px;
+}
+#home .hplay {
+  width: 100%;
+  max-width: 460px;
+  gap: 10px;
+}
+#home .hplay .btn {
+  flex: 1 1 160px;
+}
+.home-progress {
+  grid-column: 2;
+  grid-row: 1;
+  display: grid;
+  gap: 28px;
+  min-width: 0;
+}
+#home .hpass {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  gap: 12px;
+  padding: 18px;
+  cursor: default;
+}
+#home .hpass .pm {
+  min-width: 0;
+  font-size: 13px;
+}
+#home .hpass h2,
+.section-heading h2,
+.hen-equipment h2 {
+  font-size: 16px;
+  line-height: 1.3;
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+.pass-icon {
+  font-size: 24px;
+}
+#home .go {
+  min-height: 44px;
+  padding: 10px 12px;
+  flex-shrink: 0;
+  font-size: 12px;
+}
+.section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin-bottom: 12px;
+  text-align: left;
+}
+.section-heading > span {
+  font-size: 11px;
+}
+#home .hmis {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  gap: 10px;
+}
+#home .hm {
+  padding: 14px;
+  gap: 12px;
+}
+#home .hm .mt {
+  min-width: 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+#home .hm .xpbar {
+  margin-top: 10px;
+}
+#tabbar {
+  height: calc(var(--nav-height) + env(safe-area-inset-bottom));
+  padding: 8px max(12px, env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom))
+    max(12px, env(safe-area-inset-left));
+  gap: 8px;
+  align-items: stretch;
+}
+#tabbar button {
+  max-width: 180px;
+  min-height: 48px;
+  justify-content: center;
+  gap: 4px;
+  font-size: 20px;
+}
+#tabbar button span {
+  font-size: 12px;
+  line-height: 1.3;
+}
+body.hastab #modal {
+  padding: max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right))
+    calc(var(--nav-height) + 20px + env(safe-area-inset-bottom))
+    max(24px, env(safe-area-inset-left));
+}
+body.hastab .box {
+  max-height: calc(
+    100dvh - var(--nav-height) - 48px - env(safe-area-inset-top) - env(safe-area-inset-bottom)
+  );
+}
+.box:has(.tabv) {
+  width: min(100%, var(--page-width));
+  max-width: var(--page-width);
+  padding: clamp(20px, 3vw, 32px);
+  text-align: left;
+}
+.tabv {
+  min-width: 0;
+}
+.page-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.page-heading h1 {
+  margin: 0;
+  font-size: clamp(24px, 4vw, 32px);
+  line-height: 1.2;
+}
+.page-heading .coin {
+  margin: 0;
+  flex-shrink: 0;
+}
+.tabv .sm {
+  line-height: 1.6;
+  max-width: 720px;
+  font-size: 13px;
+}
+.tabv .stabs {
+  justify-content: flex-start;
+  gap: 8px;
+  margin: 20px 0;
+}
+.stabs button {
+  min-height: 44px;
+  padding: 10px 14px;
+}
+.tabv .skg {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+  max-height: none;
+  overflow: visible;
+  margin: 0;
+}
+.tabv .sk {
+  min-width: 0;
+  padding: 14px;
+  text-align: center;
+}
+.sk .nm {
+  font-size: 14px;
+  line-height: 1.3;
+  margin: 6px 0;
+}
+.sk .ds {
+  font-size: 12px;
+  line-height: 1.5;
+}
+.sk .pr {
+  margin-top: 10px;
+}
+#shg {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.tabv .skg.bp {
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+}
+.hen-layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.9fr) minmax(0, 1.3fr);
+  gap: var(--page-gap);
+  align-items: start;
+}
+.hen-overview,
+.hen-equipment {
+  min-width: 0;
+}
+.hen-overview .inp {
+  width: 100%;
+  max-width: none;
+}
+.field-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  margin: 18px 0 8px;
+}
+.hen-equipment h2 {
+  margin-top: 8px;
+}
+.hen-equipment .stabs {
+  margin-top: 14px;
+}
+.hen-overview .bnp {
+  padding: 14px;
+  margin-top: 16px;
+  line-height: 1.5;
+}
+.chrow {
+  gap: 16px;
+  margin: 20px 0;
+  justify-content: flex-start;
+}
+.chb {
+  max-width: none;
+  min-width: 0;
+  padding: 16px;
+  gap: 8px;
+  text-align: center;
+}
+.chb small {
+  font-size: 12px;
+  line-height: 1.5;
+}
+.cbt {
+  min-height: 44px;
+  padding: 10px 14px;
+}
+#skl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  max-height: none;
+  overflow: visible;
+  margin-top: 24px;
+}
+#skl .spc {
+  min-width: 0;
+  flex-wrap: wrap;
+  padding: 16px;
+  gap: 12px;
+}
+#skl .spc .ic {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+}
+#skl .spt {
+  flex: 1 1 140px;
+  min-width: 0;
+  line-height: 1.5;
+}
+#skl .spt small,
+#skl .spt span {
+  overflow-wrap: anywhere;
+}
+#skl .spb {
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
+#skl .spb button {
+  flex: 1;
+}
+#mbox .row {
+  margin-top: 24px;
+}
+#cards.tgt {
+  flex-wrap: wrap;
+}
+#cards.tgt .target-card {
+  flex: 1 1 140px;
+  max-width: 240px;
+  min-width: 0;
+}
+@media (max-width: 700px) {
+  :root {
+    --nav-height: 72px;
+  }
+  #home {
+    padding-inline: max(16px, env(safe-area-inset-left)) max(16px, env(safe-area-inset-right));
+    gap: 16px;
+  }
+  #home .hr {
+    gap: 8px;
+  }
+  #home .ttl {
+    font-size: clamp(16px, 4.5vw, 24px);
+  }
+  #home .coin {
+    font-size: 13px;
+    padding-inline: 10px;
+  }
+  .home-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+    margin: 0 auto;
+  }
+  .home-hero {
+    grid-column: 1;
+    grid-row: 1;
+    padding-top: 4px;
+  }
+  .home-progress {
+    grid-column: 1;
+    grid-row: 2;
+    gap: 24px;
+  }
+  #home .hhen {
+    height: clamp(140px, 25dvh, 220px);
+    max-width: 340px;
+    margin: 0;
+  }
+  #home .hname {
+    font-size: 21px;
+    margin-bottom: 16px;
+  }
+  #home .hplay {
+    max-width: none;
+  }
+  #home .hplay .btn {
+    flex-basis: 120px;
+    padding-inline: 14px;
+    font-size: 14px;
+  }
+  #home .hpass {
+    padding: 14px;
+  }
+  #home .hpass h2 {
+    font-size: 14px;
+  }
+  .pass-icon {
+    display: none;
+  }
+  #tabbar {
+    gap: 4px;
+  }
+  #tabbar button span {
+    font-size: 11px;
+  }
+  body.hastab #modal {
+    padding: max(12px, env(safe-area-inset-top)) 10px
+      calc(var(--nav-height) + 12px + env(safe-area-inset-bottom));
+  }
+  body.hastab .box {
+    max-height: calc(
+      100dvh - var(--nav-height) - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)
+    );
+  }
+  .box:has(.tabv) {
+    padding: 18px 14px;
+    border-radius: 18px;
+  }
+  .page-heading {
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .page-heading .coin {
+    font-size: 13px;
+    padding-inline: 10px;
+  }
+  .tabv .skg,
+  #shg {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .tabv .sk {
+    padding: 10px;
+  }
+  .tabv .skg.bp {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .tabv .stabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .stabs button {
+    padding-inline: 8px;
+    font-size: 12px;
+  }
+  .hen-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+  .hen-overview .ic.hen {
+    height: 180px;
+  }
+  .chrow {
+    gap: 10px;
+  }
+  .chb {
+    padding: 12px 8px;
+  }
+  .chb .chc {
+    width: 100%;
+    max-width: 140px;
+    height: auto;
+    aspect-ratio: 14/11;
+  }
+  .chb b {
+    font-size: 14px;
+  }
+  .chb small {
+    font-size: 11px;
+  }
+  #skl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  #cards.tgt .target-card {
+    flex-basis: 120px;
+  }
+  .rarity-guide summary {
+    min-height: 44px;
+  }
+}
+@media (max-height: 500px) and (min-width: 701px) {
+  #home .hhen {
+    height: 150px;
+  }
+  #home .hname {
+    margin-bottom: 12px;
+  }
+  .home-grid {
+    align-items: start;
+  }
+  #home {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 420px) {
+  #home .hr {
+    flex-wrap: wrap;
+    row-gap: 12px;
+  }
+  #home .ttl {
+    order: -1;
+    flex: 0 0 100%;
+    text-align: center;
+    font-size: 20px;
+  }
+}
+#toast {
+  max-width: calc(100vw - 32px);
+  font-size: 13px;
+  line-height: 1.4;
+  padding: 10px 14px;
+  border-radius: 12px;
+}

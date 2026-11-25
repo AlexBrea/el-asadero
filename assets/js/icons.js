@@ -39,6 +39,8 @@ const names = new Set([
   'home',
   'chart',
   'gift',
+  'shop',
+  'chest',
   'alert',
   'check',
   'lock',

@@ -49,4 +49,6 @@
 <symbol id="infinity" viewBox="0 0 24 24"><path d="M12 12C-3-7-3 31 12 12s15 19 0 0Z"/></symbol>
 <symbol id="medal" viewBox="0 0 24 24"><path d="m7 2 5 7 5-7M5 2h4m6 0h4M12 9a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z"/></symbol>
 <symbol id="party" viewBox="0 0 24 24"><path d="m8 8-6 14 14-6L8 8Zm7-6v4m5 3h3m-5-3 3-3M5 12l7 7"/></symbol>
+<symbol id="shop" viewBox="0 0 24 24"><path d="M4 7h16l1 14H3L4 7Zm4 0V6a4 4 0 0 1 8 0v1M8 11v1m8-1v1"/></symbol>
+<symbol id="chest" viewBox="0 0 24 24"><path d="M3 11V8a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v3M3 11h18v9H3v-9Zm5-7v7m8-7v7m-4 2v3M3 15h7m4 0h7"/></symbol>
 </svg>

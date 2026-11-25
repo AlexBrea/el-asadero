@@ -18,6 +18,7 @@ Para las herramientas de desarrollo, utiliza Node 24 (`nvm use`) y ejecuta `npm 
 - `assets/js/game.js`: composición de una sesión e instalación de sus dependencias.
 - `assets/js/features/`: módulos de combate, rondas, modelos, cámara, audio, especializaciones, reliquias, tienda, logros, cuenta y guardado. Comparten únicamente el registro de su sesión; no dependen de variables globales.
 - `assets/js/features/chests.js`, `assets/css/chests.css` y `chests` en el catálogo: cofres, llaves, niveles de skins y bonos del equipo.
+- `assets/css/layout.css` y `assets/js/layout.js`: distribución adaptable de los menús, cabeceras, controles accesibles y navegación. Conservan la paleta definida en los estilos existentes.
 - `assets/js/integration.js`: conecta estas funciones con las rarezas ponderadas, la interfaz accesible y la entrada al ring.
 - `assets/js/upgrade-ui.js`: cartas de mejora y explicación de las probabilidades.
 - `assets/js/loop.js` y `background-ticker.js`: reloj compartido para primer y segundo plano, pasos acotados y limpieza del worker.
@@ -53,6 +54,8 @@ Para ajustar las probabilidades, edita `rarities.*.weight` en el catálogo, mant
 - `npm run format`: aplicar el formato del repositorio.
 - `npm test`: distribución estadística, requisitos, catálogo, reloj, persistencia y colecciones del simulador.
 - `npm run test:browser`: Chrome con perfil temporal, modo invitado sin Firebase, arranque de módulos, cartas en cinco tamaños, selección de aliado, combate, premios de jefe, las seis especializaciones y sus definitivas, partidas guardadas, tienda y pase de batalla. Genera capturas en el directorio temporal.
+
+Las pantallas Jugar, Tienda, Mi gallina, Cofres y Pase se comprueban de 320 a 1440 px y en horizontal: sin desbordamientos, sin scroll anidado y con controles de al menos 44 px. Las capturas incluyen escritorio y móvil.
 
 La prueba de navegador busca Chrome en su ruta habitual de macOS. En otros sistemas puedes indicar el ejecutable con `ASADERO_CHROME=/ruta/a/chrome npm run test:browser`.
 La comprobación de móviles en Chrome valida el espacio y los controles; el tacto, el teclado y las áreas seguras requieren una revisión en un teléfono real.
