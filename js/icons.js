@@ -59,3 +59,35 @@ function drawFaces(c,faces){
   }
   c.globalAlpha=1;
 }
+
+/* ---- gallina grabada en la moneda ---- */
+(function(){
+  const base=drawCoin;
+  function henShape(c,ox,oy,r){
+    c.beginPath();
+    c.ellipse(ox-r*0.05,oy+r*0.12,r*0.42,r*0.32,-0.12,0,7);               /* cuerpo */
+    c.moveTo(ox+r*0.42,oy-r*0.38);c.arc(ox+r*0.3,oy-r*0.38,r*0.17,0,7);   /* cabeza */
+    c.moveTo(ox+r*0.3,oy-r*0.22);c.lineTo(ox+r*0.18,oy+r*0.02);c.lineTo(ox+r*0.1,oy-r*0.12);c.closePath(); /* cuello */
+    c.moveTo(ox-r*0.38,oy+r*0.02);c.lineTo(ox-r*0.66,oy-r*0.3);c.lineTo(ox-r*0.55,oy+r*0.12);c.lineTo(ox-r*0.68,oy+r*0.1);c.lineTo(ox-r*0.42,oy+r*0.3);c.closePath(); /* cola */
+    c.moveTo(ox+r*0.24,oy-r*0.55);c.lineTo(ox+r*0.3,oy-r*0.42);c.lineTo(ox+r*0.36,oy-r*0.56);c.lineTo(ox+r*0.4,oy-r*0.4);c.lineTo(ox+r*0.2,oy-r*0.4);c.closePath(); /* cresta */
+    c.moveTo(ox+r*0.46,oy-r*0.4);c.lineTo(ox+r*0.64,oy-r*0.33);c.lineTo(ox+r*0.46,oy-r*0.28);c.closePath(); /* pico */
+    c.fill();
+    c.fillRect(ox-r*0.1,oy+r*0.38,r*0.07,r*0.28);c.fillRect(ox+r*0.06,oy+r*0.38,r*0.07,r*0.28); /* patas */
+  }
+  drawCoin=function(cv){
+    base(cv);
+    const w=cv.clientWidth||24,h=cv.clientHeight||24,c=cv.getContext('2d');
+    const dpr=cv.width/w,a=TT*2.4+cv._p,cs=Math.cos(a),sn=Math.sin(a);
+    const r=Math.min(w,h)*0.45,th=r*0.3,cx=w/2,cy=h/2,sg=cs>=0?1:-1;
+    const rx=Math.max(r*Math.abs(cs),r*0.05),nx=cx+sg*sn*th/2;
+    if(rx<r*0.18||r<6)return;
+    c.save();c.setTransform(dpr,0,0,dpr,0,0);
+    c.translate(nx,cy);c.scale(rx/r,1);
+    c.beginPath();c.arc(0,0,r*0.7,0,7);c.clip();            /* dentro del aro */
+    const o=Math.max(0.6,r*0.05);
+    c.fillStyle='rgba(255,248,190,.85)';henShape(c,o,o,r*0.95);   /* brillo del relieve */
+    c.fillStyle='#9a5f00';henShape(c,0,0,r*0.95);                 /* gallina grabada */
+    c.fillStyle='#fff3a0';c.beginPath();c.arc(r*0.95*0.34,-r*0.95*0.4,r*0.045,0,7);c.fill(); /* ojo */
+    c.restore();
+  };
+})();
