@@ -7,7 +7,7 @@ const REL={
  hp:{e:'🪨',n:'Corazón de piedra',d:'+25% de vida a todo tu equipo',max:3},
  spd:{e:'👟',n:'Espuelas veloces',d:'Atacan y corren un 10% más rápido',max:3},
  crit:{e:'🍀',n:'Trébol de la suerte',d:'+12% de probabilidad de crítico (x3 daño)',max:3},
- vamp:{e:'🦧',n:'Colmillo de lobo',d:'Roban vida: 8% del daño que hacen',max:3},
+ vamp:{e:'🦷',n:'Colmillo de lobo',d:'Roban vida: 8% del daño que hacen',max:3},
  regen:{e:'🍲',n:'Caldo de la abuela',d:'Regeneran un 2% de su vida por segundo',max:3},
  rev:{e:'🪽',n:'Segundo aliento',d:'Cada uno revive una vez por ronda con la mitad de vida',max:1},
  xp:{e:'🏆',n:'Copa dorada',d:'+1 XP de cuenta por cada ronda superada',max:3},
