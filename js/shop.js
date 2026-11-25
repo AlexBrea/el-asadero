@@ -1,6 +1,6 @@
 'use strict';
 /* shop.js — Monedas, misiones diarias, pase de batalla, tienda y "Mi gallina" (+ tabbar) */
-const SH_TOP=20,PX_TIER=100;
+const SH_TOP=20,PX_TIER=300;
 let SH={c:0,own:{},eq:{},dq:null,ps:'',px:0,bp:0,ts:0};
 let tabCur='game',shSub='shop',shSlot='hat',hnSlot='hat';
 const cosOf=()=>SH.eq;
@@ -9,11 +9,11 @@ const dayKey=()=>{const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)
 const seasonKey=()=>{const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1);};
 /* misiones posibles (progreso = estadística actual − la de inicio del día) */
 const MPOOL=[
- {id:'r3',f:'r',t:3,g:30,n:'Supera 3 rondas'},{id:'r6',f:'r',t:6,g:60,n:'Supera 6 rondas'},{id:'r10',f:'r',t:10,g:90,n:'Supera 10 rondas'},
- {id:'k25',f:'k',t:25,g:30,n:'Derrota a 25 enemigos'},{id:'k60',f:'k',t:60,g:60,n:'Derrota a 60 enemigos'},{id:'k120',f:'k',t:120,g:90,n:'Derrota a 120 enemigos'},
- {id:'g2',f:'g',t:2,g:25,n:'Empieza 2 partidas'},{id:'g4',f:'g',t:4,g:50,n:'Empieza 4 partidas'},
- {id:'b1',f:'b',t:1,g:80,n:'Derrota a un jefe'},
- {id:'rl2',f:'rl',t:2,g:40,n:'Consigue 2 reliquias'},{id:'rl4',f:'rl',t:4,g:70,n:'Consigue 4 reliquias'}
+ {id:'r8',f:'r',t:8,g:8,n:'Supera 8 rondas'},{id:'r15',f:'r',t:15,g:18,n:'Supera 15 rondas'},{id:'r25',f:'r',t:25,g:35,n:'Supera 25 rondas'},
+ {id:'k80',f:'k',t:80,g:8,n:'Derrota a 80 enemigos'},{id:'k200',f:'k',t:200,g:18,n:'Derrota a 200 enemigos'},{id:'k400',f:'k',t:400,g:35,n:'Derrota a 400 enemigos'},
+ {id:'g3',f:'g',t:3,g:8,n:'Empieza 3 partidas'},{id:'g6',f:'g',t:6,g:16,n:'Empieza 6 partidas'},
+ {id:'b1',f:'b',t:1,g:20,n:'Derrota a un jefe'},{id:'b2',f:'b',t:2,g:40,n:'Derrota a 2 jefes'},
+ {id:'rl3',f:'rl',t:3,g:12,n:'Consigue 3 reliquias'},{id:'rl6',f:'rl',t:6,g:25,n:'Consigue 6 reliquias'}
 ];
 const mDef=id=>MPOOL.find(x=>x.id===id);
 function seedRng(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return()=>{h^=h<<13;h^=h>>>17;h^=h<<5;return((h>>>0)%100000)/100000;};}
@@ -48,7 +48,7 @@ function shopSave(){SH.ts=Date.now();lsSet('asadero_sh_'+UID,JSON.stringify(SH))
 const mProg=m=>{const d=mDef(m.id);return Math.min(d.t,Math.max(0,stN(ST[d.f])-stN(SH.dq.b[d.f])));};
 const mDone=m=>mProg(m)>=mDef(m.id).t;
 const bpTier=()=>Math.min(SH_TOP,Math.floor(SH.px/PX_TIER));
-const bpRew=t=>20+5*t+(t%5?0:100);
+const bpRew=t=>5+2*t+(t%5?0:25);
 function claimables(){
   if(!SH.dq)return 0;shopRoll();
   let n=0;SH.dq.m.forEach(m=>{if(!m.cl&&mDone(m))n++;});
@@ -57,20 +57,20 @@ function claimables(){
 let lastClaimable=0;
 function shopRound(pw,boss){
   shopRoll();
-  if(pw)SH.px+=boss?60:15;
+  if(pw)SH.px+=boss?25:5;
   shopSave();
   const n=claimables();
-  if(n>lastClaimable)toast('🎁 ¡Tienes recompensas por recoger en la <b>Tienda</b>!');
+  if(n>lastClaimable)toast('🎁 ¡Tienes recompensas por recoger en <b>Jugar</b>!');
   lastClaimable=n;
 }
 function claimMission(i){
   const m=SH.dq.m[i];if(!m||m.cl||!mDone(m))return;
-  m.cl=1;SH.c+=mDef(m.id).g;SH.px+=30;snd.win&&snd.win();shopSave();toast('🪙 +'+mDef(m.id).g+' monedas');showShop();
+  m.cl=1;SH.c+=mDef(m.id).g;SH.px+=30;snd.win&&snd.win();shopSave();toast('🪙 +'+mDef(m.id).g+' monedas');claimAfter();
 }
 function claimPass(){
   const t=bpTier();let g=0;
   for(let i=SH.bp+1;i<=t;i++)g+=bpRew(i);
-  if(!g)return;SH.bp=t;SH.c+=g;shopSave();toast('🪙 +'+g+' monedas del pase');showShop();
+  if(!g)return;SH.bp=t;SH.c+=g;shopSave();toast('🪙 +'+g+' monedas del pase');claimAfter();
 }
 function buyItem(id){
   const x=catOf(id);if(!x||SH.own[id])return;
@@ -89,7 +89,7 @@ function heroPrev(){const mo=getModel('chicken',0,false,SKIN,null,SH.eq);return 
 /* ---- tabbar ---- */
 function tabSync(){
   const tb=$('tabbar');if(!tb)return;
-  const on=mode==='menu'&&!!USER&&!$('modal').classList.contains('off');
+  const hm=$('home'),on=mode==='menu'&&!!USER&&(!$('modal').classList.contains('off')||!!(hm&&hm.classList.contains('on')));
   tb.style.display=on?'flex':'none';document.body.classList.toggle('hastab',on);
   if(!on)return;
   tb.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.t===tabCur));
@@ -100,60 +100,103 @@ function tabGo(t){
   if(t==='game')showMenu();else if(t==='shop')showShop();else showHen();
 }
 const wrapFn=(name,after)=>{const f=window[name];window[name]=function(){const r=f.apply(this,arguments);after();return r;};};
-wrapFn('setModal',tabSync);wrapFn('hideScreens',tabSync);
+wrapFn('setModal',tabSync);wrapFn('hideScreens',()=>{const h=$('home');if(h)h.classList.remove('on');passOpen=false;tabSync();});
 const coinChip=()=>'<div class="coin">🪙 <b>'+SH.c+'</b></div>';
 function menuShopHTML(){
   const n=claimables();
   return '<div class="coin">🪙 <b>'+SH.c+'</b>'+(n?' · <span style="color:#7bed9f">🎁 '+n+' por recoger</span>':'')+'</div>';
 }
 /* ---- Tienda ---- */
-function subTabs(){
-  return '<div class="stabs">'+[['shop','🛍️ Tienda'],['mis','📋 Misiones'],['pass','🎟️ Pase']].map(a=>'<button data-s="'+a[0]+'" class="'+(shSub===a[0]?'on':'')+'">'+a[1]+'</button>').join('')+'</div>';
-}
 function showShop(){
   tabCur='shop';hideScreens();closeStats();shopRoll();
-  let h='<div class="tabv"><h1>🛍️ Tienda</h1>'+coinChip()+subTabs();
-  if(shSub==='shop'){
-    h+='<div class="stabs sl">'+SLOTS.map(s=>'<button data-sl="'+s.id+'" class="'+(shSlot===s.id?'on':'')+'">'+s.e+' '+s.n+'</button>').join('')+'</div><div class="skg" id="shg"></div>';
-  }else if(shSub==='mis'){
-    h+='<p class="sm">Se renuevan cada día. Cada misión te da <b>monedas</b> y <b>30 XP de pase</b>.</p><div class="lst" id="shl"></div>';
-  }else{
-    const t=bpTier(),pend=t-SH.bp,pc=t>=SH_TOP?100:Math.round((SH.px%PX_TIER)/PX_TIER*100);
-    h+='<p class="sm">Temporada <b>'+SH.ps+'</b> · Nivel <b>'+t+'/'+SH_TOP+'</b><br>Ronda superada: +15 · Jefe: +60 · Misión: +30 puntos (100 por nivel)</p><div class="xpbar" style="max-width:380px;margin:0 auto 10px"><i style="width:'+pc+'%"></i></div>'+(pend>0?'<button class="btn" id="bpclaim" style="margin-bottom:10px">🎁 Recoger '+pend+' (+'+(function(){let g=0;for(let i=SH.bp+1;i<=t;i++)g+=bpRew(i);return g;})()+' 🪙)</button>':'')+'<div class="skg bp" id="shl"></div>';
-  }
+  let h='<div class="tabv"><h1>🛍️ Tienda</h1>'+coinChip()+'<p class="sm">Las monedas se consiguen con las misiones y el pase de batalla (pantalla Jugar).</p>'
+   +'<div class="stabs sl">'+SLOTS.map(s=>'<button data-sl="'+s.id+'" class="'+(shSlot===s.id?'on':'')+'">'+s.e+' '+s.n+'</button>').join('')+'</div><div class="skg" id="shg"></div></div>';
   $('mbox').classList.remove('hn');
-  setModal(h+'</div>',[]);
-  $('mbox').querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{ensureAudio();snd.click();shSub=b.dataset.s;showShop();});
+  setModal(h,[]);
   $('mbox').querySelectorAll('[data-sl]').forEach(b=>b.onclick=()=>{ensureAudio();snd.click();shSlot=b.dataset.sl;showShop();});
-  if(shSub==='shop'){
-    const box=$('shg');
-    CAT.filter(x=>x.slot===shSlot).forEach(x=>{
-      const own=!!SH.own[x.id],d=document.createElement('div');
-      d.className='sk'+(own?' sel':'');d.style.borderColor=own?'':RAR[x.rar].c;
-      d.innerHTML='<canvas class="ic"></canvas><div class="nm">'+x.n+'</div><div class="rar" style="color:'+RAR[x.rar].c+'">'+RAR[x.rar].n+'</div><div class="ds">'+x.d+'</div><div class="pr">'+(own?'✅ Tuyo':'🪙 '+x.price)+'</div>';
-      if(!own)d.onclick=()=>{ensureAudio();snd.click();buyItem(x.id);};
-      box.appendChild(d);icons.push({cv:d.querySelector('canvas'),spec:()=>cosPrev(x)});
-    });
-  }else if(shSub==='mis'){
-    const box=$('shl');
-    SH.dq.m.forEach((m,i)=>{
-      const d=mDef(m.id),p=mProg(m),ok=p>=d.t,r=document.createElement('div');
-      r.className='ms'+(m.cl?' cl':'');
-      r.innerHTML='<div class="mt"><b>'+d.n+'</b><div class="xpbar"><i style="width:'+Math.round(p/d.t*100)+'%"></i></div><small>'+p+' / '+d.t+'</small></div>';
-      const b=document.createElement('button');b.className='btn'+(ok&&!m.cl?'':' alt');b.textContent=m.cl?'✅':ok?'🪙 +'+d.g:'🪙 '+d.g;b.disabled=!ok||!!m.cl;
-      b.onclick=()=>{ensureAudio();snd.click();claimMission(i);};r.appendChild(b);box.appendChild(r);
-    });
-  }else{
-    const box=$('shl'),t=bpTier();
-    for(let i=1;i<=SH_TOP;i++){
-      const d=document.createElement('div');d.className='sk'+(i<=SH.bp?' sel':'')+(i>t?' lock':'');
-      d.style.cursor='default';
-      d.innerHTML='<div class="nm">Nivel '+i+'</div><div class="pr">'+(i%5?'':'⭐ ')+'🪙 '+bpRew(i)+'</div><div class="ds">'+(i<=SH.bp?'✅ Recogido':i<=t?'🎁 Listo':'🔒')+'</div>';
-      box.appendChild(d);
-    }
-    const bc=$('bpclaim');if(bc)bc.onclick=()=>{ensureAudio();snd.click();claimPass();};
-  }
+  const box=$('shg');
+  CAT.filter(x=>x.slot===shSlot).forEach(x=>{
+    const own=!!SH.own[x.id],d=document.createElement('div');
+    d.className='sk'+(own?' sel':'');d.style.borderColor=own?'':RAR[x.rar].c;
+    d.innerHTML='<canvas class="ic"></canvas><div class="nm">'+x.n+'</div><div class="rar" style="color:'+RAR[x.rar].c+'">'+RAR[x.rar].n+'</div><div class="ds">'+x.d+'</div><div class="pr">'+(own?'✅ Tuyo':'🪙 '+x.price)+'</div>';
+    if(!own)d.onclick=()=>{ensureAudio();snd.click();buyItem(x.id);};
+    box.appendChild(d);icons.push({cv:d.querySelector('canvas'),spec:()=>cosPrev(x)});
+  });
 }
+/* ---- Pase de batalla (detalle) ---- */
+let passOpen=false;
+function passGain(){let g=0;for(let i=SH.bp+1;i<=bpTier();i++)g+=bpRew(i);return g;}
+function showPass(){
+  tabCur='game';hideScreens();shopRoll();passOpen=true;
+  const t=bpTier(),pend=t-SH.bp,pc=t>=SH_TOP?100:Math.round((SH.px%PX_TIER)/PX_TIER*100);
+  const h='<div class="tabv"><h1>🎟️ Pase de batalla</h1>'+coinChip()+'<p class="sm">Temporada <b>'+SH.ps+'</b> · Nivel <b>'+t+'/'+SH_TOP+'</b><br>Ronda superada: +5 · Jefe: +25 · Misión: +30 puntos (300 por nivel)</p><div class="xpbar" style="max-width:380px;margin:0 auto 10px"><i style="width:'+pc+'%"></i></div>'+(pend>0?'<button class="btn" id="bpclaim" style="margin-bottom:10px">🎁 Recoger '+pend+' (+'+passGain()+' 🪙)</button>':'')+'<div class="skg bp" id="shl"></div></div>';
+  $('mbox').classList.remove('hn');
+  setModal(h,[{t:'Volver',cls:'alt',f:showMenu}]);
+  const box=$('shl');
+  for(let i=1;i<=SH_TOP;i++){
+    const d=document.createElement('div');d.className='sk'+(i<=SH.bp?' sel':'')+(i>t?' lock':'');
+    d.style.cursor='default';
+    d.innerHTML='<div class="nm">Nivel '+i+'</div><div class="pr">'+(i%5?'':'⭐ ')+'🪙 '+bpRew(i)+'</div><div class="ds">'+(i<=SH.bp?'✅ Recogido':i<=t?'🎁 Listo':'🔒')+'</div>';
+    box.appendChild(d);
+  }
+  const bc=$('bpclaim');if(bc)bc.onclick=()=>{ensureAudio();snd.click();claimPass();};
+}
+function claimAfter(){if(passOpen)showPass();else{const h=$('home');if(h&&h.classList.contains('on'))showHome();}}
+/* ---- Pantalla Jugar a pantalla completa ---- */
+(function(){
+  const st=document.createElement('style');
+  st.textContent='#home{position:fixed;inset:0;z-index:5;display:none;flex-direction:column;align-items:center;gap:8px;padding:calc(10px + env(safe-area-inset-top)) 14px calc(84px + env(safe-area-inset-bottom));background:radial-gradient(ellipse at 50% 40%,#4d3796 0%,#291c55 55%,#130c2b 100%);overflow-y:auto}'
+  +'#home.on{display:flex}'
+  +'#home .hr{display:flex;width:100%;max-width:560px;align-items:center;justify-content:space-between;gap:10px;flex:none}'
+  +'#home .hb{width:50px;height:50px;border-radius:16px;background:linear-gradient(#ffd24a,#ff9d1e);border:3px solid #fff6;font-size:26px;cursor:pointer;box-shadow:0 4px 0 #a35b00;font-family:inherit;color:#2a1448}'
+  +'#home .hb.alt{background:linear-gradient(#6fd3ff,#2d8fe0);box-shadow:0 4px 0 #145a9a}'
+  +'#home .hb:active{transform:translateY(3px)}'
+  +'#home .ttl{font-weight:900;font-size:clamp(20px,5vw,30px);color:#ffe08a;text-shadow:0 3px 0 #0008;letter-spacing:1px;text-align:center;line-height:1}'
+  +'#home .ttl small{display:block;font-size:11px;color:#c9bff0;letter-spacing:0;text-shadow:none;margin-top:3px}'
+  +'#home .hpass{width:100%;max-width:560px;flex:none;display:flex;align-items:center;gap:10px;background:#ffffff16;border:2px solid #ffd24a;border-radius:16px;padding:7px 12px;cursor:pointer;text-align:left}'
+  +'#home .hpass .pm{flex:1;min-width:0;font-weight:900;font-size:14px}#home .hpass .pm small{color:#c9bff0;font-size:11px;font-weight:700}'
+  +'#home .hpass .xpbar{margin:4px 0 0;height:9px}'
+  +'#home .go{background:linear-gradient(#7bed9f,#2ec866);color:#07381a;border:none;border-radius:12px;padding:7px 12px;font-weight:900;font-size:13px;font-family:inherit;box-shadow:0 3px 0 #17803d;cursor:pointer;white-space:nowrap}'
+  +'#home .hhen{flex:1 1 150px;min-height:110px;width:100%;max-width:520px;position:relative}#home .hhen canvas{position:absolute;inset:0;width:100%;height:100%}'
+  +'#home .hname{flex:none;text-align:center;font-weight:900;font-size:clamp(18px,4.5vw,26px);text-shadow:0 3px 0 #0008}'
+  +'#home .hname small{display:block;font-size:12px;color:#ffe08a}'
+  +'#home .hmis{width:100%;max-width:560px;flex:none;display:flex;flex-direction:column;gap:5px}'
+  +'#home .hm{display:flex;align-items:center;gap:8px;background:#ffffff12;border:2px solid #6a58b8;border-radius:12px;padding:4px 8px}'
+  +'#home .hm.cl{opacity:.5}#home .hm .mt{flex:1;min-width:0;font-weight:800;font-size:12.5px}#home .hm .xpbar{margin:3px 0 0;height:7px}'
+  +'#home .hm .go.dis{background:#ffffff1c;color:#d9ceff;box-shadow:none;cursor:default}'
+  +'#home .hplay{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;flex:none}';
+  document.head.appendChild(st);
+  const d=document.createElement('div');d.id='home';document.body.appendChild(d);
+})();
+function showHome(){
+  const el=$('home');if(!el)return;
+  shopRoll();tabCur='game';
+  const rn=getRun(),hasRun=!!(rn&&!rn.x&&rn.tm),t=bpTier(),pend=t-SH.bp,pc=t>=SH_TOP?100:Math.round((SH.px%PX_TIER)/PX_TIER*100);
+  let h='<div class="hr">'+(ONLINE?'<button class="hb" id="hrank" aria-label="Ranking">🏆</button>':'<span style="width:50px"></span>')+'<div class="ttl">EL ASADERO<small>Rondas infinitas</small></div>'+coinChip()+'</div>'
+   +'<div class="hpass" id="hpass"><span style="font-size:26px">🎟️</span><div class="pm">Pase de batalla · Nivel '+t+'/'+SH_TOP+'<div class="xpbar"><i style="width:'+pc+'%"></i></div><small>'+(t>=SH_TOP?'¡Completado!':SH.px%PX_TIER+' / '+PX_TIER+' puntos')+'</small></div>'+(pend>0?'<button class="go" id="hpclaim">🎁 Recoger +'+passGain()+' 🪙</button>':'<span class="go dis" style="padding:7px 10px">Ver</span>')+'</div>'
+   +'<div class="hhen"><canvas id="hcv2"></canvas></div>'
+   +'<div class="hname">'+(CNAME?esc(CNAME):'Tu gallina')+'<small>⭐ Nivel '+lvOf(XP)+' · '+titleOf(lvOf(XP))+(ONLINE?' · 🏆 '+(BEST||0):'')+'</small></div>'
+   +'<div class="hmis" id="hmis"></div>'
+   +'<div class="hplay">'+(hasRun?'<button class="btn" id="hcont">▶ Continuar · ronda '+rn.n+'</button>':'')+'<button class="btn" id="hnew">'+(hasRun?'🆕 Nueva partida':'¡JUGAR!')+'</button><button class="btn alt" id="hach">🏅 Logros</button>'+(ONLINE?'<button class="btn alt" id="hout">Salir</button>':'')+'</div>';
+  el.innerHTML=h;
+  $('modal').classList.add('off');el.classList.add('on');
+  const box=$('hmis');
+  SH.dq.m.forEach((m,i)=>{
+    const d=mDef(m.id),p=mProg(m),ok=p>=d.t,r=document.createElement('div');
+    r.className='hm'+(m.cl?' cl':'');
+    r.innerHTML='<div class="mt">'+d.n+'<div class="xpbar"><i style="width:'+Math.round(p/d.t*100)+'%"></i></div></div><span style="font-size:11px;color:#c9bff0;font-weight:800">'+p+'/'+d.t+'</span>';
+    const b=document.createElement('button');b.className='go'+(ok&&!m.cl?'':' dis');b.textContent=m.cl?'✅':ok?'🪙 +'+d.g:'🪙 '+d.g;
+    if(ok&&!m.cl)b.onclick=()=>{ensureAudio();snd.click();claimMission(i);};
+    r.appendChild(b);box.appendChild(r);
+  });
+  const on=(id,f)=>{const e=$(id);if(e)e.onclick=ev=>{ev.stopPropagation();ensureAudio();snd.click();f();};};
+  on('hrank',showRanking);on('hpclaim',claimPass);on('hcont',resumeRun);on('hnew',newGame);on('hach',showAch);on('hout',doSignOut);
+  $('hpass').onclick=()=>{ensureAudio();snd.click();showPass();};
+  icons.push({cv:$('hcv2'),spec:heroPrev});
+  coinify(el);tabSync();
+}
+const showMenuBase=showMenu;
+showMenu=function(){showMenuBase();showHome();};
 /* ---- Mi gallina ---- */
 function showHen(){
   tabCur='hen';hideScreens();closeStats();
