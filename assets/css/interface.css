@@ -1,0 +1,623 @@
+:root {
+  color-scheme: dark;
+  --surface: #1c192b;
+  --surface-raised: #282338;
+  --text: #faf6ee;
+  --muted: #b7afc7;
+  --gold: #f5d58b;
+  --line: #ffffff21;
+  --ease: cubic-bezier(0.23, 1, 0.32, 1);
+}
+html,
+body {
+  overscroll-behavior: none;
+  background: #171323;
+  color: var(--text);
+  font-family: Inter, 'Segoe UI', system-ui, sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+button,
+input {
+  font: inherit;
+}
+button {
+  color: inherit;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+button:focus-visible,
+summary:focus-visible,
+.sk:focus-visible {
+  outline: 3px solid #fff0bf;
+  outline-offset: 4px;
+}
+button:active {
+  transform: scale(0.97);
+}
+.icon {
+  width: 1.15em;
+  height: 1.15em;
+  display: inline-block;
+  vertical-align: -0.2em;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+.big .icon {
+  width: 48px;
+  height: 48px;
+  color: var(--gold);
+  margin: 0 5px;
+}
+#banner .icon {
+  width: 0.8em;
+  height: 0.8em;
+}
+#menu,
+#spd,
+#fpv {
+  display: grid;
+  place-items: center;
+  background: #242034;
+  border: 1px solid #ffffff30;
+  box-shadow: 0 4px 12px #0003;
+  color: var(--gold);
+  text-shadow: none;
+}
+#menu,
+#spd {
+  height: 48px;
+  min-width: 48px;
+  width: 48px;
+  border-radius: 14px;
+  font-size: 18px;
+}
+#menu .icon {
+  width: 23px;
+  height: 23px;
+}
+#fpv {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+}
+#lvl,
+#pips {
+  background: #1c192be8;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-size: 13px;
+  letter-spacing: 0;
+  box-shadow: 0 3px 12px #0002;
+}
+#lvl small {
+  color: var(--muted);
+  font-size: 10px;
+  margin-top: 2px;
+}
+#pips {
+  margin-left: 8px;
+}
+.ros {
+  background: #172e4ad9;
+  border: 1px solid #74acff59;
+  font-size: 12px;
+  border-radius: 12px;
+  padding: 8px 12px;
+  max-width: 43vw;
+}
+.ros.r {
+  background: #401e2cd9;
+  border-color: #ff9ba14a;
+}
+.ros b {
+  font-size: 9px;
+  letter-spacing: 1.4px;
+  margin-bottom: 2px;
+}
+.chip .icon {
+  width: 16px;
+  height: 16px;
+}
+#panel {
+  padding: 24px 24px calc(18px + env(safe-area-inset-bottom));
+  background: linear-gradient(0deg, #171323 75%, #171323f2 94%, #17132300);
+  max-height: 82dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.selection-head {
+  margin: 0 auto 18px;
+  max-width: 900px;
+  text-align: left;
+}
+#selection-meta {
+  font-size: 10px;
+  line-height: 1.5;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+#ptitle {
+  font-size: clamp(21px, 3vw, 30px);
+  font-weight: 650;
+  letter-spacing: -0.8px;
+  line-height: 1.2;
+  color: var(--text);
+  text-shadow: none;
+  margin: 0;
+}
+#cards {
+  gap: 14px;
+  max-width: 900px;
+  margin: 0 auto;
+  align-items: stretch;
+}
+.card {
+  color: var(--text);
+  font-family: inherit;
+  text-align: left;
+  box-shadow: none;
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  transition:
+    transform 160ms var(--ease),
+    border-color 160ms ease;
+}
+.upgrade-card {
+  --rarity: #b6c4d8;
+  flex: 1;
+  width: 0;
+  max-width: none;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--rarity) 35%, transparent);
+  position: relative;
+}
+.upgrade-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: var(--rarity);
+  opacity: 0.8;
+}
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 16px 16px 0;
+}
+.rarity-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.3px;
+  font-weight: 750;
+  color: var(--rarity);
+}
+.rarity-badge .icon {
+  width: 13px;
+  height: 13px;
+}
+.card-level {
+  font-size: 8px;
+  letter-spacing: 1px;
+  color: #d3cbdc;
+}
+.card-art {
+  display: block;
+  margin: 8px 14px 0;
+  background: radial-gradient(
+    ellipse at center,
+    color-mix(in srgb, var(--rarity) 12%, transparent),
+    transparent 68%
+  );
+  border-radius: 12px;
+}
+.upgrade-card .ic {
+  height: 112px;
+  margin: 0;
+}
+.card-copy {
+  display: block;
+  padding: 0 18px 18px;
+  flex: 1;
+}
+.card .nm {
+  display: block;
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -0.3px;
+  margin: 0 0 8px;
+  line-height: 1.2;
+}
+.card .ds {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: #c6bed3;
+  margin: 0;
+}
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-top: 1px solid var(--line);
+  padding: 12px 16px;
+  color: var(--rarity);
+  font-size: 10px;
+}
+.card-footer > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.card-footer > .icon {
+  width: 16px;
+  height: 16px;
+}
+.rarity-guide {
+  max-width: 900px;
+  margin: 14px auto 0;
+  text-align: left;
+  font-size: 11px;
+  color: var(--muted);
+}
+.rarity-guide summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  width: fit-content;
+  min-height: 32px;
+  user-select: none;
+}
+.rarity-guide summary::-webkit-details-marker {
+  display: none;
+}
+.rarity-guide summary > .icon:last-child {
+  margin-left: 2px;
+  width: 12px;
+}
+.rarity-guide[open] summary > .icon:last-child {
+  transform: rotate(180deg);
+}
+.rarity-guide p {
+  font-size: 11px;
+  line-height: 1.6;
+  max-width: 650px;
+  margin: 10px 0 0;
+}
+.rarity-chances {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  margin-top: 8px;
+}
+.rarity-chances > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--rarity);
+}
+.rarity-chances b {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  margin-left: 3px;
+}
+.box {
+  width: min(100%, 560px);
+  background: linear-gradient(155deg, #2b253c, #1b1827);
+  border: 1px solid #f5d58b4d;
+  border-radius: 24px;
+  box-shadow: 0 24px 100px #0008;
+  padding: 30px;
+  max-height: 90dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.box h1 {
+  color: var(--text);
+  text-shadow: none;
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 750;
+  letter-spacing: -1.2px;
+  margin: 12px 0 18px;
+}
+.box p {
+  font-size: 14px;
+  line-height: 1.65;
+  color: #c6bed3;
+}
+.box .big {
+  margin: 0 0 8px;
+}
+.btn {
+  background: var(--gold);
+  color: #241d15;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  box-shadow: none;
+  padding: 13px 22px;
+  font-size: 15px;
+  font-weight: 700;
+  min-height: 48px;
+  transition: transform 140ms var(--ease);
+}
+.btn.alt {
+  background: #ffffff09;
+  color: var(--text);
+  border-color: var(--line);
+  box-shadow: none;
+}
+.btn:active {
+  transform: scale(0.97);
+  box-shadow: none;
+}
+.inp {
+  border: 1px solid #ffffff30;
+  background: #171323;
+  border-radius: 12px;
+  font-size: 16px;
+  padding: 13px;
+  color: var(--text);
+}
+.inp:focus {
+  border-color: var(--gold);
+}
+.lvbox {
+  background: #ffffff05;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 13px;
+  color: #d8d0e4;
+}
+.xpbar {
+  background: #ffffff0d;
+  height: 5px;
+  margin-top: 9px;
+  border-radius: 8px;
+}
+.xpbar i {
+  background: var(--gold);
+}
+#drawer {
+  background: #1c192b;
+  border-right: 1px solid var(--line);
+  box-shadow: 12px 0 50px #0006;
+}
+#drawer .dh {
+  color: var(--text);
+  font-size: 15px;
+  letter-spacing: 1px;
+}
+#drawer .dh button {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #ffffff08;
+}
+.di {
+  background: #ffffff05;
+  border: 1px solid var(--line);
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 12px;
+}
+.di > .icon {
+  width: 20px;
+  height: 20px;
+  color: var(--gold);
+}
+.target-card {
+  padding: 12px;
+}
+#cards.tgt {
+  margin-inline: auto;
+  max-width: 900px;
+}
+.sk {
+  background: #ffffff06;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  min-height: 44px;
+  color: var(--text);
+}
+.sk.sel {
+  border-color: var(--gold);
+  box-shadow: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .upgrade-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--rarity);
+  }
+  .btn:hover,
+  .di:hover {
+    filter: brightness(1.1);
+  }
+}
+@media (max-width: 600px) and (min-height: 501px) {
+  #panel {
+    padding: 20px 14px calc(12px + env(safe-area-inset-bottom));
+    max-height: 78dvh;
+  }
+  .selection-head {
+    margin-bottom: 12px;
+  }
+  #selection-meta {
+    font-size: 9px;
+    letter-spacing: 1.4px;
+  }
+  #ptitle {
+    font-size: 23px;
+  }
+  #cards:not(.tgt) {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .upgrade-card {
+    width: 100%;
+    max-width: none;
+    flex: none;
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    grid-template-rows: auto 1fr;
+    min-height: 102px;
+    border-radius: 13px;
+  }
+  .upgrade-card::before {
+    inset: 0 auto 0 0;
+    width: 2px;
+    height: auto;
+  }
+  .card-top {
+    grid-column: 2;
+    padding: 12px 14px 0 0;
+  }
+  .card-art {
+    grid-column: 1;
+    grid-row: 1/3;
+    margin: 8px 0 8px 6px;
+    align-self: center;
+  }
+  .upgrade-card .ic {
+    height: 76px;
+  }
+  .card-copy {
+    grid-column: 2;
+    padding: 6px 14px 13px 0;
+  }
+  .card .nm {
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+  .card .ds {
+    font-size: 11px;
+    line-height: 1.4;
+  }
+  .card-footer {
+    display: none;
+  }
+  .card-level {
+    font-size: 8px;
+  }
+  .rarity-badge {
+    font-size: 9px;
+    letter-spacing: 1px;
+  }
+  .rarity-guide {
+    margin-top: 6px;
+  }
+  .box {
+    padding: 22px 18px;
+  }
+  .box .big .icon {
+    width: 36px;
+    height: 36px;
+  }
+  #pips {
+    margin-left: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+  #pips > div {
+    font-size: 11px !important;
+    padding: 0 !important;
+  }
+  .ros {
+    top: 70px;
+    font-size: 11px;
+    padding: 6px 8px;
+  }
+}
+@media (max-height: 500px) {
+  #panel {
+    padding: 14px 20px calc(8px + env(safe-area-inset-bottom));
+    max-height: 76dvh;
+  }
+  .selection-head {
+    margin-bottom: 10px;
+  }
+  #ptitle {
+    font-size: 20px;
+  }
+  #selection-meta {
+    font-size: 8px;
+    margin-bottom: 3px;
+  }
+  .card-top {
+    padding: 10px 12px 0;
+  }
+  .upgrade-card .ic {
+    height: 48px;
+  }
+  .card-copy {
+    padding: 0 12px 10px;
+  }
+  .card .nm {
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+  .card .ds {
+    display: block;
+    font-size: 10px;
+    line-height: 1.35;
+  }
+  .card-footer {
+    display: none;
+  }
+  .rarity-badge {
+    font-size: 8px;
+    letter-spacing: 0.6px;
+  }
+  .card-level {
+    display: none;
+  }
+  .rarity-guide {
+    margin-top: 4px;
+  }
+}
+@media (max-width: 360px) {
+  #hud .mid {
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+  }
+  #lvl {
+    padding: 3px 8px;
+    font-size: 11px;
+  }
+  #pips {
+    padding: 0;
+  }
+  #pips > div {
+    font-size: 10px !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+  .card:hover {
+    transform: none;
+  }
+}

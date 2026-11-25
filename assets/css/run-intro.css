@@ -1,0 +1,13 @@
+#entrance-ui {
+  position: fixed;
+  right: calc(20px + env(safe-area-inset-right));
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  z-index: 5;
+}
+#entrance-ui[hidden] {
+  display: none;
+}
+#skip-entrance {
+  font-size: 12px;
+  background: #1c192be8;
+}

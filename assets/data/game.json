@@ -1,0 +1,593 @@
+{
+  "rarities": {
+    "common": {
+      "name": "Común",
+      "weight": 55,
+      "color": "#b6c4d8",
+      "icon": "diamond"
+    },
+    "rare": {
+      "name": "Rara",
+      "weight": 28,
+      "color": "#66c9ff",
+      "icon": "diamond"
+    },
+    "epic": {
+      "name": "Épica",
+      "weight": 13,
+      "color": "#c498ff",
+      "icon": "sparkles"
+    },
+    "legendary": {
+      "name": "Legendaria",
+      "weight": 4,
+      "color": "#ffd36e",
+      "icon": "crown"
+    }
+  },
+  "upgrades": {
+    "gold": {
+      "n": "Pico de oro",
+      "max": 5,
+      "d": "Golpes críticos dorados con daño enorme",
+      "rarity": "epic",
+      "icon": "sparkles"
+    },
+    "laser": {
+      "n": "Rayos láser",
+      "max": 5,
+      "d": "Dispara rayos láser a los enemigos",
+      "rarity": "epic",
+      "icon": "target"
+    },
+    "egg": {
+      "n": "Huevos explosivos",
+      "max": 5,
+      "d": "Lanza huevos que explotan en zona",
+      "rarity": "epic",
+      "icon": "egg"
+    },
+    "storm": {
+      "n": "Tormenta de plumas",
+      "max": 5,
+      "d": "Remolino de plumas cortantes alrededor",
+      "rarity": "epic",
+      "icon": "feather"
+    },
+    "fire": {
+      "n": "Pico de fuego",
+      "max": 5,
+      "d": "Los picotazos queman al enemigo",
+      "rarity": "rare",
+      "icon": "flame"
+    },
+    "vamp": {
+      "n": "Pico vampiro",
+      "max": 4,
+      "d": "Recupera vida al golpear",
+      "rarity": "rare",
+      "icon": "moon"
+    },
+    "armor": {
+      "n": "Plumas de acero",
+      "max": 5,
+      "d": "Recibe menos daño",
+      "rarity": "common",
+      "icon": "shield"
+    },
+    "speed": {
+      "n": "Alas veloces",
+      "max": 4,
+      "d": "Corre y picotea más rápido",
+      "rarity": "common",
+      "icon": "bolt"
+    },
+    "power": {
+      "n": "Músculos de gallina",
+      "max": 99,
+      "d": "Cada picotazo pega más fuerte",
+      "rarity": "common",
+      "icon": "sword"
+    },
+    "vit": {
+      "n": "Súper plumaje",
+      "max": 99,
+      "d": "Aguanta muchos más golpes",
+      "rarity": "common",
+      "icon": "heart"
+    },
+    "flock": {
+      "n": "La bandada",
+      "max": 4,
+      "d": "Dos pollitos aliados se unen (y también se pueden mejorar)",
+      "rarity": "rare",
+      "icon": "users"
+    },
+    "phoenix": {
+      "n": "Huevo fénix",
+      "max": 1,
+      "d": "Resucita con toda la vida (solo 1 a la vez; se gasta al usarlo)",
+      "rarity": "legendary",
+      "icon": "sun"
+    },
+    "robot": {
+      "n": "Cuerpo robot",
+      "max": 1,
+      "d": "Se convierte en robot: mucho más fuerte",
+      "rarity": "epic",
+      "icon": "robot"
+    },
+    "titan": {
+      "n": "Titán dorado",
+      "max": 1,
+      "d": "Armadura de oro: enorme y brutal",
+      "rarity": "legendary",
+      "icon": "crown"
+    }
+  },
+  "species": {
+    "chicken": {
+      "es": ["Gallina", "Gallinas"],
+      "hp": 10,
+      "atk": 2,
+      "rate": 0.7,
+      "spd": 3.4,
+      "model": {
+        "kind": "bird",
+        "options": {
+          "L": 0.5,
+          "leg": 0.22,
+          "col": "#f7f4ea",
+          "tailc": ["#e9e4d2"],
+          "tailN": 1
+        }
+      },
+      "icon": "chicken"
+    },
+    "rooster": {
+      "es": ["Gallo", "Gallos"],
+      "hp": 14,
+      "atk": 3,
+      "rate": 0.75,
+      "spd": 3.5,
+      "model": {
+        "kind": "bird",
+        "options": {
+          "L": 0.7,
+          "leg": 0.3,
+          "col": "#b5531c",
+          "hcol": "#c96a22",
+          "breast": "#7a2f10",
+          "wing": "#8e3b12",
+          "tailc": ["#1d6b4a", "#2b3fa0", "#b5531c"],
+          "tailN": 3
+        }
+      },
+      "icon": "rooster"
+    },
+    "cat": {
+      "es": ["Gato", "Gatos"],
+      "hp": 30,
+      "atk": 6,
+      "rate": 0.65,
+      "spd": 4.4,
+      "model": {
+        "kind": "quad",
+        "options": {
+          "L": 0.6,
+          "H": 0.3,
+          "W": 0.26,
+          "leg": 0.25,
+          "lw": 0.1,
+          "head": 0.28,
+          "sn": 0.05,
+          "col": "#f0912e",
+          "belly": "#fff1d8",
+          "ear": "point",
+          "tailUp": 1,
+          "tail": 0.5,
+          "nose": 1
+        }
+      },
+      "icon": "cat"
+    },
+    "dog": {
+      "es": ["Perro", "Perros"],
+      "hp": 60,
+      "atk": 20,
+      "rate": 0.85,
+      "spd": 4.1,
+      "model": {
+        "kind": "quad",
+        "options": {
+          "L": 0.95,
+          "H": 0.5,
+          "W": 0.4,
+          "leg": 0.4,
+          "lw": 0.15,
+          "head": 0.4,
+          "sn": 0.22,
+          "col": "#a8703a",
+          "hcol": "#b97d44",
+          "snc": "#e6c69a",
+          "ear": "floppy",
+          "earc": "#5b3515",
+          "tail": 0.35,
+          "tailh": 0.12,
+          "nose": 1,
+          "belly": "#e6c69a"
+        }
+      },
+      "icon": "dog"
+    },
+    "wolf": {
+      "es": ["Lobo", "Lobos"],
+      "hp": 80,
+      "atk": 30,
+      "rate": 0.85,
+      "spd": 4.5,
+      "model": {
+        "kind": "quad",
+        "options": {
+          "L": 1.2,
+          "H": 0.55,
+          "W": 0.4,
+          "leg": 0.55,
+          "lw": 0.16,
+          "head": 0.42,
+          "sn": 0.35,
+          "col": "#8a8f98",
+          "belly": "#c9ced6",
+          "ear": "point",
+          "earc": "#5d626b",
+          "tail": 0.5,
+          "tailh": 0.2,
+          "nose": 1
+        }
+      },
+      "icon": "wolf"
+    },
+    "puma": {
+      "es": ["Puma", "Pumas"],
+      "hp": 100,
+      "atk": 30,
+      "rate": 0.8,
+      "spd": 4.9,
+      "model": {
+        "kind": "quad",
+        "options": {
+          "L": 1.4,
+          "H": 0.5,
+          "W": 0.4,
+          "leg": 0.5,
+          "lw": 0.15,
+          "head": 0.38,
+          "sn": 0.16,
+          "col": "#c99b5c",
+          "belly": "#ecd9b8",
+          "ear": "round",
+          "tail": 0.95,
+          "tailh": 0.13,
+          "nose": 1
+        }
+      },
+      "icon": "puma"
+    },
+    "lion": {
+      "es": ["León", "Leones"],
+      "hp": 180,
+      "atk": 60,
+      "rate": 0.95,
+      "spd": 3.7,
+      "model": {
+        "kind": "quad",
+        "options": {
+          "L": 1.5,
+          "H": 0.8,
+          "W": 0.65,
+          "leg": 0.62,
+          "lw": 0.22,
+          "head": 0.52,
+          "sn": 0.16,
+          "col": "#d9a441",
+          "hcol": "#e2b25a",
+          "mane": "#7a4a1e",
+          "ear": "round",
+          "earc": "#7a4a1e",
+          "tail": 0.9,
+          "tailh": 0.12,
+          "tailc": "#7a4a1e",
+          "nose": 1,
+          "hup": 0.1
+        }
+      },
+      "icon": "lion"
+    },
+    "bear": {
+      "es": ["Oso", "Osos"],
+      "hp": 240,
+      "atk": 55,
+      "rate": 1.1,
+      "spd": 3.1,
+      "model": {
+        "kind": "quad",
+        "options": {
+          "L": 1.6,
+          "H": 1,
+          "W": 0.95,
+          "leg": 0.5,
+          "lw": 0.4,
+          "head": 0.62,
+          "sn": 0.25,
+          "col": "#5a3a22",
+          "hcol": "#6b4529",
+          "snc": "#c9a77f",
+          "ear": "round",
+          "earc": "#3d2514",
+          "tail": 0.18,
+          "tailh": 0.2,
+          "nose": 1
+        }
+      },
+      "icon": "bear"
+    },
+    "gorilla": {
+      "es": ["Gorila", "Gorilas"],
+      "hp": 260,
+      "atk": 65,
+      "rate": 1,
+      "spd": 3.1,
+      "model": {
+        "kind": "gorilla"
+      },
+      "icon": "gorilla"
+    },
+    "chick": {
+      "es": ["Pollito", "Pollitos"],
+      "hp": 10,
+      "atk": 2,
+      "rate": 0.7,
+      "spd": 3.6,
+      "model": {
+        "kind": "bird",
+        "options": {
+          "L": 0.38,
+          "leg": 0.16,
+          "col": "#ffe066",
+          "hcol": "#ffe97a",
+          "wing": "#ffd23a",
+          "tailc": ["#ffd23a"],
+          "tailN": 1
+        }
+      },
+      "icon": "chick"
+    },
+    "elephant": {
+      "es": ["Elefante", "Elefantes"],
+      "hp": 500,
+      "atk": 70,
+      "rate": 1.3,
+      "spd": 2.5,
+      "model": {
+        "kind": "quad",
+        "options": {
+          "L": 2.1,
+          "H": 1.5,
+          "W": 1.15,
+          "leg": 0.95,
+          "lw": 0.48,
+          "head": 0.95,
+          "col": "#8f9aa8",
+          "hcol": "#9ba6b4",
+          "ear": "big",
+          "earc": "#7b8695",
+          "trunk": 1,
+          "tail": 0.5,
+          "tailh": 0.1,
+          "hup": -0.05
+        }
+      },
+      "icon": "elephant"
+    }
+  },
+  "skins": [
+    {
+      "id": "classic",
+      "n": "Clásica",
+      "lvl": 1,
+      "d": "La gallina de siempre"
+    },
+    {
+      "id": "cap",
+      "n": "Gorra roja",
+      "lvl": 3,
+      "d": "Una gorra muy molona"
+    },
+    {
+      "id": "black",
+      "n": "Gallina negra",
+      "lvl": 6,
+      "d": "Plumas negras y cresta roja",
+      "pal": {
+        "body": "#26232b",
+        "head": "#2f2b35",
+        "wing": "#1b1920",
+        "tail": "#1b1920"
+      }
+    },
+    {
+      "id": "pirate",
+      "n": "Pirata",
+      "lvl": 10,
+      "d": "Pañuelo y parche en el ojo",
+      "pal": {
+        "body": "#8a5a3a",
+        "head": "#9b6a46",
+        "wing": "#6e4529",
+        "tail": "#5a3820"
+      }
+    },
+    {
+      "id": "ninja",
+      "n": "Ninja",
+      "lvl": 15,
+      "d": "Sigilo y estilo",
+      "pal": {
+        "body": "#1e2a4a",
+        "head": "#26345c",
+        "wing": "#141c33",
+        "tail": "#141c33"
+      }
+    },
+    {
+      "id": "royal",
+      "n": "Gallina real",
+      "lvl": 20,
+      "d": "Corona y capa de reina",
+      "pal": {
+        "body": "#fff6e0",
+        "head": "#fffaf0",
+        "wing": "#f1e2b8",
+        "tail": "#f1e2b8"
+      }
+    },
+    {
+      "id": "rainbow",
+      "n": "Arcoíris",
+      "lvl": 25,
+      "d": "Colores que no paran de cambiar",
+      "rbw": 1
+    },
+    {
+      "id": "fire",
+      "n": "Gallina de fuego",
+      "lvl": 30,
+      "d": "Ardiente y brillante",
+      "pal": {
+        "body": "#ff6a1a",
+        "head": "#ff8a2a",
+        "wing": "#ffb81a",
+        "tail": "#ff3d1a",
+        "glow": ["wing", "tail"]
+      }
+    },
+    {
+      "id": "galaxy",
+      "n": "Galaxia",
+      "lvl": 40,
+      "d": "Un cielo lleno de estrellas",
+      "pal": {
+        "body": "#2a1b5c",
+        "head": "#3a2680",
+        "wing": "#1c1240",
+        "tail": "#7b3fa0"
+      }
+    },
+    {
+      "id": "legend",
+      "n": "Legendaria",
+      "lvl": 50,
+      "d": "Oro puro, halo y corona",
+      "pal": {
+        "body": "#ffd24a",
+        "head": "#ffe38a",
+        "wing": "#ffb81a",
+        "tail": "#ffd24a",
+        "glow": ["wing", "tail"]
+      }
+    }
+  ],
+  "themes": [
+    {
+      "sky": ["#2a1b5c", "#7b3fa0", "#ff9a6b"],
+      "hill": "#4b2f7a",
+      "fa": "#dcbd7c",
+      "fb": "#d0b06c",
+      "oa": "#3f8f4a",
+      "ob": "#3a8544"
+    },
+    {
+      "sky": ["#10304a", "#2c6a63", "#9bd3a0"],
+      "hill": "#1d4a3a",
+      "fa": "#9a7a4a",
+      "fb": "#8c6b3f",
+      "oa": "#2d6b3a",
+      "ob": "#285f33"
+    },
+    {
+      "sky": ["#5b2a86", "#e0662f", "#ffd27a"],
+      "hill": "#8a4a2f",
+      "fa": "#e5c070",
+      "fb": "#d9b45f",
+      "oa": "#b9a14a",
+      "ob": "#ae9642"
+    },
+    {
+      "sky": ["#1c2c5a", "#5a7fc0", "#cfe6ff"],
+      "hill": "#6b7fa8",
+      "fa": "#a9b2c2",
+      "fb": "#9aa3b3",
+      "oa": "#e8eef7",
+      "ob": "#dbe4f0"
+    },
+    {
+      "sky": ["#1a0f2e", "#6a1b4d", "#ff5e5e"],
+      "hill": "#3a1d4a",
+      "fa": "#5a4a80",
+      "fb": "#4a3b6b",
+      "oa": "#2a2146",
+      "ob": "#251c3c"
+    }
+  ],
+  "tierPalettes": [
+    null,
+    {
+      "body": "#8b95aa",
+      "head": "#aeb8cc",
+      "limb": "#5f687c",
+      "acc": "#2ec8ff",
+      "tail": "#5f687c",
+      "eye": "#ff3050"
+    },
+    {
+      "body": "#e0b020",
+      "head": "#ffd84d",
+      "limb": "#a8780c",
+      "acc": "#ff4f2e",
+      "tail": "#c58f12",
+      "eye": "#4df0ff"
+    }
+  ],
+  "titles": [
+    [1, "Polluelo"],
+    [3, "Pollo valiente"],
+    [6, "Gallina brava"],
+    [10, "Gallo de pelea"],
+    [15, "Campeón del corral"],
+    [20, "Gran maestro"],
+    [30, "Leyenda del Asadero"],
+    [40, "Mito emplumado"],
+    [50, "Dios del Asadero"]
+  ],
+  "balance": {
+    "healthMultiplier": 1.6,
+    "healthTiers": [1, 2, 4],
+    "attackTiers": [1, 1.6, 2.8],
+    "speedTiers": [1, 1.12, 1.3],
+    "enemyBase": 70,
+    "enemyGrowth": 1.35,
+    "enemyExponent": 0.003,
+    "enemyOrder": [
+      "chicken",
+      "rooster",
+      "cat",
+      "dog",
+      "wolf",
+      "puma",
+      "lion",
+      "bear",
+      "gorilla",
+      "elephant"
+    ]
+  }
+}

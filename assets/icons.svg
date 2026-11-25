@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+<symbol id="chicken" viewBox="0 0 24 24"><path d="M6 18c-3-1-4-4-3-7l4 2c0-5 2-8 6-8 3 0 5 2 5 5l3 2-4 2c-1 4-4 5-7 5H6Zm5 1v3m4-4v4M11 5l-1-3 3 1 2-2 1 4"/></symbol>
+<symbol id="chick" viewBox="0 0 24 24"><path d="M5 17c-3-4 0-8 4-8 0-5 7-7 9-2l1 3 3 2-4 1c-1 5-7 7-13 4Zm5 2v3m5-3v3"/></symbol>
+<symbol id="rooster" viewBox="0 0 24 24"><path d="M5 18c-4-1-4-6-3-9l5 4c0-7 3-10 7-8 3 1 3 3 3 5l4 2-4 2c-2 4-5 6-12 4ZM12 5 10 2l4 1 2-2 1 5m-7 13v3m5-4v4"/></symbol>
+<symbol id="cat" viewBox="0 0 24 24"><path d="M5 12 4 3l7 4 3-1 6-3-1 10c2 4-1 8-7 8s-9-4-7-9Zm3 1h1m6 0h1m-5 4 1 1 1-1M3 15l5 1m8 0 5-1"/></symbol>
+<symbol id="dog" viewBox="0 0 24 24"><path d="M8 6 3 4 2 13l5 2m9-9 5-2 1 9-5 2M7 5h10v11c0 7-10 7-10 0Zm3 8h.1m4 0h.1M10 17h4"/></symbol>
+<symbol id="wolf" viewBox="0 0 24 24"><path d="M3 3 10 8h4l7-5-2 12-7 7-7-7L3 3Zm5 8 2 2m6-2-2 2m-4 4 2 2 2-2"/></symbol>
+<symbol id="puma" viewBox="0 0 24 24"><path d="M3 4 8 7h8l5-3-2 12-7 5-7-5L3 4Zm4 8h2m6 0h2m-7 5h4M5 8 3 9m16-1 2 1"/></symbol>
+<symbol id="lion" viewBox="0 0 24 24"><path d="m12 2 4 2 4 2 1 5-1 6-4 4-4 1-4-1-4-4-1-6 1-5 4-2 4-2Zm-5 6v6l5 5 5-5V8H7Zm2 4h.1m6 0h.1m-5 4h4"/></symbol>
+<symbol id="bear" viewBox="0 0 24 24"><path d="M5 8C-1 5 4-1 8 5h8c4-6 9 0 3 3 5 9-1 14-7 14S0 17 5 8Zm3 4h.1m8 0h.1m-7 4c0-3 6-3 6 0s-6 4-6 0Z"/></symbol>
+<symbol id="gorilla" viewBox="0 0 24 24"><path d="M6 5C8 1 16 1 18 5l3 5-2 10-7 2-7-2-2-10 3-5Zm1 4 5 2 5-2m-7 6h4m-6 4h8M9 7h.1m6 0h.1"/></symbol>
+<symbol id="elephant" viewBox="0 0 24 24"><path d="M8 5c-7-5-8 12-2 11l2-4m8-7c7-5 8 12 2 11l-2-4M8 4h8v13c0 6-6 6-6 1v-6m0-4h.1m4 0h.1"/></symbol>
+<symbol id="sword" viewBox="0 0 24 24"><path d="m14 3 7-1-1 7-10 10-5-5L14 3Zm-9 9 7 7M3 21l4-4m-4-4 8 8"/></symbol>
+<symbol id="heart" viewBox="0 0 24 24"><path d="M20 5c-3-3-6-1-8 1-2-2-5-4-8-1-5 5 1 10 8 16 7-6 13-11 8-16Z"/></symbol>
+<symbol id="shield" viewBox="0 0 24 24"><path d="m12 2 9 4-1 9-8 7-8-7-1-9 9-4Zm0 5v9m-4-5h8"/></symbol>
+<symbol id="bolt" viewBox="0 0 24 24"><path d="m14 2-11 12h8l-1 8 11-13h-8l1-7Z"/></symbol>
+<symbol id="flame" viewBox="0 0 24 24"><path d="M12 2c1 6-5 7-3 11 2 0 4-3 5-5 7 7 8 14-2 14C1 22 2 13 6 9c0 4 3 4 3 2 0-3 0-6 3-9Z"/></symbol>
+<symbol id="moon" viewBox="0 0 24 24"><path d="M21 13A9 9 0 0 1 11 3a9 9 0 1 0 10 10Z"/></symbol>
+<symbol id="users" viewBox="0 0 24 24"><path d="M16 21v-3c0-5-12-5-12 0v3m15-8c4 0 4 4 4 8M10 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm7 0a4 4 0 0 1 0 8"/></symbol>
+<symbol id="sparkles" viewBox="0 0 24 24"><path d="m12 2 3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7Zm8 0v4m-2-2h4M3 18v4m-2-2h4"/></symbol>
+<symbol id="diamond" viewBox="0 0 24 24"><path d="m12 3 9 9-9 9-9-9 9-9Zm0 4 5 5-5 5-5-5 5-5Z"/></symbol>
+<symbol id="crown" viewBox="0 0 24 24"><path d="M3 6 7 10l5-7 5 7 4-4-2 13H5L3 6Zm2 9h14"/></symbol>
+<symbol id="robot" viewBox="0 0 24 24"><path d="M5 7h14v13H5V7Zm7 0V3m-2 0h4M8 12h1m6 0h1m-7 5h6M2 10v6m20-6v6"/></symbol>
+<symbol id="sun" viewBox="0 0 24 24"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0-6v3m0 16v3M1 12h3m16 0h3M4 4l2 2m12 12 2 2M4 20l2-2M18 6l2-2"/></symbol>
+<symbol id="egg" viewBox="0 0 24 24"><path d="M12 2C5 2-1 22 12 22S19 2 12 2Zm-5 11 3 2-2 3"/></symbol>
+<symbol id="feather" viewBox="0 0 24 24"><path d="M21 3C11-3 2 9 6 17c8 4 20-5 15-14ZM3 21 16 8m-8 8h6m-2-4h6"/></symbol>
+<symbol id="target" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 5a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm0-7v4m0 14v4M1 12h4m14 0h4"/></symbol>
+<symbol id="star" viewBox="0 0 24 24"><path d="m12 2 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1 3-6Z"/></symbol>
+<symbol id="trophy" viewBox="0 0 24 24"><path d="M7 3h10v8c0 7-10 7-10 0V3Zm0 2H2v4c0 3 2 5 6 5m9-9h5v4c0 3-2 5-6 5m-4 2v5m-5 0h10"/></symbol>
+<symbol id="volume" viewBox="0 0 24 24"><path d="M3 9h4l5-5v16l-5-5H3V9Zm13-2c4 3 4 7 0 10m3-13c6 5 6 11 0 16"/></symbol>
+<symbol id="volume-off" viewBox="0 0 24 24"><path d="M3 9h4l5-5v16l-5-5H3V9Zm13 0 6 6m0-6-6 6"/></symbol>
+<symbol id="music" viewBox="0 0 24 24"><path d="M9 18V5l12-3v13M9 8l12-3M5 15c-5 0-5 6 0 6s5-6 0-6Zm12-3c-5 0-5 6 0 6s5-6 0-6Z"/></symbol>
+<symbol id="menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+<symbol id="x" viewBox="0 0 24 24"><path d="M6 6l12 12M6 18 18 6"/></symbol>
+<symbol id="eye" viewBox="0 0 24 24"><path d="M2 12c6-10 14-10 20 0-6 10-14 10-20 0Zm10-3a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></symbol>
+<symbol id="user" viewBox="0 0 24 24"><path d="M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8ZM4 22v-4c0-6 16-6 16 0v4"/></symbol>
+<symbol id="logout" viewBox="0 0 24 24"><path d="M10 3H3v18h7m-2-9h14m-5-5 5 5-5 5"/></symbol>
+<symbol id="home" viewBox="0 0 24 24"><path d="m2 11 10-9 10 9M5 9v13h14V9M10 22v-8h4v8"/></symbol>
+<symbol id="chart" viewBox="0 0 24 24"><path d="M3 3v18h18M7 16v-5m5 5V6m5 10V9"/></symbol>
+<symbol id="gift" viewBox="0 0 24 24"><path d="M3 8h18v5H3V8Zm2 5v9h14v-9M12 8v14M12 8C2 8 5-2 10 3l2 5Zm0 0c10 0 7-10 2-5l-2 5Z"/></symbol>
+<symbol id="alert" viewBox="0 0 24 24"><path d="m12 2 11 19H1L12 2Zm0 6v6m0 3v1"/></symbol>
+<symbol id="check" viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"/></symbol>
+<symbol id="lock" viewBox="0 0 24 24"><path d="M5 10h14v12H5V10Zm3 0V6c0-6 8-6 8 0v4m-4 5v3"/></symbol>
+<symbol id="paint" viewBox="0 0 24 24"><path d="M12 2C-1 2-1 22 10 22c7 0-1-6 5-6 12 0 9-14-3-14ZM7 8h.1m5-3h.1m5 4h.1M5 13h.1"/></symbol>
+<symbol id="clock" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 4v7l4 2"/></symbol>
+<symbol id="chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+<symbol id="arrow-right" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
+<symbol id="skull" viewBox="0 0 24 24"><path d="M5 15c-6-10 0-14 7-14s13 4 7 14l-2 1v6H7v-6l-2-1Zm3-7v4m8-4v4m-6 6v4m4-4v4"/></symbol>
+<symbol id="infinity" viewBox="0 0 24 24"><path d="M12 12C-3-7-3 31 12 12s15 19 0 0Z"/></symbol>
+<symbol id="medal" viewBox="0 0 24 24"><path d="m7 2 5 7 5-7M5 2h4m6 0h4M12 9a6 6 0 1 0 0 12 6 6 0 0 0 0-12Z"/></symbol>
+<symbol id="party" viewBox="0 0 24 24"><path d="m8 8-6 14 14-6L8 8Zm7-6v4m5 3h3m-5-3 3-3M5 12l7 7"/></symbol>
+</svg>

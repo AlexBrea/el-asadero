@@ -1,0 +1,96 @@
+:root {
+  --motion-enter: 200ms;
+  --motion-exit: 140ms;
+  --motion-stagger: 40ms;
+  --motion-press: 140ms;
+  --motion-reduced: 120ms;
+  --motion-notice: 1500ms;
+}
+
+.card,
+.btn {
+  transition:
+    transform var(--motion-press) var(--ease),
+    border-color var(--motion-press) ease;
+}
+
+/* Discrete display transitions progressively enhance exits; older browsers hide immediately. */
+#panel,
+#modal {
+  transition:
+    opacity var(--motion-exit) var(--ease),
+    display var(--motion-exit) allow-discrete;
+}
+
+#panel:not(.on),
+#modal.off {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#panel.on,
+#modal:not(.off) {
+  opacity: 1;
+}
+
+@starting-style {
+  #modal:not(.off) {
+    opacity: 0;
+  }
+}
+
+#drawer {
+  transition: transform 250ms var(--ease);
+}
+
+#toast {
+  transition:
+    opacity var(--motion-enter) var(--ease),
+    transform var(--motion-enter) var(--ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .upgrade-card:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.card:active {
+  transform: scale(0.97);
+}
+
+/* Reading and keyboard navigation stay immediate, including CSS-only interactions. */
+:root[data-motion-input='keyboard'] .card,
+:root[data-motion-input='keyboard'] .btn,
+:root[data-motion-input='keyboard'] #menu,
+:root[data-motion-input='keyboard'] #spd,
+:root[data-motion-input='keyboard'] #fpv {
+  transition: none !important;
+  transform: none !important;
+}
+
+:root[data-motion-input='keyboard'] #panel,
+:root[data-motion-input='keyboard'] #modal,
+:root[data-motion-input='keyboard'] #drawer,
+:root[data-motion-input='keyboard'] #toast {
+  transition: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #panel,
+  #modal,
+  #toast {
+    transition-duration: var(--motion-reduced) !important;
+  }
+  #drawer {
+    transition: none;
+  }
+  .card,
+  .btn {
+    transform: none !important;
+  }
+  #toast,
+  #toast.show {
+    transform: translateX(-50%) !important;
+  }
+}
