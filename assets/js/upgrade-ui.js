@@ -15,6 +15,8 @@ import { icon } from './icons.js';
  * @param {function(string):object[]} options.objSpec Get preview geometry.
  * @param {function(object,string):boolean} options.canUpg Check member eligibility.
  * @param {object} options.motion Session-owned decorative animation controller.
+ * @param {object} [options.specializations] Optional specialization definitions.
+ * @param {object} [options.ultimates] Optional maximum-level ability descriptions.
  * @returns {void}
  */
 export function renderUpgradeCards({
@@ -28,6 +30,8 @@ export function renderUpgradeCards({
   objSpec,
   canUpg,
   motion,
+  specializations = {},
+  ultimates = {},
 }) {
   container.replaceChildren();
   offers.forEach((offer, index) => {
@@ -55,6 +59,18 @@ export function renderUpgradeCards({
       <span class="card-art"><canvas class="ic" aria-hidden="true"></canvas></span>
       <span class="card-copy"><span class="nm">${upgrade.n}</span><span class="ds">${upgrade.d}</span></span>
       <span class="card-footer"><span>${icon(upgrade.icon)} Nivel ${level + 1} / ${upgrade.max}</span>${icon('arrow-right')}</span>`;
+    if (upgrade.sp) {
+      const label = document.createElement('span');
+      label.className = 'specialty-label';
+      label.textContent = specializations[upgrade.sp]?.n || upgrade.sp;
+      card.querySelector('.card-copy').appendChild(label);
+      if (level + 1 >= upgrade.max && ultimates[offer.id]) {
+        const ultimate = document.createElement('span');
+        ultimate.className = 'ultimate-label';
+        ultimate.textContent = `Definitiva: ${ultimates[offer.id].n}`;
+        card.querySelector('.card-copy').appendChild(ultimate);
+      }
+    }
     card.onclick = () => onPick(index);
     container.appendChild(card);
     icons.push({ cv: card.querySelector('canvas'), spec: () => objSpec(offer.id) });

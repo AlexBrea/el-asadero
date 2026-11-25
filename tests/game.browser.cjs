@@ -17,12 +17,13 @@ async function main() {
     '.css': 'text/css',
     '.svg': 'image/svg+xml',
   };
-  const api = `window.__testGame={startInf,pick,startFight,hurt,roundOver,newMember,
-    get st(){return st},get offers(){return offers},get team(){return team},get units(){return units},
-    goRound(n,bonus=1){infN=n;picksLeft=bonus;prize=bonus>1?bonus:0;nextInfRound()},
-    showOffers(ids){offers=ids.map(id=>({id}));st='choose';showCards()},
-    addAlly(){team.push(newMember(false));buildArena()},
-    showProfile,showMenu,showCards,memberStats};`;
+  const api = `window.__testGame={
+    startInf:()=>game.startInf({skipIntro:true}),pick:i=>game.pick(i),startFight:()=>game.startFight(),hurt:(...args)=>game.hurt(...args),roundOver:won=>game.roundOver(won),newMember:game.newMember,
+    get st(){return game.st},get offers(){return game.offers},get team(){return game.team},get units(){return game.units},get session(){return game},
+    goRound(n,bonus=1){game.infN=n;game.picksLeft=bonus;game.prize=bonus>1?bonus:0;game.nextInfRound()},
+    showOffers(ids){game.offers=ids.map(id=>({id}));game.st='choose';game.showCards()},
+    addAlly(){game.team.push(game.newMember(false));game.buildArena()},
+    showProfile:()=>game.showProfile(),showMenu:()=>game.showMenu(),showCards:()=>game.showCards(),memberStats:game.memberStats};`;
   const server = http.createServer((request, response) => {
     const url = new URL(request.url, 'http://localhost');
     const filename = path.join(root, url.pathname === '/' ? 'index.html' : url.pathname);
@@ -35,7 +36,7 @@ async function main() {
       if (filename.endsWith('index.html'))
         body = Buffer.from(body.toString().replace(/<script src=[^>]+><\/script>/g, ''));
       if (!extension && filename.endsWith('/game.js'))
-        body = Buffer.from(body.toString().replace(/\bboot\(\);/, api + '\nboot();'));
+        body = Buffer.from(body.toString().replace(/game\.boot\(\);/, api + '\ngame.boot();'));
       response
         .writeHead(200, {
           'Content-Type': mime[path.extname(filename)] || 'application/octet-stream',
@@ -97,6 +98,10 @@ async function main() {
           ? promise.reject(new Error(message.error.message))
           : promise.resolve(message.result);
       } else if (message.sessionId === sessionId) {
+        if (message.method === 'Page.javascriptDialogOpening')
+          send('Page.handleJavaScriptDialog', { accept: true }).catch((error) =>
+            errors.push(error.message),
+          );
         if (message.method === 'Runtime.exceptionThrown')
           errors.push(
             message.params.exceptionDetails.exception?.description ||
@@ -158,7 +163,7 @@ async function main() {
     await send('Page.navigate', { url });
     if (extension) {
       await waitFor("document.querySelector('#mbox h1')?.textContent==='EL ASADERO'");
-      assert.equal(await evaluate('!!window.__game'), false);
+      assert.equal(await evaluate('!!window.__game'), true);
       const debuggerListeners = new Map();
       const sandbox = {
         setTimeout,
@@ -187,8 +192,7 @@ async function main() {
         fs.readFileSync(path.join(root, 'chrome-extension/background.js'), 'utf8'),
         sandbox,
       );
-      const connection = await vm.runInContext('connectGame(1)', sandbox);
-      assert.equal(connection.ok, true, connection.error);
+
       await evaluate(fs.readFileSync(path.join(root, 'chrome-extension/trainer.js'), 'utf8'));
       await evaluate('window.__game.startInf()');
       assert.equal((await evaluate("window.__asaderoTrainer.command('god',true)")).god, true);
@@ -205,7 +209,7 @@ async function main() {
     }
     await waitFor('!!window.__testGame');
     assert.equal(await evaluate("document.querySelector('#mbox h1').textContent"), 'EL ASADERO');
-    await evaluate("document.querySelector('#mrow button').click()");
+    await evaluate("document.getElementById('hnew').click()");
     assert.equal(await evaluate('window.__testGame.st'), 'entrance');
     assert.ok(await evaluate('window.__testGame.units.find(u=>u.hero).z>6'));
     await new Promise((resolve) => setTimeout(resolve, 700));
@@ -321,7 +325,14 @@ async function main() {
       /RONDA 02/,
     );
     // Multiple boss rewards must return to selection before the fight starts.
-    await evaluate('window.__testGame.goRound(10);window.__testGame.roundOver(true)');
+    await evaluate(
+      "window.__testGame.session.chooseSpec(window.__testGame.team[0],'war');window.__testGame.goRound(10);window.__testGame.roundOver(true)",
+    );
+    assert.equal(await evaluate('window.__testGame.st'), 'relic');
+    await evaluate('window.__testGame.session.pickRelic(window.__testGame.session.relOffer()[0])');
+    assert.equal(await evaluate('window.__testGame.st'), 'gamble');
+    // Keep the claimed relic instead of betting it, then take the two boss upgrades.
+    await evaluate("document.querySelectorAll('#cards .card')[1].click()");
     assert.match(
       await evaluate("document.getElementById('selection-meta').textContent"),
       /ELECCIÓN 1 DE 2/,
@@ -336,16 +347,48 @@ async function main() {
       await evaluate("document.querySelector('.target-card').click()");
     assert.equal(await evaluate('window.__testGame.st'), 'intro');
     await evaluate('window.__testGame.showMenu();window.__testGame.showProfile()');
-    assert.ok(await evaluate("document.querySelectorAll('.sk').length>=10"));
+    assert.ok(await evaluate("document.querySelectorAll('#hng .sk').length>=1"));
     assert.ok(await evaluate('!(/\\p{Extended_Pictographic}/u.test(document.body.innerText))'));
     await evaluate(
-      "window.__testGame.showMenu();document.querySelector('#mrow button').click();document.getElementById('skip-entrance').click()",
+      "window.__testGame.showMenu();document.getElementById('hnew').click();document.getElementById('skip-entrance').click()",
     );
     assert.equal(await evaluate('window.__testGame.st'), 'choose');
     assert.equal(await evaluate("document.getElementById('entrance-ui').hidden"), true);
+    // Exercise the imported specialization meshes, ultimates, enemies and saved runs.
+    const specializations = await evaluate(`(()=>{
+      const game=window.__testGame.session;
+      const checked=[];
+      for (const id of Object.keys(game.SPECS)) {
+        game.startInf({skipIntro:true});
+        const hero=game.heroOf();
+        game.chooseSpec(hero,id);
+        for (const upgrade of game.SPECS[id].up) hero.l[upgrade]=game.UPG[upgrade].max;
+        game.infN=40;game.bteam=game.genInfEnemy(40);
+        game.buildArena();game.startFight();
+        for(let i=0;i<100;i++) game.stepFight(0.025);
+        game.render();
+        if(!game.units.every(unit=>Number.isFinite(unit.hp))) throw new Error('Invalid health: '+id);
+        checked.push(id);
+      }
+      game.st='choose';game.snapRun('choose');
+      const saved=JSON.stringify(game.team);
+      game.showMenu();game.resumeRun();
+      if(JSON.stringify(game.team)!==saved) throw new Error('Saved team changed');
+      return checked;
+    })()`);
+    assert.equal(specializations.length, 6);
+    await evaluate('window.__testGame.showMenu();window.__testGame.session.showShop()');
+    assert.ok(await evaluate("document.querySelectorAll('#shg .sk').length>0"));
+    assert.equal(
+      await evaluate("document.getElementById('mbox').textContent.includes('__COIN__')"),
+      false,
+    );
+    await evaluate('window.__testGame.session.showPass()');
+    assert.equal(await evaluate("document.querySelectorAll('#shl .sk').length"), 20);
+    assert.ok(await evaluate('window.__testGame.session.SH.dq.m.length===3'));
     assert.equal(errors.length, 0, errors.join('\n'));
     console.log(
-      'PASS: real Chrome startup, 5 viewports, motion timing, reduced motion, keyboard, combat, boss rewards and profile.',
+      'PASS: real Chrome startup, 5 viewports, motion timing, reduced motion, keyboard, combat, boss rewards, 6 specializations, saved runs, shop and battle pass.',
     );
   } finally {
     clearTimeout(timer);

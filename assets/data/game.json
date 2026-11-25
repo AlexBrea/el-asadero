@@ -123,6 +123,198 @@
       "d": "Armadura de oro: enorme y brutal",
       "rarity": "legendary",
       "icon": "crown"
+    },
+    "rage": {
+      "sp": "war",
+      "n": "Furia de gallina",
+      "max": 4,
+      "d": "Cuanta menos vida te queda, más rápido picoteas (hasta +80%)",
+      "rarity": "rare",
+      "icon": "sword"
+    },
+    "cleave": {
+      "sp": "war",
+      "n": "Picotazo en arco",
+      "max": 4,
+      "d": "Tus golpes dañan también a los enemigos cercanos",
+      "rarity": "epic",
+      "icon": "sword"
+    },
+    "warcry": {
+      "sp": "war",
+      "n": "Grito de guerra",
+      "max": 4,
+      "d": "Cada pocos segundos, todo tu equipo pega más fuerte durante 4 s",
+      "rarity": "epic",
+      "icon": "sword"
+    },
+    "thorns": {
+      "sp": "war",
+      "n": "Espolones de acero",
+      "max": 4,
+      "d": "Devuelves parte del daño que recibes",
+      "rarity": "rare",
+      "icon": "sword"
+    },
+    "focus": {
+      "sp": "art",
+      "n": "Mira telescópica",
+      "max": 4,
+      "d": "Tus rayos láser hacen mucho más daño",
+      "rarity": "rare",
+      "icon": "target"
+    },
+    "barrage": {
+      "sp": "art",
+      "n": "Lluvia de huevos",
+      "max": 4,
+      "d": "Lanza una salva de huevos explosivos",
+      "rarity": "epic",
+      "icon": "target"
+    },
+    "mega": {
+      "sp": "art",
+      "n": "Mega huevo",
+      "max": 4,
+      "d": "Cada pocos segundos lanza un huevo gigante devastador",
+      "rarity": "epic",
+      "icon": "target"
+    },
+    "overclock": {
+      "sp": "art",
+      "n": "Recarga turbo",
+      "max": 4,
+      "d": "Todas tus habilidades se recargan más rápido",
+      "rarity": "rare",
+      "icon": "target"
+    },
+    "drain": {
+      "sp": "vam",
+      "n": "Aura de sangre",
+      "max": 4,
+      "d": "Un aura roja daña a los enemigos cercanos y te cura",
+      "rarity": "epic",
+      "icon": "moon"
+    },
+    "bats": {
+      "sp": "vam",
+      "n": "Murciélagos",
+      "max": 4,
+      "d": "Envía murciélagos que vuelan hasta los enemigos y los muerden",
+      "rarity": "epic",
+      "icon": "moon"
+    },
+    "lust": {
+      "sp": "vam",
+      "n": "Sed de sangre",
+      "max": 4,
+      "d": "Al derrotar a un enemigo recuperas vida",
+      "rarity": "rare",
+      "icon": "moon"
+    },
+    "mist": {
+      "sp": "vam",
+      "n": "Forma de niebla",
+      "max": 4,
+      "d": "Esquivas parte de los golpes",
+      "rarity": "rare",
+      "icon": "moon"
+    },
+    "ember": {
+      "sp": "pyr",
+      "n": "Brasas eternas",
+      "max": 4,
+      "d": "La quemadura dura más y quema más fuerte",
+      "rarity": "rare",
+      "icon": "flame"
+    },
+    "spread": {
+      "sp": "pyr",
+      "n": "Contagio",
+      "max": 3,
+      "d": "Los enemigos que mueren ardiendo incendian a sus vecinos",
+      "rarity": "epic",
+      "icon": "flame"
+    },
+    "volcano": {
+      "sp": "pyr",
+      "n": "Erupción",
+      "max": 4,
+      "d": "Cada pocos segundos, una explosión de fuego a tu alrededor",
+      "rarity": "epic",
+      "icon": "flame"
+    },
+    "ashes": {
+      "sp": "pyr",
+      "n": "Cenizas ardientes",
+      "max": 4,
+      "d": "Los enemigos en llamas reciben más daño tuyo",
+      "rarity": "rare",
+      "icon": "flame"
+    },
+    "cyclone": {
+      "sp": "sto",
+      "n": "Ciclón",
+      "max": 4,
+      "d": "Tu tormenta es más grande, pega más y empuja a los enemigos",
+      "rarity": "epic",
+      "icon": "bolt"
+    },
+    "breeze": {
+      "sp": "sto",
+      "n": "Brisa esquiva",
+      "max": 4,
+      "d": "Esquivas golpes y corres más rápido",
+      "rarity": "rare",
+      "icon": "bolt"
+    },
+    "bolt": {
+      "sp": "sto",
+      "n": "Rayo del cielo",
+      "max": 4,
+      "d": "Cada pocos segundos caen rayos sobre los enemigos",
+      "rarity": "epic",
+      "icon": "bolt"
+    },
+    "eye": {
+      "sp": "sto",
+      "n": "Ojo del huracán",
+      "max": 4,
+      "d": "Atacas y corres más rápido",
+      "rarity": "epic",
+      "icon": "bolt"
+    },
+    "summon": {
+      "sp": "bru",
+      "n": "Invocar espíritus",
+      "max": 4,
+      "d": "Cada pocos segundos invocas polluelos espectrales que pelean por ti unos segundos",
+      "rarity": "epic",
+      "icon": "sparkles"
+    },
+    "curse": {
+      "sp": "bru",
+      "n": "Maldición",
+      "max": 4,
+      "d": "Maldices a enemigos: reciben más daño de todo tu equipo durante 6 s",
+      "rarity": "epic",
+      "icon": "sparkles"
+    },
+    "pact": {
+      "sp": "bru",
+      "n": "Pacto profundo",
+      "max": 4,
+      "d": "Refuerza el Pacto de sangre: cada aliado caído te potencia mucho más",
+      "rarity": "rare",
+      "icon": "sparkles"
+    },
+    "nova": {
+      "sp": "bru",
+      "n": "Muerte explosiva",
+      "max": 4,
+      "d": "Tus polluelos y espíritus explotan al caer y dañan a los enemigos cercanos",
+      "rarity": "epic",
+      "icon": "sparkles"
     }
   },
   "species": {
@@ -388,6 +580,34 @@
         }
       },
       "icon": "elephant"
+    },
+    "dino": {
+      "es": ["Dinosaurio", "Dinosaurios"],
+      "icon": "wolf",
+      "hp": 820,
+      "atk": 115,
+      "rate": 1.2,
+      "spd": 2.9,
+      "model": {
+        "kind": "quad",
+        "options": {
+          "L": 2.5,
+          "H": 1.45,
+          "W": 1,
+          "leg": 1,
+          "lw": 0.46,
+          "head": 1,
+          "sn": 0.5,
+          "col": "#4f8f3a",
+          "hcol": "#5a9d42",
+          "snc": "#5a9d42",
+          "belly": "#c9d98a",
+          "tail": 1.9,
+          "tailh": 0.42,
+          "hup": 0.15,
+          "legc": "#417a30"
+        }
+      }
     }
   },
   "skins": [
@@ -587,7 +807,624 @@
       "lion",
       "bear",
       "gorilla",
-      "elephant"
-    ]
-  }
+      "elephant",
+      "dino"
+    ],
+    "enemyLimit": 7,
+    "enemyStrength": 0.5,
+    "specializationRound": 5,
+    "specializationOffers": 2,
+    "passMax": 20,
+    "passTierPoints": 300
+  },
+  "specializations": {
+    "war": {
+      "n": "Guerrera",
+      "col": "#ff7b3d",
+      "d": "Cuerpo a cuerpo: +65% de vida, +30% de daño y empieza con plumas de acero (menos daño recibido).",
+      "hp": 1.65,
+      "atk": 1.3,
+      "dmg": 0.85,
+      "spd": 1,
+      "vamp": 0,
+      "cd": 1,
+      "dodge": 0,
+      "start": ["armor"],
+      "allow": ["power", "vit", "armor", "speed", "gold", "fire"],
+      "up": ["rage", "cleave", "warcry", "thorns"]
+    },
+    "art": {
+      "n": "Artillera",
+      "col": "#ff7be0",
+      "d": "A distancia: empieza con rayos láser y todas sus habilidades recargan un 15% más rápido, pero con un 10% menos de vida.",
+      "hp": 0.9,
+      "atk": 1,
+      "dmg": 1,
+      "spd": 1,
+      "vamp": 0,
+      "cd": 0.85,
+      "dodge": 0,
+      "start": ["laser"],
+      "allow": ["laser", "egg", "storm", "power", "vit", "speed"],
+      "up": ["focus", "barrage", "mega", "overclock"]
+    },
+    "vam": {
+      "n": "Vampira",
+      "col": "#d0102e",
+      "d": "Roba vida: empieza con pico vampiro, +12% de robo de vida base, +25% de vida y +15% de daño.",
+      "hp": 1.25,
+      "atk": 1.15,
+      "dmg": 1,
+      "spd": 1,
+      "vamp": 0.12,
+      "cd": 1,
+      "dodge": 0,
+      "start": ["vamp"],
+      "allow": ["vamp", "power", "vit", "speed", "gold", "armor"],
+      "up": ["drain", "bats", "lust", "mist"]
+    },
+    "pyr": {
+      "n": "Pirómana",
+      "col": "#ff9a3d",
+      "d": "Todo arde: empieza con pico de fuego y +35% de daño y +20% de vida. Sus mejoras son de fuego y explosiones.",
+      "hp": 1.2,
+      "atk": 1.35,
+      "dmg": 1,
+      "spd": 1,
+      "vamp": 0,
+      "cd": 1,
+      "dodge": 0,
+      "start": ["fire"],
+      "allow": ["fire", "egg", "power", "vit", "speed", "armor"],
+      "up": ["ember", "spread", "volcano", "ashes"]
+    },
+    "sto": {
+      "n": "Tormentosa",
+      "col": "#b7a8ff",
+      "d": "Veloz y escurridiza: empieza con tormenta de plumas, +15% de velocidad, +10% de vida y daño, y 5% de esquiva.",
+      "hp": 1.1,
+      "atk": 1.1,
+      "dmg": 1,
+      "spd": 1.15,
+      "vamp": 0,
+      "cd": 1,
+      "dodge": 0.05,
+      "start": ["storm"],
+      "allow": ["storm", "laser", "speed", "power", "vit", "gold"],
+      "up": ["cyclone", "breeze", "bolt", "eye"]
+    },
+    "bru": {
+      "n": "Brujo",
+      "col": "#a855f7",
+      "d": "Hechicero oscuro: empieza con 2 polluelos (La bandada). Cada aliado que cae le da más daño, velocidad y vida (Pacto de sangre). Sus mejoras: espíritus, maldiciones y explosiones.",
+      "hp": 1,
+      "atk": 1.1,
+      "dmg": 1,
+      "spd": 1,
+      "vamp": 0,
+      "cd": 1,
+      "dodge": 0,
+      "start": ["flock"],
+      "allow": ["egg", "storm", "power", "vit", "speed", "armor"],
+      "up": ["summon", "curse", "pact", "nova"]
+    }
+  },
+  "ultimates": {
+    "rage": {
+      "n": "Furia berserker",
+      "d": "Con menos del 35% de vida pegas un 50% más fuerte"
+    },
+    "cleave": {
+      "n": "Torbellino",
+      "d": "El arco llega mucho más lejos y pega un 50% más"
+    },
+    "warcry": {
+      "n": "Himno de guerra",
+      "d": "Recarga un 25% más rápida y además cura un 15% al equipo"
+    },
+    "thorns": {
+      "n": "Armadura de pinchos",
+      "d": "Devuelves el doble de daño"
+    },
+    "focus": {
+      "n": "Ojo de águila",
+      "d": "Tus láseres disparan 2 rayos más y pegan un 40% más"
+    },
+    "barrage": {
+      "n": "Bombardeo",
+      "d": "3 huevos más por salva y explosiones más grandes"
+    },
+    "mega": {
+      "n": "Huevo nuclear",
+      "d": "Explota más grande y vuelve a explotar poco después"
+    },
+    "overclock": {
+      "n": "Sobrecarga",
+      "d": "Todas tus habilidades recargan un 20% más rápido"
+    },
+    "drain": {
+      "n": "Aura carmesí",
+      "d": "Aura más grande que te cura mucho más"
+    },
+    "bats": {
+      "n": "Murciélagos explosivos",
+      "d": "Al morder, el murciélago explota y daña a los de alrededor"
+    },
+    "lust": {
+      "n": "Banquete de sangre",
+      "d": "Curas el doble por KO y pegas un 30% más durante 3 s"
+    },
+    "mist": {
+      "n": "Niebla densa",
+      "d": "+15% de esquiva y te curas un 5% al esquivar"
+    },
+    "ember": {
+      "n": "Infierno",
+      "d": "La quemadura dura 2 s más y quema casi el doble"
+    },
+    "spread": {
+      "n": "Pandemia",
+      "d": "Tus golpes incendian también a los enemigos de alrededor"
+    },
+    "volcano": {
+      "n": "Lava",
+      "d": "La erupción deja un charco de lava que quema durante 4 s"
+    },
+    "ashes": {
+      "n": "Cenizas explosivas",
+      "d": "Los enemigos ardiendo reciben +50% más y explotan al morir"
+    },
+    "cyclone": {
+      "n": "Tornado",
+      "d": "La tormenta atrae a los enemigos y se recarga un 30% antes"
+    },
+    "breeze": {
+      "n": "Viento a favor",
+      "d": "+10% de esquiva y +10% de velocidad"
+    },
+    "bolt": {
+      "n": "Tormenta eléctrica",
+      "d": "Cada rayo salta a 2 enemigos cercanos"
+    },
+    "eye": {
+      "n": "Vórtice",
+      "d": "Cada 9 s un torbellino te rodea y destruye a los cercanos"
+    },
+    "summon": {
+      "n": "Ejército fantasma",
+      "d": "Invocas 3 espíritus más, duran más y son un 30% más fuertes"
+    },
+    "curse": {
+      "n": "Plaga maldita",
+      "d": "Los malditos sufren daño continuo y la maldición salta a otro enemigo al morir"
+    },
+    "pact": {
+      "n": "Pacto oscuro",
+      "d": "Los bonos del pacto valen un 50% más y el tope sube a 14 aliados caídos"
+    },
+    "nova": {
+      "n": "Supernova",
+      "d": "Explosión mucho mayor (+80% daño, +1.5 radio) y te cura un 8% al explotar"
+    }
+  },
+  "relics": {
+    "dmg": {
+      "n": "Pluma de águila",
+      "d": "+20% de daño a todo tu equipo",
+      "max": 3,
+      "icon": "feather"
+    },
+    "hp": {
+      "n": "Corazón de piedra",
+      "d": "+25% de vida a todo tu equipo",
+      "max": 3,
+      "icon": "shield"
+    },
+    "spd": {
+      "n": "Espuelas veloces",
+      "d": "Atacan y corren un 10% más rápido",
+      "max": 3,
+      "icon": "bolt"
+    },
+    "crit": {
+      "n": "Trébol de la suerte",
+      "d": "+12% de probabilidad de crítico (x3 daño)",
+      "max": 3,
+      "icon": "sparkles"
+    },
+    "vamp": {
+      "n": "Colmillo de lobo",
+      "d": "Roban vida: 8% del daño que hacen",
+      "max": 3,
+      "icon": "sword"
+    },
+    "regen": {
+      "n": "Caldo de la abuela",
+      "d": "Regeneran un 2% de su vida por segundo",
+      "max": 3,
+      "icon": "heart"
+    },
+    "rev": {
+      "n": "Segundo aliento",
+      "d": "Cada uno revive una vez por ronda con la mitad de vida",
+      "max": 1,
+      "icon": "feather"
+    },
+    "xp": {
+      "n": "Copa dorada",
+      "d": "+1 XP de cuenta por cada ronda superada",
+      "max": 3,
+      "icon": "trophy"
+    },
+    "chick": {
+      "n": "Huevo de la suerte",
+      "d": "Un pollito aliado más se une al equipo",
+      "max": 3,
+      "icon": "egg"
+    }
+  },
+  "cosmeticRarities": {
+    "common": {
+      "n": "Común",
+      "c": "#9fb4d6"
+    },
+    "rare": {
+      "n": "Raro",
+      "c": "#4fa8ff"
+    },
+    "epic": {
+      "n": "Épico",
+      "c": "#c77dff"
+    },
+    "legend": {
+      "n": "Legendario",
+      "c": "#ffd24a"
+    }
+  },
+  "cosmeticSlots": [
+    {
+      "id": "hat",
+      "n": "Gorro",
+      "icon": "crown"
+    },
+    {
+      "id": "shoes",
+      "n": "Zapatillas",
+      "icon": "bolt"
+    },
+    {
+      "id": "suit",
+      "n": "Traje",
+      "icon": "shield"
+    },
+    {
+      "id": "skin",
+      "n": "Skin",
+      "icon": "paint"
+    }
+  ],
+  "shopSkins": [
+    {
+      "id": "neon",
+      "n": "Neón",
+      "lvl": 9999,
+      "d": "Brilla en la oscuridad",
+      "rar": "rare",
+      "price": 450,
+      "pal": {
+        "body": "#0b1d2a",
+        "head": "#10303f",
+        "wing": "#20f0ff",
+        "tail": "#20f0ff",
+        "glow": ["wing", "tail"]
+      }
+    },
+    {
+      "id": "candy",
+      "n": "Algodón de azúcar",
+      "lvl": 9999,
+      "d": "Dulce y esponjosa",
+      "rar": "rare",
+      "price": 450,
+      "pal": {
+        "body": "#ff9ecb",
+        "head": "#ffc2e0",
+        "wing": "#9ee7ff",
+        "tail": "#9ee7ff"
+      }
+    },
+    {
+      "id": "zombie",
+      "n": "Zombi",
+      "lvl": 9999,
+      "d": "Vuelve de la sartén",
+      "rar": "epic",
+      "price": 600,
+      "pal": {
+        "body": "#7fa86a",
+        "head": "#93c27c",
+        "wing": "#5c7d4c",
+        "tail": "#5c7d4c"
+      }
+    },
+    {
+      "id": "ice",
+      "n": "Hielo",
+      "lvl": 9999,
+      "d": "Fría como el invierno",
+      "rar": "epic",
+      "price": 700,
+      "pal": {
+        "body": "#bfefff",
+        "head": "#dff8ff",
+        "wing": "#8fd8ff",
+        "tail": "#8fd8ff",
+        "glow": ["tail"]
+      }
+    },
+    {
+      "id": "magma",
+      "n": "Magma",
+      "lvl": 9999,
+      "d": "Roca ardiente",
+      "rar": "legend",
+      "price": 1000,
+      "pal": {
+        "body": "#2a1c1c",
+        "head": "#3a2424",
+        "wing": "#ff6a1a",
+        "tail": "#ffb81a",
+        "glow": ["wing", "tail"]
+      }
+    }
+  ],
+  "cosmetics": [
+    {
+      "id": "paja",
+      "slot": "hat",
+      "n": "Sombrero de paja",
+      "rar": "common",
+      "price": 150,
+      "d": "Para el sol del corral"
+    },
+    {
+      "id": "cocinero",
+      "slot": "hat",
+      "n": "Gorro de cocinero",
+      "rar": "common",
+      "price": 150,
+      "d": "La gallina chef"
+    },
+    {
+      "id": "fiesta",
+      "slot": "hat",
+      "n": "Gorro de fiesta",
+      "rar": "rare",
+      "price": 250,
+      "d": "¡Cumpleaños!"
+    },
+    {
+      "id": "chistera",
+      "slot": "hat",
+      "n": "Chistera",
+      "rar": "rare",
+      "price": 300,
+      "d": "Elegancia de mago"
+    },
+    {
+      "id": "vikingo",
+      "slot": "hat",
+      "n": "Casco vikingo",
+      "rar": "epic",
+      "price": 500,
+      "d": "Con cuernos y todo"
+    },
+    {
+      "id": "halo",
+      "slot": "hat",
+      "n": "Aureola",
+      "rar": "legend",
+      "price": 900,
+      "d": "Una gallina celestial"
+    },
+    {
+      "id": "deportivas",
+      "slot": "shoes",
+      "n": "Deportivas rojas",
+      "rar": "common",
+      "price": 150,
+      "d": "Corren que se las pelan"
+    },
+    {
+      "id": "botas",
+      "slot": "shoes",
+      "n": "Botas de agua",
+      "rar": "common",
+      "price": 150,
+      "d": "Que llueva"
+    },
+    {
+      "id": "oro",
+      "slot": "shoes",
+      "n": "Zapatos dorados",
+      "rar": "epic",
+      "price": 500,
+      "d": "Brillan al andar"
+    },
+    {
+      "id": "cohete",
+      "slot": "shoes",
+      "n": "Zapatillas cohete",
+      "rar": "legend",
+      "price": 800,
+      "d": "Con propulsores"
+    },
+    {
+      "id": "peto",
+      "slot": "suit",
+      "n": "Peto vaquero",
+      "rar": "common",
+      "price": 200,
+      "d": "Para trabajar en la granja"
+    },
+    {
+      "id": "delantal",
+      "slot": "suit",
+      "n": "Delantal de chef",
+      "rar": "common",
+      "price": 200,
+      "d": "Cuidado con la sartén"
+    },
+    {
+      "id": "capa",
+      "slot": "suit",
+      "n": "Capa de superheroína",
+      "rar": "rare",
+      "price": 350,
+      "d": "¡Gallina al rescate!"
+    },
+    {
+      "id": "esmoquin",
+      "slot": "suit",
+      "n": "Esmoquin",
+      "rar": "rare",
+      "price": 400,
+      "d": "Con pajarita"
+    },
+    {
+      "id": "armadura",
+      "slot": "suit",
+      "n": "Armadura dorada",
+      "rar": "epic",
+      "price": 650,
+      "d": "Placas de oro"
+    },
+    {
+      "id": "jetpack",
+      "slot": "suit",
+      "n": "Mochila cohete",
+      "rar": "legend",
+      "price": 1000,
+      "d": "Despega en cada pelea"
+    }
+  ],
+  "missions": [
+    {
+      "id": "r8",
+      "f": "r",
+      "t": 8,
+      "g": 8,
+      "n": "Supera 8 rondas"
+    },
+    {
+      "id": "r15",
+      "f": "r",
+      "t": 15,
+      "g": 18,
+      "n": "Supera 15 rondas"
+    },
+    {
+      "id": "r25",
+      "f": "r",
+      "t": 25,
+      "g": 35,
+      "n": "Supera 25 rondas"
+    },
+    {
+      "id": "k80",
+      "f": "k",
+      "t": 80,
+      "g": 8,
+      "n": "Derrota a 80 enemigos"
+    },
+    {
+      "id": "k200",
+      "f": "k",
+      "t": 200,
+      "g": 18,
+      "n": "Derrota a 200 enemigos"
+    },
+    {
+      "id": "k400",
+      "f": "k",
+      "t": 400,
+      "g": 35,
+      "n": "Derrota a 400 enemigos"
+    },
+    {
+      "id": "g3",
+      "f": "g",
+      "t": 3,
+      "g": 8,
+      "n": "Empieza 3 partidas"
+    },
+    {
+      "id": "g6",
+      "f": "g",
+      "t": 6,
+      "g": 16,
+      "n": "Empieza 6 partidas"
+    },
+    {
+      "id": "b1",
+      "f": "b",
+      "t": 1,
+      "g": 20,
+      "n": "Derrota a un jefe"
+    },
+    {
+      "id": "b2",
+      "f": "b",
+      "t": 2,
+      "g": 40,
+      "n": "Derrota a 2 jefes"
+    },
+    {
+      "id": "rl3",
+      "f": "rl",
+      "t": 3,
+      "g": 12,
+      "n": "Consigue 3 reliquias"
+    },
+    {
+      "id": "rl6",
+      "f": "rl",
+      "t": 6,
+      "g": 25,
+      "n": "Consigue 6 reliquias"
+    }
+  ],
+  "achievementTiers": [
+    {
+      "n": "Bronce",
+      "xp": 2,
+      "d": "#5a3414",
+      "l": "#f0bd88"
+    },
+    {
+      "n": "Plata",
+      "xp": 5,
+      "d": "#46505d",
+      "l": "#f4f7fa"
+    },
+    {
+      "n": "Oro",
+      "xp": 12,
+      "d": "#6b4a00",
+      "l": "#fff1a0"
+    },
+    {
+      "n": "Diamante",
+      "xp": 30,
+      "d": "#0b4a6e",
+      "l": "#eafcff"
+    }
+  ],
+  "medalPalettes": [
+    ["#f0b57a", "#b06a2c", "#7a4216", "#8a4e1e", "#c98446", "#e9ac70"],
+    ["#ffffff", "#aab4c0", "#6b7682", "#7d8896", "#c5cdd6", "#f1f4f7"],
+    ["#fff2a8", "#e0a91a", "#9a6a00", "#a87400", "#e8b92d", "#fff0a0"],
+    ["#f4ffff", "#5fd6f2", "#2b7fc7", "#2a79b8", "#73dcf5", "#eaffff"],
+    ["#8a8f96", "#555a61", "#3a3e44", "#3a3e44", "#5a5f66", "#7a7f86"]
+  ]
 }

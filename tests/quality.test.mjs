@@ -5,7 +5,7 @@ import { validateCatalog, freezeCatalog } from '../assets/js/catalog.js';
 import { removeExpired, createBattleIndex } from '../assets/js/simulation.js';
 import { createGameLoop } from '../assets/js/loop.js';
 import { sanitizeChickenName, normalizeExperience, getLevelInfo } from '../assets/js/profile.js';
-import { createEnemySystem } from '../assets/js/enemies.js';
+import { createRules } from './runtime-fixture.mjs';
 import { createRingEntrance } from '../assets/js/run-intro.js';
 
 const catalog = JSON.parse(readFileSync(new URL('../assets/data/game.json', import.meta.url)));
@@ -30,6 +30,15 @@ test('catalog validation rejects broken cross-references and non-finite balance 
     },
     (value) => {
       value.upgrades.power.max = 1.5;
+    },
+    (value) => {
+      value.specializations.war.up.push('missing');
+    },
+    (value) => {
+      delete value.ultimates.rage;
+    },
+    (value) => {
+      value.cosmetics[0].slot = 'missing';
     },
   ]) {
     const invalid = structuredClone(catalog);
@@ -195,7 +204,8 @@ test('a consumer can stop a failed clock update without scheduling another frame
 });
 
 test('enemy generation is repeatable and preserves tier and boss rules', () => {
-  const enemies = createEnemySystem({ data: catalog, species: catalog.species });
+  const rules = createRules();
+  const enemies = { generate: rules.genInfEnemy };
   for (const round of [1, 9, 10, 19, 20]) {
     assert.deepEqual(enemies.generate(round), enemies.generate(round));
     assert.ok(enemies.generate(round).every((member) => member.t >= 0 && member.t <= 2));

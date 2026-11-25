@@ -12,17 +12,16 @@ Para las herramientas de desarrollo, utiliza Node 24 (`nvm use`) y ejecuta `npm 
 ## Organización
 
 - `index.html`: estructura de la interfaz y carga de los scripts.
-- `assets/css/game.css`: estilos base del juego; `interface.css`: interfaz, rarezas y adaptación a móviles.
+- `assets/css/game.css`: estilos base del juego; `features.css`: tienda, especializaciones y funciones incorporadas de main; `interface.css`: interfaz, rarezas y adaptación a móviles.
 - `assets/data/game.json`: mejoras, rarezas, probabilidades, especies, modelos, skins, escenarios y balance.
 - `assets/js/main.js` y `config.js`: arranque, carga de datos y errores de inicio.
-- `assets/js/game.js`: estado de la partida, combate, flujo de rondas e integración de las pantallas con Firebase.
-- `assets/js/models.js` y `renderer.js`: geometría, cámara, renderizado 3D, vistas de las cartas y gestos.
-- `assets/js/audio.js`: efectos y música procedural.
-- `assets/js/upgrades.js` y `rarity.js`: estadísticas, requisitos, aplicación de mejoras y sorteo ponderado.
+- `assets/js/game.js`: composición de una sesión e instalación de sus dependencias.
+- `assets/js/features/`: módulos de combate, rondas, modelos, cámara, audio, especializaciones, reliquias, tienda, logros, cuenta y guardado. Comparten únicamente el registro de su sesión; no dependen de variables globales.
+- `assets/js/integration.js`: conecta estas funciones con las rarezas ponderadas, la interfaz accesible y la entrada al ring.
 - `assets/js/upgrade-ui.js`: cartas de mejora y explicación de las probabilidades.
 - `assets/js/loop.js` y `background-ticker.js`: reloj compartido para primer y segundo plano, pasos acotados y limpieza del worker.
 - `assets/js/simulation.js`: colecciones reutilizables y limpieza de partículas sin reasignar arrays.
-- `assets/js/enemies.js`: generación de rivales con semilla reproducible.
+- `assets/js/features/team.js`: estadísticas, requisitos y generación reproducible de rivales; limita a siete enemigos y mantiene los jefes en solitario.
 - `assets/js/profile.js`: nombres, niveles y persistencia local con tolerancia a errores.
 - `assets/js/catalog.js` y `types.js`: validación, metadatos inmutables y contratos JSDoc compartidos.
 - `assets/js/motion.js` y `assets/css/motion.css`: animaciones nativas de interfaz y sus tiempos compartidos.
@@ -41,7 +40,9 @@ La extensión de Chrome se mantiene localmente: `/chrome-extension/` está exclu
 
 En cada extracción se elige primero una rareza y después una mejora disponible de esa categoría. Las tres ofertas son distintas. Cuando una categoría se queda sin mejoras elegibles, su probabilidad se reparte proporcionalmente entre las restantes. Los porcentajes son por extracción, no la probabilidad de ver una rareza en el conjunto de tres cartas.
 
-Los niveles máximos y requisitos siguen siendo independientes de la rareza. Por ejemplo, Titán requiere Robot; Fénix no aparece si ya existe uno disponible en el equipo. Los premios de jefe conservan sus dos elecciones. Si se agotan todas las mejoras, se puede continuar al siguiente combate.
+Desde la ronda 5 se elige una especialización entre dos opciones. Si quedan mejoras exclusivas disponibles, se garantiza una carta de especialización y se sortean las otras dos con los pesos anteriores. Las definitivas aparecen al alcanzar el nivel máximo de su mejora.
+
+Los niveles máximos y requisitos siguen siendo independientes de la rareza. Por ejemplo, Titán requiere Robot; Fénix no aparece si ya existe uno disponible en el equipo. Los premios de jefe conservan sus dos elecciones, precedidas de una reliquia y una apuesta opcional. Si se agotan todas las mejoras, se puede continuar al siguiente combate.
 
 Para ajustar las probabilidades, edita `rarities.*.weight` en el catálogo, manteniendo una suma de 100. Cada mejora define su `rarity`, `icon`, descripción y máximo.
 
@@ -50,7 +51,7 @@ Para ajustar las probabilidades, edita `rarities.*.weight` en el catálogo, mant
 - `npm run check`: ESLint, contratos JSDoc, formato y pruebas. También se ejecuta en GitHub Actions al subir código o abrir una PR.
 - `npm run format`: aplicar el formato del repositorio.
 - `npm test`: distribución estadística, requisitos, catálogo, reloj, persistencia y colecciones del simulador.
-- `npm run test:browser`: Chrome con perfil temporal, modo invitado sin Firebase, arranque de módulos, cartas en cinco tamaños, selección de aliado, combate, premios de jefe y perfil. Genera capturas en el directorio temporal.
+- `npm run test:browser`: Chrome con perfil temporal, modo invitado sin Firebase, arranque de módulos, cartas en cinco tamaños, selección de aliado, combate, premios de jefe, las seis especializaciones y sus definitivas, partidas guardadas, tienda y pase de batalla. Genera capturas en el directorio temporal.
 
 La prueba de navegador busca Chrome en su ruta habitual de macOS. En otros sistemas puedes indicar el ejecutable con `ASADERO_CHROME=/ruta/a/chrome npm run test:browser`.
 La comprobación de móviles en Chrome valida el espacio y los controles; el tacto, el teclado y las áreas seguras requieren una revisión en un teléfono real.
@@ -60,6 +61,8 @@ La comprobación de móviles en Chrome valida el espacio y los controles; el tac
 Se utiliza JavaScript con módulos ES, sangría de dos espacios, comillas simples, punto y coma y llaves explícitas. `.editorconfig`, Prettier y ESLint definen las reglas ejecutables; no hay que ajustar el formato manualmente.
 
 Las APIs exportadas y las operaciones complejas documentan con JSDoc sus entradas, salidas, unidades y efectos sobre el estado. El catálogo se valida y congela al cargarlo; la progresión y las entidades de combate son los objetos mutables. Las claves compactas de los miembros (`k`, `t`, `l`) forman parte del formato de guardado y requieren una migración si se cambian.
+
+Las funciones nuevas de main se mantienen: cosméticos y equipamiento, misiones diarias, pase mensual, logros, estadísticas y partidas reanudables. Los catálogos de estas funciones están en el JSON y sus estilos en CSS.
 
 Los pasos de simulación reciben segundos. El reloj y la generación aleatoria admiten dependencias inyectadas para que sus pruebas sean deterministas. Las colecciones de trabajo del combate se reutilizan: no se deben retener sus resultados entre actualizaciones. Las optimizaciones del bucle deben conservar el orden de dibujo, los objetivos válidos y la resolución de las muertes; las pruebas de rendimiento no deben depender de umbrales de tiempo en CI.
 

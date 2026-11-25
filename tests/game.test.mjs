@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { drawUpgradeOffers } from '../assets/js/rarity.js';
-import { createUpgradeSystem } from '../assets/js/upgrades.js';
+import { createRules } from './runtime-fixture.mjs';
 import { mulberry } from '../assets/js/math.js';
 
 const data = JSON.parse(readFileSync(new URL('../assets/data/game.json', import.meta.url)));
@@ -41,10 +41,9 @@ test('offers stay distinct and normalize probabilities across remaining eligible
 });
 
 test('prerequisites and maximum levels still control availability', () => {
-  let team = [];
-  const rules = createUpgradeSystem({ data, getTeam: () => team, getSkin: () => 'cap' });
+  const rules = createRules();
   const hero = rules.newMember(true);
-  team = [hero];
+  const team = (rules.team = [hero]);
   assert.equal(hero.skin, 'cap');
   assert.equal(rules.memberStats(hero).hp, 48);
   assert.equal(rules.memberStats(hero).atk, 6);
@@ -77,12 +76,41 @@ test('catalog icons and rarities are complete and source UI contains no emoji pi
   for (const file of [
     '../index.html',
     '../assets/js/game.js',
-    '../assets/js/models.js',
-    '../assets/js/renderer.js',
+    '../assets/js/features/models.js',
+    '../assets/js/features/main.js',
   ]) {
     assert.ok(
       !/\p{Extended_Pictographic}/u.test(readFileSync(new URL(file, import.meta.url), 'utf8')),
       file,
     );
+  }
+});
+
+test('specializations restrict exclusive upgrades and relics modify actual combat stats', () => {
+  const rules = createRules();
+  for (const [id, specialization] of Object.entries(rules.SPECS)) {
+    const hero = rules.newMember(true);
+    rules.team = [hero];
+    rules.chooseSpec(hero, id);
+    for (const upgrade of specialization.up) {
+      assert.equal(rules.canUpg(hero, upgrade), true);
+      assert.equal(rules.canUpg(rules.newMember(false), upgrade), false);
+      hero.l[upgrade] = rules.UPG[upgrade].max;
+      assert.equal(rules.canUpg(hero, upgrade), false);
+    }
+    for (const [upgrade, definition] of Object.entries(rules.UPG)) {
+      if (definition.sp && definition.sp !== id) assert.equal(rules.canUpg(hero, upgrade), false);
+    }
+    const base = rules.memberStats(hero);
+    rules.RL = { hp: 1, dmg: 1 };
+    const boosted = rules.memberStats(hero);
+    assert.ok(boosted.hp > base.hp);
+    assert.ok(boosted.atk > base.atk);
+    assert.ok(
+      Object.values(boosted)
+        .filter((value) => typeof value === 'number')
+        .every(Number.isFinite),
+    );
+    rules.RL = {};
   }
 });

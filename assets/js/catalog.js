@@ -49,6 +49,41 @@ export function validateCatalog(value) {
     }
     require(['bird', 'quad', 'gorilla'].includes(species.model?.kind), `modelo de ${id}`);
   }
+  for (const key of ['specializations', 'ultimates', 'relics', 'cosmeticRarities']) {
+    require(isRecord(value[key]) && Object.keys(value[key]).length > 0, `falta ${key}`);
+  }
+  for (const key of ['cosmeticSlots', 'shopSkins', 'cosmetics', 'missions']) {
+    require(Array.isArray(value[key]) && value[key].length > 0, `falta ${key}`);
+  }
+  for (const [id, specialization] of Object.entries(value.specializations)) {
+    for (const key of ['start', 'allow', 'up']) {
+      require(Array.isArray(specialization[key]) &&
+        specialization[key].every((upgrade) =>
+          Object.hasOwn(value.upgrades, upgrade),
+        ), `mejoras de ${id}.${key}`);
+    }
+    require(specialization.up.every(
+      (upgrade) => value.upgrades[upgrade].sp === id,
+    ), `especialización de ${id}`);
+  }
+  for (const [id, upgrade] of Object.entries(value.upgrades)) {
+    if (upgrade.sp) {
+      require(Object.hasOwn(value.specializations, upgrade.sp), `especialización de ${id}`);
+      require(isRecord(value.ultimates[id]), `definitiva de ${id}`);
+    }
+  }
+  for (const [id, relic] of Object.entries(value.relics)) {
+    require(Number.isInteger(relic.max) && relic.max > 0, `máximo de reliquia ${id}`);
+  }
+  const slots = new Set(value.cosmeticSlots.map((slot) => slot.id));
+  for (const cosmetic of [...value.cosmetics, ...value.shopSkins]) {
+    require(Object.hasOwn(
+      value.cosmeticRarities,
+      cosmetic.rar,
+    ), `rareza de cosmético ${cosmetic.id}`);
+    require(positive(cosmetic.price), `precio de cosmético ${cosmetic.id}`);
+    require(!cosmetic.slot || slots.has(cosmetic.slot), `equipamiento de ${cosmetic.id}`);
+  }
   const { balance } = value;
   for (const key of ['healthMultiplier', 'enemyBase', 'enemyGrowth', 'enemyExponent']) {
     require(positive(balance[key]), `balance.${key}`);
